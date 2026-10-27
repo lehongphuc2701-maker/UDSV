@@ -1,0 +1,16 @@
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\bin\Debug\net8.0\UDSV.DAL.deps.json
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\bin\Debug\net8.0\UDSV.DAL.dll
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\bin\Debug\net8.0\UDSV.DAL.pdb
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\bin\Debug\net8.0\UDSV.DTO.dll
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\bin\Debug\net8.0\UDSV.DTO.pdb
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\obj\Debug\net8.0\UDSV.DAL.csproj.AssemblyReference.cache
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\obj\Debug\net8.0\UDSV.DAL.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\obj\Debug\net8.0\UDSV.DAL.AssemblyInfoInputs.cache
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\obj\Debug\net8.0\UDSV.DAL.AssemblyInfo.cs
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\obj\Debug\net8.0\UDSV.DAL.csproj.CoreCompileInputs.cache
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\obj\Debug\net8.0\UDSV.DAL.sourcelink.json
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\obj\Debug\net8.0\UDSV.DAL.csproj.Up2Date
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\obj\Debug\net8.0\UDSV.DAL.dll
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\obj\Debug\net8.0\refint\UDSV.DAL.dll
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\obj\Debug\net8.0\UDSV.DAL.pdb
+C:\Users\PC\OneDrive\Máy tính\Ứng dụng quản lí sinh viên\UDSV\UDSV.DAL\obj\Debug\net8.0\ref\UDSV.DAL.dll
