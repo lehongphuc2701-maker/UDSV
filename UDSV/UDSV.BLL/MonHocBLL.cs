@@ -17,6 +17,23 @@ namespace UDSV.BLL
             return mhDAL.LayDanhSachMonHoc();
         }
 
+        /// <summary>
+        /// Tổng số tín chỉ của danh sách môn — hiển thị trên tiêu đề FrmMonHoc.
+        /// Tách thành hàm thuần (không chạm CSDL) để Unit Test kiểm tra được phép cộng.
+        /// </summary>
+        public static int TongTinChi(DataTable danhSach)
+        {
+            if (danhSach == null) return 0;
+
+            int tong = 0;
+            foreach (DataRow dong in danhSach.Rows)
+            {
+                if (dong["SoTinChi"] != DBNull.Value)
+                    tong += Convert.ToInt32(dong["SoTinChi"]);
+            }
+            return tong;
+        }
+
         public bool ThemMonHoc(MonHocDTO mh, out string error)
         {
             if (!ChuanHoaVaKiemTra(mh, out error))

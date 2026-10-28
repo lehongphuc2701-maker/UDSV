@@ -89,6 +89,11 @@ namespace UDSV
             if (dgvSinhVien.Columns.Contains("GioiTinh")) dgvSinhVien.Columns["GioiTinh"].HeaderText = "Giới tính";
             if (dgvSinhVien.Columns.Contains("Lop")) dgvSinhVien.Columns["Lop"].HeaderText = "Lớp";
             if (dgvSinhVien.Columns.Contains("SDT")) dgvSinhVien.Columns["SDT"].HeaderText = "SĐT";
+            if (dgvSinhVien.Columns.Contains("DiemTB"))
+            {
+                dgvSinhVien.Columns["DiemTB"].HeaderText = "Điểm TB";
+                dgvSinhVien.Columns["DiemTB"].DefaultCellStyle.Format = "0.00";
+            }
         }
 
         // ---------- Lấy dữ liệu từ form ----------
@@ -102,8 +107,25 @@ namespace UDSV
                 NgaySinh = dtpNgaySinh.Value,
                 GioiTinh = cboGioiTinh.Text,
                 Lop = txtLop.Text,
-                SDT = txtSDT.Text
+                SDT = txtSDT.Text,
+                DiemTB = DocDiemTuForm()
             };
+        }
+
+        /// <summary>Ô điểm để trống = chưa có điểm (null). Người dùng có thể gõ 3.45 hoặc 3,45.</summary>
+        private decimal? DocDiemTuForm()
+        {
+            string chuoi = txtDiemTB.Text.Trim().Replace(',', '.');
+            if (chuoi.Length == 0) return null;
+
+            if (decimal.TryParse(chuoi, System.Globalization.NumberStyles.Number,
+                                 System.Globalization.CultureInfo.InvariantCulture, out decimal diem))
+            {
+                return diem;
+            }
+
+            // Không đọc được số: trả về giá trị chắc chắn sai để BLL từ chối và báo lỗi rõ ràng
+            return -1m;
         }
 
         // ---------- Sự kiện nút ----------
@@ -225,6 +247,9 @@ namespace UDSV
             txtHoTen.Text = item["HoTen"].ToString() ?? "";
             txtLop.Text = item["Lop"].ToString() ?? "";
             txtSDT.Text = item["SDT"].ToString() ?? "";
+            txtDiemTB.Text = item["DiemTB"] == DBNull.Value
+                ? ""
+                : Convert.ToDecimal(item["DiemTB"]).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
 
             string gioiTinh = item["GioiTinh"].ToString() ?? "";
             if (gioiTinh == "Nam" || gioiTinh == "Nữ")
@@ -249,6 +274,7 @@ namespace UDSV
             txtHoTen.Clear();
             txtLop.Clear();
             txtSDT.Clear();
+            txtDiemTB.Clear();
             txtTimKiem.Clear();
             txtMaSV.ReadOnly = false;
             cboGioiTinh.SelectedIndex = 0;

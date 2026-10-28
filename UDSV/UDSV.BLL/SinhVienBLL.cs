@@ -12,8 +12,17 @@ namespace UDSV.BLL
     /// </summary>
     public class SinhVienBLL
     {
-        private readonly SinhVienDAL svDAL = new SinhVienDAL();
+        private readonly ISinhVienDAL svDAL;
         private static readonly ILogger log = AppLog.For<SinhVienBLL>();
+
+        /// <summary>Dùng thật trong ứng dụng: DAL nói chuyện với SQL Server.</summary>
+        public SinhVienBLL() : this(new SinhVienDAL()) { }
+
+        /// <summary>Dùng cho Unit Test: truyền vào một DAL giả, không cần CSDL.</summary>
+        public SinhVienBLL(ISinhVienDAL dal)
+        {
+            svDAL = dal ?? throw new ArgumentNullException(nameof(dal));
+        }
 
         // 1. Danh sách sinh viên cho lưới
         public DataTable LayDanhSachSinhVien()
@@ -83,6 +92,30 @@ namespace UDSV.BLL
             if (ok) log.LogInformation("Xoá sinh viên {MaSV} thành công", maSV);
             else log.LogWarning("Xoá sinh viên {MaSV} không tìm thấy dòng nào", maSV);
             return ok;
+        }
+
+        /// <summary>
+        /// Chỉ kiểm tra dữ liệu, không ghi CSDL — dùng cho Unit Test và cho UI muốn báo lỗi sớm.
+        /// </summary>
+        public static bool KiemTraDuLieu(SinhVienDTO sv, out string error)
+        {
+            if (sv == null)
+            {
+                error = "Dữ liệu sinh viên rỗng.";
+                return false;
+            }
+            return ChuanHoaVaKiemTra(sv, out error);
+        }
+
+        /// <summary>
+        /// Điểm trung bình hệ 4 hợp lệ khi nằm trong đoạn [0, 4].
+        /// null = sinh viên chưa có điểm, vẫn hợp lệ.
+        /// Tách thành hàm riêng để Unit Test kiểm tra được mà không cần CSDL (Chương 7).
+        /// </summary>
+        public static bool IsValidGPA(decimal? diemTB)
+        {
+            if (diemTB == null) return true;
+            return diemTB.Value >= 0m && diemTB.Value <= 4m;
         }
 
         /// <summary>
@@ -161,6 +194,11 @@ namespace UDSV.BLL
                     error = "Số điện thoại chỉ được chứa chữ số.";
                     return false;
                 }
+            }
+            if (!IsValidGPA(sv.DiemTB))
+            {
+                error = "Điểm trung bình phải nằm trong khoảng 0 đến 4.";
+                return false;
             }
 
             return true;

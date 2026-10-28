@@ -8,9 +8,9 @@ namespace UDSV.DAL
     /// Tầng truy cập dữ liệu của bảng SinhVien.
     /// Chỉ chứa SQL; không kiểm tra nghiệp vụ (việc đó ở BLL), không hiển thị gì (việc đó ở UI).
     /// </summary>
-    public class SinhVienDAL
+    public class SinhVienDAL : ISinhVienDAL
     {
-        private const string SelectColumns = "MaSV, HoTen, NgaySinh, GioiTinh, Lop, SDT";
+        private const string SelectColumns = "MaSV, HoTen, NgaySinh, GioiTinh, Lop, SDT, DiemTB";
 
         // 1. Lấy toàn bộ danh sách sinh viên
         public DataTable LayDanhSachSinhVien()
@@ -53,8 +53,8 @@ namespace UDSV.DAL
         // 5. Thêm sinh viên mới
         public bool ThemSinhVien(SinhVienDTO sv)
         {
-            string query = @"INSERT INTO SinhVien (MaSV, HoTen, NgaySinh, GioiTinh, Lop, SDT)
-                             VALUES (@MaSV, @HoTen, @NgaySinh, @GioiTinh, @Lop, @SDT)";
+            string query = @"INSERT INTO SinhVien (MaSV, HoTen, NgaySinh, GioiTinh, Lop, SDT, DiemTB)
+                             VALUES (@MaSV, @HoTen, @NgaySinh, @GioiTinh, @Lop, @SDT, @DiemTB)";
 
             int rows = DatabaseHelper.ExecuteNonQuery(query, BuildParameters(sv));
             return rows == 1;
@@ -65,7 +65,7 @@ namespace UDSV.DAL
         {
             string query = @"UPDATE SinhVien
                              SET HoTen = @HoTen, NgaySinh = @NgaySinh,
-                                 GioiTinh = @GioiTinh, Lop = @Lop, SDT = @SDT
+                                 GioiTinh = @GioiTinh, Lop = @Lop, SDT = @SDT, DiemTB = @DiemTB
                              WHERE MaSV = @MaSV";
 
             int rows = DatabaseHelper.ExecuteNonQuery(query, BuildParameters(sv));
@@ -94,7 +94,9 @@ namespace UDSV.DAL
                 new SqlParameter("@NgaySinh", SqlDbType.Date) { Value = sv.NgaySinh },
                 new SqlParameter("@GioiTinh", SqlDbType.NVarChar, 10) { Value = (object)sv.GioiTinh ?? DBNull.Value },
                 new SqlParameter("@Lop", SqlDbType.VarChar, 50) { Value = sv.Lop },
-                new SqlParameter("@SDT", SqlDbType.VarChar, 15) { Value = (object)sv.SDT ?? DBNull.Value }
+                new SqlParameter("@SDT", SqlDbType.VarChar, 15) { Value = (object)sv.SDT ?? DBNull.Value },
+                new SqlParameter("@DiemTB", SqlDbType.Decimal) { Precision = 4, Scale = 2,
+                                                                 Value = (object)sv.DiemTB ?? DBNull.Value }
             };
         }
     }

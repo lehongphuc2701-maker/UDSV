@@ -51,8 +51,12 @@ namespace UDSV
         {
             try
             {
-                dgvMonHoc.DataSource = bll.LayDanhSachMonHoc();
+                DataTable dt = bll.LayDanhSachMonHoc();
+                dgvMonHoc.DataSource = dt;
                 DatTieuDeCot();
+
+                // Cho người dùng thấy ngay tổng tín chỉ của chương trình
+                this.Text = $"Quản lí môn học — {dt.Rows.Count} môn, {MonHocBLL.TongTinChi(dt)} tín chỉ";
             }
             catch (Exception ex)
             {
