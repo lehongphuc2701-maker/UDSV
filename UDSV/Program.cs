@@ -11,7 +11,9 @@ namespace UDSV
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new FrmSinhVien());
+            // Ứng dụng bắt đầu ở màn hình đăng nhập; sau khi đăng nhập mới vào trang chủ.
+            Application.Run(new FrmDangNhap());
         }
     }
 }
+

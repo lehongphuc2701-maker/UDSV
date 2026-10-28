@@ -1,4 +1,4 @@
-﻿namespace UDSV
+namespace UDSV
 {
     partial class FrmTrangChu
     {
@@ -78,7 +78,6 @@
             btnDangXuat.TabIndex = 3;
             btnDangXuat.Text = "ĐĂNG XUẤT";
             btnDangXuat.UseVisualStyleBackColor = false;
-            btnDangXuat.Click += button4_Click;
             // 
             // btnLichHoc
             // 
