@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using Microsoft.Extensions.Logging;
 using UDSV.DAL;
 using UDSV.DTO;
 
@@ -12,6 +13,7 @@ namespace UDSV.BLL
     public class SinhVienBLL
     {
         private readonly SinhVienDAL svDAL = new SinhVienDAL();
+        private static readonly ILogger log = AppLog.For<SinhVienBLL>();
 
         // 1. Danh sách sinh viên cho lưới
         public DataTable LayDanhSachSinhVien()
@@ -32,25 +34,37 @@ namespace UDSV.BLL
         public bool ThemSinhVien(SinhVienDTO sv, out string error)
         {
             if (!ChuanHoaVaKiemTra(sv, out error))
+            {
+                log.LogWarning("Từ chối thêm sinh viên {MaSV}: {Loi}", sv?.MaSV, error);
                 return false;
+            }
 
             // Kiểm tra trùng mã trước khi chèn (DB vẫn là chốt chặn cuối nhờ PRIMARY KEY)
             if (svDAL.KiemTraMaTonTai(sv.MaSV))
             {
                 error = $"Mã sinh viên '{sv.MaSV}' đã tồn tại!";
+                log.LogWarning("Từ chối thêm sinh viên {MaSV}: trùng mã", sv.MaSV);
                 return false;
             }
 
-            return svDAL.ThemSinhVien(sv);
+            bool ok = svDAL.ThemSinhVien(sv);
+            if (ok) log.LogInformation("Thêm sinh viên {MaSV} - {HoTen} thành công", sv.MaSV, sv.HoTen);
+            return ok;
         }
 
         // 4. Cập nhật sinh viên
         public bool SuaSinhVien(SinhVienDTO sv, out string error)
         {
             if (!ChuanHoaVaKiemTra(sv, out error))
+            {
+                log.LogWarning("Từ chối sửa sinh viên {MaSV}: {Loi}", sv?.MaSV, error);
                 return false;
+            }
 
-            return svDAL.SuaSinhVien(sv);
+            bool ok = svDAL.SuaSinhVien(sv);
+            if (ok) log.LogInformation("Cập nhật sinh viên {MaSV} thành công", sv.MaSV);
+            else log.LogWarning("Sửa sinh viên {MaSV} không tìm thấy dòng nào", sv.MaSV);
+            return ok;
         }
 
         // 5. Xoá sinh viên
@@ -61,10 +75,14 @@ namespace UDSV.BLL
             if (string.IsNullOrWhiteSpace(maSV))
             {
                 error = "Hãy chọn sinh viên cần xoá!";
+                log.LogWarning("Từ chối xoá: chưa chọn sinh viên");
                 return false;
             }
 
-            return svDAL.XoaSinhVien(maSV.Trim());
+            bool ok = svDAL.XoaSinhVien(maSV.Trim());
+            if (ok) log.LogInformation("Xoá sinh viên {MaSV} thành công", maSV);
+            else log.LogWarning("Xoá sinh viên {MaSV} không tìm thấy dòng nào", maSV);
+            return ok;
         }
 
         /// <summary>
@@ -149,3 +167,4 @@ namespace UDSV.BLL
         }
     }
 }
+

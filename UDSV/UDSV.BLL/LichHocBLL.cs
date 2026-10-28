@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using Microsoft.Extensions.Logging;
 using UDSV.DAL;
 using UDSV.DTO;
 
@@ -14,6 +15,7 @@ namespace UDSV.BLL
         private readonly LichHocDAL lhDAL = new LichHocDAL();
         private readonly SinhVienDAL svDAL = new SinhVienDAL();
         private readonly MonHocDAL mhDAL = new MonHocDAL();
+        private static readonly ILogger log = AppLog.For<LichHocBLL>();
 
         public DataTable LayDanhSachLichHoc()
         {
@@ -23,9 +25,15 @@ namespace UDSV.BLL
         public bool ThemLichHoc(LichHocDTO lh, out string error)
         {
             if (!KiemTra(lh, out error))
+            {
+                log.LogWarning("Từ chối thêm lịch học: {Loi}", error);
                 return false;
+            }
 
-            return lhDAL.ThemLichHoc(lh);
+            bool ok = lhDAL.ThemLichHoc(lh);
+            if (ok) log.LogInformation("Thêm lịch học: môn {MaMH}, SV {MaSV}, ngày {Ngay:dd/MM/yyyy}",
+                                       lh.MaMH, lh.MaSV, lh.NgayHoc);
+            return ok;
         }
 
         public bool SuaLichHoc(LichHocDTO lh, out string error)
@@ -33,12 +41,18 @@ namespace UDSV.BLL
             if (lh.MaLich <= 0)
             {
                 error = "Hãy chọn một buổi học trong bảng để sửa.";
+                log.LogWarning("Từ chối sửa lịch học: chưa chọn dòng");
                 return false;
             }
             if (!KiemTra(lh, out error))
+            {
+                log.LogWarning("Từ chối sửa lịch học {MaLich}: {Loi}", lh.MaLich, error);
                 return false;
+            }
 
-            return lhDAL.SuaLichHoc(lh);
+            bool ok = lhDAL.SuaLichHoc(lh);
+            if (ok) log.LogInformation("Cập nhật lịch học {MaLich} thành công", lh.MaLich);
+            return ok;
         }
 
         public bool XoaLichHoc(int maLich, out string error)
@@ -48,10 +62,13 @@ namespace UDSV.BLL
             if (maLich <= 0)
             {
                 error = "Hãy chọn một buổi học trong bảng để xoá.";
+                log.LogWarning("Từ chối xoá lịch học: chưa chọn dòng");
                 return false;
             }
 
-            return lhDAL.XoaLichHoc(maLich);
+            bool ok = lhDAL.XoaLichHoc(maLich);
+            if (ok) log.LogInformation("Xoá lịch học {MaLich} thành công", maLich);
+            return ok;
         }
 
         private bool KiemTra(LichHocDTO lh, out string error)

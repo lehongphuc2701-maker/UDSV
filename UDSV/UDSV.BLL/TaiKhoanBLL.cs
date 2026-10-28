@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.Logging;
 using UDSV.DAL;
 using UDSV.DTO;
 
@@ -11,6 +12,7 @@ namespace UDSV.BLL
     public class TaiKhoanBLL
     {
         private readonly TaiKhoanDAL tkDAL = new TaiKhoanDAL();
+        private static readonly ILogger log = AppLog.For<TaiKhoanBLL>();
 
         // 1. Đăng nhập
         public bool DangNhap(string username, string password, out TaiKhoanDTO taiKhoan, out string error)
@@ -24,11 +26,13 @@ namespace UDSV.BLL
             if (string.IsNullOrWhiteSpace(username))
             {
                 error = "Tên đăng nhập không được để trống!";
+                log.LogWarning("Đăng nhập bị chặn: tên đăng nhập rỗng");
                 return false;
             }
             if (string.IsNullOrEmpty(password))
             {
                 error = "Mật khẩu không được để trống!";
+                log.LogWarning("Đăng nhập bị chặn: mật khẩu rỗng (user {Username})", username);
                 return false;
             }
 
@@ -36,9 +40,11 @@ namespace UDSV.BLL
             if (taiKhoan == null)
             {
                 error = "Sai tên đăng nhập hoặc mật khẩu!";
+                log.LogWarning("Đăng nhập thất bại cho tài khoản {Username}", username);
                 return false;
             }
 
+            log.LogInformation("Đăng nhập thành công: {Username} ({HoTen})", taiKhoan.Username, taiKhoan.HoTen);
             return true;
         }
 
@@ -68,6 +74,7 @@ namespace UDSV.BLL
             if (password.Length < 6)
             {
                 error = "Mật khẩu phải có ít nhất 6 ký tự.";
+                log.LogWarning("Đăng ký bị chặn cho {Username}: mật khẩu quá ngắn", username);
                 return false;
             }
             if (password.Length > 100)
@@ -78,6 +85,7 @@ namespace UDSV.BLL
             if (password != nhapLaiMatKhau)
             {
                 error = "Hai lần nhập mật khẩu không khớp!";
+                log.LogWarning("Đăng ký bị chặn cho {Username}: nhập lại mật khẩu không khớp", username);
                 return false;
             }
             if (string.IsNullOrWhiteSpace(hoTen))
@@ -93,11 +101,14 @@ namespace UDSV.BLL
             if (tkDAL.KiemTraTaiKhoanTonTai(username))
             {
                 error = $"Tên tài khoản '{username}' đã được sử dụng!";
+                log.LogWarning("Đăng ký bị chặn: tài khoản {Username} đã tồn tại", username);
                 return false;
             }
 
             TaiKhoanDTO tk = new TaiKhoanDTO(username, password, hoTen);
-            return tkDAL.ThemTaiKhoan(tk);
+            bool ok = tkDAL.ThemTaiKhoan(tk);
+            if (ok) log.LogInformation("Đăng ký tài khoản mới: {Username} ({HoTen})", username, hoTen);
+            return ok;
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using Microsoft.Extensions.Logging;
 using UDSV.DAL;
 using UDSV.DTO;
 
@@ -9,6 +10,7 @@ namespace UDSV.BLL
     public class MonHocBLL
     {
         private readonly MonHocDAL mhDAL = new MonHocDAL();
+        private static readonly ILogger log = AppLog.For<MonHocBLL>();
 
         public DataTable LayDanhSachMonHoc()
         {
@@ -18,23 +20,35 @@ namespace UDSV.BLL
         public bool ThemMonHoc(MonHocDTO mh, out string error)
         {
             if (!ChuanHoaVaKiemTra(mh, out error))
+            {
+                log.LogWarning("Từ chối thêm môn học {MaMH}: {Loi}", mh?.MaMH, error);
                 return false;
+            }
 
             if (mhDAL.KiemTraMaTonTai(mh.MaMH))
             {
                 error = $"Mã môn học '{mh.MaMH}' đã tồn tại!";
+                log.LogWarning("Từ chối thêm môn học {MaMH}: trùng mã", mh.MaMH);
                 return false;
             }
 
-            return mhDAL.ThemMonHoc(mh);
+            bool ok = mhDAL.ThemMonHoc(mh);
+            if (ok) log.LogInformation("Thêm môn học {MaMH} - {TenMH} thành công", mh.MaMH, mh.TenMH);
+            return ok;
         }
 
         public bool SuaMonHoc(MonHocDTO mh, out string error)
         {
             if (!ChuanHoaVaKiemTra(mh, out error))
+            {
+                log.LogWarning("Từ chối sửa môn học {MaMH}: {Loi}", mh?.MaMH, error);
                 return false;
+            }
 
-            return mhDAL.SuaMonHoc(mh);
+            bool ok = mhDAL.SuaMonHoc(mh);
+            if (ok) log.LogInformation("Cập nhật môn học {MaMH} thành công", mh.MaMH);
+            else log.LogWarning("Sửa môn học {MaMH} không tìm thấy dòng nào", mh.MaMH);
+            return ok;
         }
 
         public bool XoaMonHoc(string maMH, out string error)
@@ -44,6 +58,7 @@ namespace UDSV.BLL
             if (string.IsNullOrWhiteSpace(maMH))
             {
                 error = "Hãy chọn môn học cần xoá!";
+                log.LogWarning("Từ chối xoá môn học: chưa chọn dòng");
                 return false;
             }
 
@@ -53,10 +68,13 @@ namespace UDSV.BLL
             {
                 error = $"Không thể xoá: môn '{maMH}' đang có {soLich} buổi trong lịch học.\n" +
                         "Hãy xoá các buổi học đó trước.";
+                log.LogWarning("Từ chối xoá môn học {MaMH}: còn {SoLich} buổi học tham chiếu", maMH, soLich);
                 return false;
             }
 
-            return mhDAL.XoaMonHoc(maMH);
+            bool xoaOk = mhDAL.XoaMonHoc(maMH);
+            if (xoaOk) log.LogInformation("Xoá môn học {MaMH} thành công", maMH);
+            return xoaOk;
         }
 
         private static bool ChuanHoaVaKiemTra(MonHocDTO mh, out string error)
