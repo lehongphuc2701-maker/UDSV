@@ -1,56 +1,93 @@
-﻿using System;
+using System;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace UDSV.DAL
 {
-    public class DatabaseHelper
+    /// <summary>
+    /// Nơi duy nhất trong ứng dụng biết cách mở kết nối SQL Server.
+    /// Toàn bộ câu lệnh đi qua đây đều dùng SqlParameter — không ghép chuỗi.
+    /// </summary>
+    public static class DatabaseHelper
     {
-        // CHÚ Ý: Đổi TEN_SERVER_CUA_BAN thành Server Name trong SQL của bạn
-        private static string connectionString = @"Data Source=.\SQL2022;Initial Catalog=DETAI;Integrated Security=True;TrustServerCertificate=True";
+        // Chuỗi kết nối mặc định của nhóm (SQL Server Express trên máy từng thành viên).
+        // Muốn đổi mà không sửa code: đặt biến môi trường UDSV_CONNECTION trước khi chạy.
+        // Ví dụ: setx UDSV_CONNECTION "Server=localhost\SQLEXPRESS05;Database=DETAI;Integrated Security=True;TrustServerCertificate=True"
+        private static readonly string ConnectionString =
+            Environment.GetEnvironmentVariable("UDSV_CONNECTION")
+            ?? @"Server=localhost\SQLEXPRESS05;Database=DETAI;Integrated Security=True;TrustServerCertificate=True;";
 
-        // Hàm 1: Mở kết nối
+        /// <summary>Mở một kết nối mới (người gọi chịu trách nhiệm đóng — dùng trong using).</summary>
         public static SqlConnection GetConnection()
         {
-            return new SqlConnection(connectionString);
+            return new SqlConnection(ConnectionString);
         }
 
-        // Hàm 2: Dùng cho lệnh SELECT (Lấy dữ liệu lên DataGridView)
-        public static DataTable GetData(string query)
+        /// <summary>SELECT → trả về DataTable để bind thẳng lên DataGridView.</summary>
+        public static DataTable GetData(string query, params SqlParameter[] parameters)
         {
             DataTable dt = new DataTable();
             try
             {
                 using (SqlConnection conn = GetConnection())
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
+                    if (parameters != null && parameters.Length > 0)
+                        cmd.Parameters.AddRange(parameters);
+
                     conn.Open();
-                    SqlDataAdapter da = new SqlDataAdapter(query, conn);
-                    da.Fill(dt);
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
                 }
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
-                throw new Exception("Lỗi lấy dữ liệu: " + ex.Message);
+                throw new Exception("Lỗi lấy dữ liệu: " + ex.Message, ex);
             }
             return dt;
         }
 
-        // Hàm 3: Dùng cho lệnh INSERT, UPDATE, DELETE (Thêm, Sửa, Xóa)
-        public static bool ExecuteQuery(string query)
+        /// <summary>INSERT / UPDATE / DELETE → trả về số dòng bị ảnh hưởng.</summary>
+        public static int ExecuteNonQuery(string query, params SqlParameter[] parameters)
         {
             try
             {
                 using (SqlConnection conn = GetConnection())
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
+                    if (parameters != null && parameters.Length > 0)
+                        cmd.Parameters.AddRange(parameters);
+
                     conn.Open();
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    int result = cmd.ExecuteNonQuery();
-                    return result > 0;
+                    return cmd.ExecuteNonQuery();
                 }
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
-                throw new Exception("Lỗi thực thi dữ liệu: " + ex.Message);
+                throw new Exception("Lỗi thực thi dữ liệu: " + ex.Message, ex);
+            }
+        }
+
+        /// <summary>SELECT đếm / kiểm tra tồn tại → trả về một giá trị đơn.</summary>
+        public static object ExecuteScalar(string query, params SqlParameter[] parameters)
+        {
+            try
+            {
+                using (SqlConnection conn = GetConnection())
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    if (parameters != null && parameters.Length > 0)
+                        cmd.Parameters.AddRange(parameters);
+
+                    conn.Open();
+                    return cmd.ExecuteScalar();
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Lỗi truy vấn dữ liệu: " + ex.Message, ex);
             }
         }
     }
