@@ -1,4 +1,4 @@
-﻿namespace UDSV
+namespace UDSV
 {
     partial class FrmDangNhap
     {
@@ -69,7 +69,6 @@
             label3.Size = new Size(70, 20);
             label3.TabIndex = 2;
             label3.Text = "Mật khẩu";
-            label3.Click += label3_Click;
             // 
             // txtTaiKhoan
             // 

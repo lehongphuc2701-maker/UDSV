@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -8,20 +8,21 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- Project UDSV nằm cùng thư mục với các project con, nên phải loại chúng ra khỏi phép biên dịch
+       mặc định; nếu không, UDSV.Tests (MSTest) sẽ bị project UI biên dịch và báo thiếu TestMethod. -->
   <ItemGroup>
     <Compile Remove="UDSV.BLL\**" />
     <Compile Remove="UDSV.DAL\**" />
     <Compile Remove="UDSV.DTO\**" />
+    <Compile Remove="UDSV.Tests\**" />
     <EmbeddedResource Remove="UDSV.BLL\**" />
     <EmbeddedResource Remove="UDSV.DAL\**" />
     <EmbeddedResource Remove="UDSV.DTO\**" />
+    <EmbeddedResource Remove="UDSV.Tests\**" />
     <None Remove="UDSV.BLL\**" />
     <None Remove="UDSV.DAL\**" />
     <None Remove="UDSV.DTO\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.14" />
+    <None Remove="UDSV.Tests\**" />
   </ItemGroup>
 
   <ItemGroup>
