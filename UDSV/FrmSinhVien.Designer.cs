@@ -1,4 +1,4 @@
-namespace UDSV
+﻿namespace UDSV
 {
     partial class FrmSinhVien
     {
@@ -31,8 +31,6 @@ namespace UDSV
             label1 = new Label();
             groupBox1 = new GroupBox();
             txtSDT = new TextBox();
-            txtDiemTB = new TextBox();
-            label8 = new Label();
             txtLop = new TextBox();
             label7 = new Label();
             label6 = new Label();
@@ -67,8 +65,6 @@ namespace UDSV
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(txtDiemTB);
-            groupBox1.Controls.Add(label8);
             groupBox1.Controls.Add(txtSDT);
             groupBox1.Controls.Add(txtLop);
             groupBox1.Controls.Add(label7);
@@ -96,23 +92,6 @@ namespace UDSV
             txtSDT.Name = "txtSDT";
             txtSDT.Size = new Size(125, 27);
             txtSDT.TabIndex = 12;
-            // 
-            // txtDiemTB
-            // 
-            txtDiemTB.Location = new Point(654, 137);
-            txtDiemTB.Name = "txtDiemTB";
-            txtDiemTB.PlaceholderText = "0.00 - 4.00";
-            txtDiemTB.Size = new Size(125, 27);
-            txtDiemTB.TabIndex = 14;
-            // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.Location = new Point(541, 140);
-            label8.Name = "label8";
-            label8.Size = new Size(72, 20);
-            label8.TabIndex = 13;
-            label8.Text = "Điểm TB";
             // 
             // txtLop
             // 
@@ -294,6 +273,7 @@ namespace UDSV
             ForeColor = SystemColors.MenuHighlight;
             Name = "FrmSinhVien";
             Text = "FrmSinhVien";
+            
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvSinhVien).EndInit();
@@ -314,8 +294,6 @@ namespace UDSV
         private DateTimePicker dtpNgaySinh;
         private ComboBox cboGioiTinh;
         private TextBox txtSDT;
-        private TextBox txtDiemTB;
-        private Label label8;
         private TextBox txtLop;
         private Label label7;
         private Label label6;

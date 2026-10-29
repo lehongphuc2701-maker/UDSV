@@ -4,9 +4,6 @@
     <Compile Update="FrmDangKy.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="FrmLichHoc.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Update="FrmMonHoc.cs">
       <SubType>Form</SubType>
     </Compile>
