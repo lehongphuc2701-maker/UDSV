@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="UDSV.BLL\**" />
+    <Compile Remove="UDSV.DAL\**" />
+    <Compile Remove="UDSV.DTO\**" />
+    <EmbeddedResource Remove="UDSV.BLL\**" />
+    <EmbeddedResource Remove="UDSV.DAL\**" />
+    <EmbeddedResource Remove="UDSV.DTO\**" />
+    <None Remove="UDSV.BLL\**" />
+    <None Remove="UDSV.DAL\**" />
+    <None Remove="UDSV.DTO\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="UDSV.BLL\UDSV.BLL.csproj" />
+    <ProjectReference Include="UDSV.DTO\UDSV.DTO.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>
