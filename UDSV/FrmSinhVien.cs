@@ -42,7 +42,7 @@ namespace UDSV
             txtHoTen.Clear();
             txtLop.Clear();
             txtSDT.Clear();
-            // txtDiemTB.Clear(); // Bỏ dấu // ở đầu dòng này nếu bạn thêm ô txtDiemTB
+            txtDiemTB.Clear(); // Đã mở khóa ô Điểm TB
             dtpNgaySinh.Value = DateTime.Now;
             cboGioiTinh.SelectedIndex = -1;
 
@@ -66,8 +66,8 @@ namespace UDSV
                 txtLop.Text = row.Cells["Lop"].Value?.ToString();
                 txtSDT.Text = row.Cells["SDT"].Value?.ToString();
 
-                // Bỏ dấu // ở đầu dòng dưới nếu bạn thêm ô txtDiemTB
-                // txtDiemTB.Text = row.Cells["DiemTB"].Value?.ToString();
+                // Đã mở khóa: Lấy dữ liệu điểm từ DataGridView hiển thị lên TextBox
+                txtDiemTB.Text = row.Cells["DiemTB"].Value?.ToString();
             }
         }
 
@@ -76,9 +76,9 @@ namespace UDSV
         {
             decimal? diemTB = null;
 
-            // Bỏ dấu // ở đầu 2 dòng dưới nếu bạn thêm ô txtDiemTB
-            // if (decimal.TryParse(txtDiemTB.Text, out decimal d)) 
-            //     diemTB = d;
+            // Đã mở khóa: Ép kiểu dữ liệu từ TextBox sang dạng số thập phân (decimal)
+            if (decimal.TryParse(txtDiemTB.Text.Trim(), out decimal d))
+                diemTB = d;
 
             return new SinhVienDTO(
                 txtMaSV.Text.Trim(),

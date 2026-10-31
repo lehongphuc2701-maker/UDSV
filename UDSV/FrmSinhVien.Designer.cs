@@ -49,6 +49,9 @@
             btnTimKiem = new Button();
             txtTimKiem = new TextBox();
             dgvSinhVien = new DataGridView();
+            label8 = new Label();
+            flowLayoutPanel1 = new FlowLayoutPanel();
+            txtDiemTB = new TextBox();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvSinhVien).BeginInit();
             SuspendLayout();
@@ -65,6 +68,9 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(txtDiemTB);
+            groupBox1.Controls.Add(flowLayoutPanel1);
+            groupBox1.Controls.Add(label8);
             groupBox1.Controls.Add(txtSDT);
             groupBox1.Controls.Add(txtLop);
             groupBox1.Controls.Add(label7);
@@ -256,6 +262,29 @@
             dgvSinhVien.Size = new Size(1020, 188);
             dgvSinhVien.TabIndex = 8;
             // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(833, 105);
+            label8.Name = "label8";
+            label8.Size = new Size(69, 20);
+            label8.TabIndex = 13;
+            label8.Text = "Điểm TB";
+            // 
+            // flowLayoutPanel1
+            // 
+            flowLayoutPanel1.Location = new Point(3, 23);
+            flowLayoutPanel1.Name = "flowLayoutPanel1";
+            flowLayoutPanel1.Size = new Size(250, 125);
+            flowLayoutPanel1.TabIndex = 14;
+            // 
+            // txtDiemTB
+            // 
+            txtDiemTB.Location = new Point(921, 98);
+            txtDiemTB.Name = "txtDiemTB";
+            txtDiemTB.Size = new Size(125, 27);
+            txtDiemTB.TabIndex = 15;
+            // 
             // FrmSinhVien
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -273,7 +302,6 @@
             ForeColor = SystemColors.MenuHighlight;
             Name = "FrmSinhVien";
             Text = "FrmSinhVien";
-            
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvSinhVien).EndInit();
@@ -304,5 +332,8 @@
         private Button btnTimKiem;
         private TextBox txtTimKiem;
         private DataGridView dgvSinhVien;
+        private Label label8;
+        private TextBox txtDiemTB;
+        private FlowLayoutPanel flowLayoutPanel1;
     }
 }
