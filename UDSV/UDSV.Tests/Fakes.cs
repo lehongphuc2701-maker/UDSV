@@ -198,6 +198,8 @@ namespace UDSV.Tests
         public int DemSinhVienDaCoDiem(string maKhoa, string maMH) =>
             SoSinhVienCoDiem.TryGetValue(maKhoa + "|" + maMH, out int n) ? n : 0;
 
+        public DataTable LayTuanMau(string maKhoa, int hocKy) => new DataTable();
+
         public DataTable LayHocKy(string maKhoa)
         {
             DataTable dt = new DataTable();
