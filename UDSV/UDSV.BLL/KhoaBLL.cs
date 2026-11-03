@@ -52,9 +52,68 @@ namespace UDSV.BLL
                 return false;
             }
 
+            KhoaDTO? hienTai = khoaDAL.LayTheoMa(khoa.MaKhoa);
+            if (hienTai == null)
+            {
+                error = $"Khóa '{khoa.MaKhoa}' không tồn tại.";
+                return false;
+            }
+
+            // Chương trình đã chốt thì số tín chỉ là bất biến — sửa được tên/năm, không sửa được TC.
+            if (hienTai.DaKhoa &&
+                (khoa.TongTCBatBuoc != hienTai.TongTCBatBuoc || khoa.TongTCTuChon != hienTai.TongTCTuChon))
+            {
+                error = "Không thể sửa vì số tín chỉ sau khi chỉnh sửa khác với số tín chỉ đã khoá " +
+                        $"({hienTai.TongTCBatBuoc} bắt buộc + {hienTai.TongTCTuChon} tự chọn).\n" +
+                        "Muốn đổi số tín chỉ thì phải tạo khóa mới.";
+                log.LogWarning("Từ chối sửa TC khóa {MaKhoa}: đã khoá {BB}/{TC}, sửa thành {NewBB}/{NewTC}",
+                               khoa.MaKhoa, hienTai.TongTCBatBuoc, hienTai.TongTCTuChon,
+                               khoa.TongTCBatBuoc, khoa.TongTCTuChon);
+                return false;
+            }
+
             bool ok = khoaDAL.Sua(khoa);
             if (ok) log.LogInformation("Cập nhật khóa {MaKhoa}", khoa.MaKhoa);
             return ok;
+        }
+
+        /// <summary>
+        /// Tạo khóa kế tiếp: mã = "K" + (số lớn nhất hiện có + 1), tên và năm suy ra từ số đó.
+        /// Mã khóa là khoá chính nên người dùng không gõ tay — chỉ tăng, không sửa.
+        /// </summary>
+        public bool TaoKhoaKeTiep(out string maKhoaMoi, out string error)
+        {
+            maKhoaMoi = "";
+            error = "";
+
+            int lonNhat = 0;
+            foreach (System.Data.DataRow r in khoaDAL.LayDanhSach().Rows)
+            {
+                string maHienCo = r["MaKhoa"].ToString() ?? "";
+                if (maHienCo.Length > 1 && (maHienCo[0] == 'K' || maHienCo[0] == 'k')
+                    && int.TryParse(maHienCo.Substring(1), out int so) && so > lonNhat)
+                {
+                    lonNhat = so;
+                }
+            }
+
+            int tiepTheo = lonNhat + 1;
+            string maMoi = "K" + tiepTheo;
+            KhoaDTO moi = new KhoaDTO(maMoi,
+                                      "Công nghệ thông tin K" + tiepTheo,
+                                      2000 + tiepTheo,
+                                      2000 + tiepTheo + 4,
+                                      0, 0);
+
+            if (!khoaDAL.Them(moi))
+            {
+                error = "Không tạo được khóa mới.";
+                return false;
+            }
+
+            maKhoaMoi = maMoi;
+            log.LogInformation("Thêm khóa {MaKhoa} (tự sinh, khóa trước lớn nhất là K{Cu})", maMoi, lonNhat);
+            return true;
         }
 
         public bool Xoa(string maKhoa, out string error)
@@ -71,6 +130,15 @@ namespace UDSV.BLL
             {
                 error = $"Không thể xoá: khóa '{maKhoa}' đang có {soSv} sinh viên.";
                 log.LogWarning("Từ chối xoá khóa {MaKhoa}: còn {SoSv} sinh viên", maKhoa, soSv);
+                return false;
+            }
+
+            KhoaDTO? khoa = khoaDAL.LayTheoMa(maKhoa);
+            if (khoa != null && khoa.DaKhoa)
+            {
+                error = $"Không thể xoá: chương trình của khóa '{maKhoa}' đã được khoá " +
+                        $"ngày {khoa.NgayKhoa:dd/MM/yyyy} bởi {khoa.NguoiKhoa}.";
+                log.LogWarning("Từ chối xoá khóa {MaKhoa}: chương trình đã khoá", maKhoa);
                 return false;
             }
 

@@ -65,7 +65,7 @@ namespace UDSV
 
         private void BtnKhoa_Click(object sender, EventArgs e)
         {
-            using (FrmKhoa frm = new FrmKhoa())
+            using (FrmKhoa frm = new FrmKhoa(taiKhoanHienTai?.Username))
             {
                 frm.ShowDialog(this);
             }

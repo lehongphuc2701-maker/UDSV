@@ -3,21 +3,24 @@ using UDSV.DTO;
 
 namespace UDSV.DAL
 {
-    /// <summary>
-    /// Hợp đồng của tầng dữ liệu cho khóa. Có interface để BLL unit-test được bằng DAL giả —
-    /// nhờ vậy test chạy trên máy chấm bài mà không cần SQL Server.
-    /// </summary>
+    /// <summary>Hợp đồng tầng dữ liệu cho khóa.</summary>
     public interface IKhoaDAL
     {
         DataTable LayDanhSach();
         KhoaDTO? LayTheoMa(string maKhoa);
         bool KiemTraTonTai(string maKhoa);
 
-        /// <summary>Số sinh viên thuộc khóa — dùng cho luật "khóa đã có sinh viên thì khoá chương trình".</summary>
+        /// <summary>Số sinh viên thuộc khóa — dùng để chặn xoá khóa.</summary>
         int DemSinhVien(string maKhoa);
 
         bool Them(KhoaDTO khoa);
         bool Sua(KhoaDTO khoa);
         bool Xoa(string maKhoa);
+
+        /// <summary>
+        /// Chốt chương trình: ghi NgayKhoa + NguoiKhoa, và ghi luôn tổng tín chỉ đã chốt.
+        /// Chỉ có tác dụng khi khóa CHƯA khoá (NgayKhoa còn NULL).
+        /// </summary>
+        bool KhoaChuongTrinh(string maKhoa, string nguoiKhoa, int tongTCBatBuoc, int tongTCTuChon);
     }
 }

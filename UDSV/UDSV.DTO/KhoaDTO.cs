@@ -4,7 +4,7 @@ namespace UDSV.DTO
 {
     /// <summary>
     /// Khóa (niên khóa). Mỗi khóa mang một chương trình riêng và số tín chỉ cố định —
-    /// đây là "quyền theo khóa" (catalog year): sinh viên học theo chương trình của khóa mình.
+    /// đây là "quyền theo khóa" (catalog year).
     /// </summary>
     public class KhoaDTO
     {
@@ -13,16 +13,26 @@ namespace UDSV.DTO
         public int NamBatDau { get; set; }
         public int NamKetThuc { get; set; }
 
-        /// <summary>Tổng tín chỉ bắt buộc phải đạt để tốt nghiệp — cố định theo khóa.</summary>
+        /// <summary>Tổng tín chỉ bắt buộc — chốt tại thời điểm khoá chương trình.</summary>
         public int TongTCBatBuoc { get; set; }
 
-        /// <summary>Tổng tín chỉ tự chọn của khóa.</summary>
+        /// <summary>Tổng tín chỉ tự chọn.</summary>
         public int TongTCTuChon { get; set; }
+
+        /// <summary>null = chương trình còn sửa được. Có giá trị = đã chốt, không mở lại.</summary>
+        public DateTime? NgayKhoa { get; set; }
+
+        /// <summary>Tài khoản bấm nút khoá.</summary>
+        public string NguoiKhoa { get; set; }
+
+        /// <summary>Chương trình đã bị chốt hay chưa.</summary>
+        public bool DaKhoa => NgayKhoa.HasValue;
 
         public KhoaDTO() { }
 
         public KhoaDTO(string maKhoa, string tenKhoa, int namBatDau, int namKetThuc,
-                       int tongTCBatBuoc, int tongTCTuChon)
+                       int tongTCBatBuoc, int tongTCTuChon,
+                       DateTime? ngayKhoa = null, string nguoiKhoa = null)
         {
             MaKhoa = maKhoa;
             TenKhoa = tenKhoa;
@@ -30,6 +40,8 @@ namespace UDSV.DTO
             NamKetThuc = namKetThuc;
             TongTCBatBuoc = tongTCBatBuoc;
             TongTCTuChon = tongTCTuChon;
+            NgayKhoa = ngayKhoa;
+            NguoiKhoa = nguoiKhoa;
         }
     }
 }

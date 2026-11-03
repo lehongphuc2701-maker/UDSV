@@ -1,4 +1,4 @@
-﻿namespace UDSV
+namespace UDSV
 {
     partial class FrmMonHoc
     {
@@ -30,11 +30,9 @@
         {
             label1 = new Label();
             groupBox1 = new GroupBox();
-            txtGiangVien = new TextBox();
             txtSoTinChi = new TextBox();
             txtTenMH = new TextBox();
             txtMaMH = new TextBox();
-            label5 = new Label();
             label4 = new Label();
             label3 = new Label();
             label2 = new Label();
@@ -61,11 +59,9 @@
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(txtGiangVien);
             groupBox1.Controls.Add(txtSoTinChi);
             groupBox1.Controls.Add(txtTenMH);
             groupBox1.Controls.Add(txtMaMH);
-            groupBox1.Controls.Add(label5);
             groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(label2);
@@ -76,16 +72,6 @@
             groupBox1.TabIndex = 2;
             groupBox1.TabStop = false;
             groupBox1.Text = "Thông tin môn học";
-            // 
-            // txtGiangVien
-            // 
-            txtGiangVien.Location = new Point(397, 110);
-            txtGiangVien.Name = "txtGiangVien";
-            txtGiangVien.Size = new Size(125, 27);
-            txtGiangVien.TabIndex = 7;
-            // 
-            // txtSoTinChi
-            // 
             txtSoTinChi.Location = new Point(117, 103);
             txtSoTinChi.Name = "txtSoTinChi";
             txtSoTinChi.Size = new Size(125, 27);
@@ -104,15 +90,6 @@
             txtMaMH.Name = "txtMaMH";
             txtMaMH.Size = new Size(125, 27);
             txtMaMH.TabIndex = 4;
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(297, 110);
-            label5.Name = "label5";
-            label5.Size = new Size(79, 20);
-            label5.TabIndex = 3;
-            label5.Text = "Giảng viên";
             // 
             // label4
             // 
@@ -219,11 +196,9 @@
         private TextBox txtSoTinChi;
         private TextBox txtTenMH;
         private TextBox txtMaMH;
-        private Label label5;
         private Label label4;
         private Label label3;
         private Label label2;
-        private TextBox txtGiangVien;
         private Button btnThem;
         private Button btnSua;
         private Button btnXoa;

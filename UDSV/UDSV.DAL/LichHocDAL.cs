@@ -12,7 +12,7 @@ namespace UDSV.DAL
     public class LichHocDAL : ILichHocDAL
     {
         private const string SelectColumns =
-            "lh.MaLich, lh.MaMH, m.TenMH, lh.NgayHoc, lh.CaHoc, lh.PhongHoc";
+            "lh.MaLich, lh.MaMH, m.TenMH, lh.NgayHoc, lh.CaHoc, lh.TietBD, lh.TietKT, lh.PhongHoc";
 
         private const string FromJoin =
             "FROM LichHoc lh INNER JOIN MonHoc m ON m.MaMH = lh.MaMH";
@@ -75,6 +75,32 @@ namespace UDSV.DAL
             return DatabaseHelper.ExecuteNonQuery(query, p) == 1;
         }
 
+        /// <summary>
+        /// Buổi học của một khóa trong một học kỳ, giới hạn theo tuần.
+        /// Lọc qua ChuongTrinhChiTiet để biết môn nào thuộc học kỳ đó của khóa.
+        /// </summary>
+        public DataTable LayTheoTuan(string maKhoa, int hocKy, DateTime tuNgay, DateTime denNgay)
+        {
+            const string query = @"
+                SELECT lh.MaLich, lh.MaMH, m.TenMH, m.GiangVien,
+                       lh.NgayHoc, lh.CaHoc, lh.TietBD, lh.TietKT, lh.PhongHoc
+                FROM LichHoc lh
+                INNER JOIN MonHoc m             ON m.MaMH  = lh.MaMH
+                INNER JOIN ChuongTrinhChiTiet c ON c.MaMH  = lh.MaMH
+                WHERE c.MaKhoa = @MaKhoa AND c.HocKy = @HocKy
+                  AND lh.NgayHoc >= @TuNgay AND lh.NgayHoc <= @DenNgay
+                ORDER BY lh.NgayHoc, lh.TietBD";
+
+            SqlParameter[] ps =
+            {
+                new SqlParameter("@MaKhoa", SqlDbType.VarChar, 10) { Value = maKhoa ?? "" },
+                new SqlParameter("@HocKy", SqlDbType.TinyInt) { Value = hocKy },
+                new SqlParameter("@TuNgay", SqlDbType.Date) { Value = tuNgay.Date },
+                new SqlParameter("@DenNgay", SqlDbType.Date) { Value = denNgay.Date }
+            };
+            return DatabaseHelper.GetData(query, ps);
+        }
+
         private static SqlParameter[] BuildParameters(LichHocDTO lh)
         {
             return new SqlParameter[]
@@ -82,6 +108,8 @@ namespace UDSV.DAL
                 new SqlParameter("@MaMH", SqlDbType.VarChar, 20) { Value = lh.MaMH ?? "" },
                 new SqlParameter("@NgayHoc", SqlDbType.Date) { Value = lh.NgayHoc },
                 new SqlParameter("@CaHoc", SqlDbType.NVarChar, 50) { Value = lh.CaHoc ?? "" },
+                new SqlParameter("@TietBD", SqlDbType.TinyInt) { Value = lh.TietBD },
+                new SqlParameter("@TietKT", SqlDbType.TinyInt) { Value = lh.TietKT },
                 new SqlParameter("@PhongHoc", SqlDbType.VarChar, 50) { Value = (object?)lh.PhongHoc ?? DBNull.Value }
             };
         }

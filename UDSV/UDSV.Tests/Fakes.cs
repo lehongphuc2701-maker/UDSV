@@ -93,6 +93,19 @@ namespace UDSV.Tests
         public bool Sua(KhoaDTO khoa) => true;
 
         public bool Xoa(string maKhoa) => ds.RemoveAll(k => k.MaKhoa == maKhoa) == 1;
+
+        /// <summary>Chốt chương trình: mô phỏng UPDATE ... WHERE NgayKhoa IS NULL.</summary>
+        public bool KhoaChuongTrinh(string maKhoa, string nguoiKhoa, int tongTCBatBuoc, int tongTCTuChon)
+        {
+            KhoaDTO? k = ds.Find(x => x.MaKhoa == maKhoa);
+            if (k == null || k.NgayKhoa.HasValue) return false;
+
+            k.NgayKhoa = new DateTime(2026, 9, 1, 8, 0, 0);
+            k.NguoiKhoa = nguoiKhoa;
+            k.TongTCBatBuoc = tongTCBatBuoc;
+            k.TongTCTuChon = tongTCTuChon;
+            return true;
+        }
     }
 
     internal sealed class MonHocDALGia : IMonHocDAL
@@ -146,9 +159,10 @@ namespace UDSV.Tests
             dt.Columns.Add("TenMH", typeof(string));
             dt.Columns.Add("SoTinChi", typeof(int));
             dt.Columns.Add("BatBuoc", typeof(bool));
+            dt.Columns.Add("HocKy", typeof(byte));
 
             foreach (ChuongTrinhDTO r in ds.FindAll(x => x.MaKhoa == maKhoa))
-                dt.Rows.Add(r.MaKhoa, r.MaMH, "Môn " + r.MaMH, monHoc.TinChiCua(r.MaMH) ?? 0, r.BatBuoc);
+                dt.Rows.Add(r.MaKhoa, r.MaMH, "Môn " + r.MaMH, monHoc.TinChiCua(r.MaMH) ?? 0, r.BatBuoc, (byte)r.HocKy);
 
             return dt;
         }
@@ -167,6 +181,50 @@ namespace UDSV.Tests
             foreach (ChuongTrinhDTO r in ds.FindAll(x => x.MaKhoa == maKhoa && x.BatBuoc == batBuoc))
                 tong += monHoc.TinChiCua(r.MaMH) ?? 0;
             return tong;
+        }
+
+        /// <summary>Thay toàn bộ chương trình của khóa bằng danh sách mới (giống transaction thật).</summary>
+        public bool LuuCaChuongTrinh(string maKhoa, IList<ChuongTrinhDTO> danhSach)
+        {
+            ds.RemoveAll(x => x.MaKhoa == maKhoa);
+            foreach (ChuongTrinhDTO d in danhSach)
+                ds.Add(new ChuongTrinhDTO(maKhoa, d.MaMH, d.BatBuoc, d.HocKy));
+            return true;
+        }
+
+        /// <summary>Số sinh viên của khóa đã có điểm ở môn này — đặt sẵn khi dựng test.</summary>
+        public Dictionary<string, int> SoSinhVienCoDiem { get; } = new Dictionary<string, int>();
+
+        public int DemSinhVienDaCoDiem(string maKhoa, string maMH) =>
+            SoSinhVienCoDiem.TryGetValue(maKhoa + "|" + maMH, out int n) ? n : 0;
+
+        public DataTable LayTuanMau(string maKhoa, int hocKy) => new DataTable();
+
+        public DataTable LayHocKy(string maKhoa)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("HocKy", typeof(int));
+
+            List<int> cacKy = new List<int>();
+            foreach (ChuongTrinhDTO r in ds.FindAll(x => x.MaKhoa == maKhoa))
+                if (!cacKy.Contains(r.HocKy)) cacKy.Add(r.HocKy);
+
+            cacKy.Sort();
+            foreach (int ky in cacKy) dt.Rows.Add(ky);
+            return dt;
+        }
+
+        public DataTable LayMonTheoKy(string maKhoa, int hocKy)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("MaMH", typeof(string));
+            dt.Columns.Add("TenMH", typeof(string));
+            dt.Columns.Add("SoTinChi", typeof(int));
+
+            foreach (ChuongTrinhDTO r in ds.FindAll(x => x.MaKhoa == maKhoa && x.HocKy == hocKy))
+                dt.Rows.Add(r.MaMH, "Môn " + r.MaMH, monHoc.TinChiCua(r.MaMH) ?? 0);
+
+            return dt;
         }
     }
 
@@ -235,6 +293,35 @@ namespace UDSV.Tests
             }
             return tong;
         }
+
+        public DataTable LayBangDiem(string maKhoa, string maMH)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("MaSV", typeof(string));
+            dt.Columns.Add("HoTen", typeof(string));
+            dt.Columns.Add("Diem", typeof(decimal));
+
+            foreach (KeyValuePair<string, decimal?> kv in ds)
+            {
+                string[] p = kv.Key.Split('|');
+                if (p[1] != maMH) continue;
+                dt.Rows.Add(p[0], "Sinh viên " + p[0],
+                            kv.Value.HasValue ? (object)kv.Value.Value : DBNull.Value);
+            }
+            return dt;
+        }
+
+        /// <summary>Ghi cả bảng: có điểm thì đặt, để trống thì xoá dòng.</summary>
+        public bool LuuBangDiem(string maMH, IList<DongDiem> danhSach)
+        {
+            foreach (DongDiem d in danhSach)
+            {
+                string k = Khoa(d.MaSV, maMH);
+                if (d.Diem == null) ds.Remove(k);
+                else ds[k] = d.Diem;
+            }
+            return true;
+        }
     }
 
     internal sealed class LichHocDALGia : ILichHocDAL
@@ -244,6 +331,9 @@ namespace UDSV.Tests
         public DataTable LayDanhSachLichHoc() => new DataTable();
         public DataTable LayTheoMon(string maMH) => new DataTable();
         public DataTable LayTheoSinhVien(string maSV) => new DataTable();
+
+        public DataTable LayTheoTuan(string maKhoa, int hocKy, DateTime tuNgay, DateTime denNgay)
+            => new DataTable();
 
         public bool ThemLichHoc(LichHocDTO lh) { ds.Add(lh); return true; }
         public bool SuaLichHoc(LichHocDTO lh) => true;
