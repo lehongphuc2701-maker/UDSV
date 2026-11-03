@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Windows.Forms;
 using UDSV.BLL;
@@ -15,42 +15,101 @@ namespace UDSV
         {
             InitializeComponent();
 
-            // Gắn các sự kiện (Events) tự động thay vì phải nhấp đúp vào giao diện
+            // Gắn các sự kiện (Events) tự động
             this.Load += FrmSinhVien_Load;
             dgvSinhVien.CellClick += DgvSinhVien_CellClick;
             btnThem.Click += BtnThem_Click;
             btnSua.Click += BtnSua_Click;
             btnXoa.Click += BtnXoa_Click;
             btnLamMoi.Click += BtnLamMoi_Click;
+
+            // Tìm kiếm dữ liệu
+            btnTimKiem.Click += (s, e) => ThucHienTimKiem();
+            txtTimKiem.TextChanged += (s, e) => ThucHienTimKiem();
         }
 
         // 1. Khi Form vừa mở lên, tự động tải dữ liệu
-        private void FrmSinhVien_Load(object sender, EventArgs e)
+        private void FrmSinhVien_Load(object? sender, EventArgs e)
         {
             LoadData();
         }
 
         private void LoadData()
         {
-            dgvSinhVien.DataSource = svBLL.LayDanhSachSinhVien();
+            DataTable dt = svBLL.LayDanhSachSinhVien();
+            dgvSinhVien.DataSource = dt;
+            DinhDangCot();
         }
 
-        // 2. Làm trống các ô nhập liệu
-        private void BtnLamMoi_Click(object sender, EventArgs e)
+        // Định dạng tiêu đề cột và hiển thị đẹp mắt
+        private void DinhDangCot()
+        {
+            if (dgvSinhVien.Columns.Count == 0) return;
+
+            if (dgvSinhVien.Columns.Contains("MaSV"))
+                dgvSinhVien.Columns["MaSV"].HeaderText = "Mã Sinh Viên";
+
+            if (dgvSinhVien.Columns.Contains("HoTen"))
+                dgvSinhVien.Columns["HoTen"].HeaderText = "Họ và Tên";
+
+            if (dgvSinhVien.Columns.Contains("NgaySinh"))
+            {
+                dgvSinhVien.Columns["NgaySinh"].HeaderText = "Ngày Sinh";
+                dgvSinhVien.Columns["NgaySinh"].DefaultCellStyle.Format = "dd/MM/yyyy";
+            }
+
+            if (dgvSinhVien.Columns.Contains("GioiTinh"))
+                dgvSinhVien.Columns["GioiTinh"].HeaderText = "Giới Tính";
+
+            if (dgvSinhVien.Columns.Contains("Lop"))
+                dgvSinhVien.Columns["Lop"].HeaderText = "Lớp";
+
+            if (dgvSinhVien.Columns.Contains("SDT"))
+                dgvSinhVien.Columns["SDT"].HeaderText = "Số Điện Thoại";
+
+            if (dgvSinhVien.Columns.Contains("DiemTB"))
+            {
+                dgvSinhVien.Columns["DiemTB"].HeaderText = "Điểm TB";
+                dgvSinhVien.Columns["DiemTB"].DefaultCellStyle.Format = "N2";
+            }
+        }
+
+        // 2. Tìm kiếm sinh viên theo từ khóa (Mã SV, Tên, Lớp, SĐT)
+        private void ThucHienTimKiem()
+        {
+            if (dgvSinhVien.DataSource is DataTable dt)
+            {
+                string tuKhoa = txtTimKiem.Text.Trim().Replace("'", "''");
+                if (string.IsNullOrEmpty(tuKhoa))
+                {
+                    dt.DefaultView.RowFilter = string.Empty;
+                }
+                else
+                {
+                    dt.DefaultView.RowFilter = string.Format(
+                        "MaSV LIKE '%{0}%' OR HoTen LIKE '%{0}%' OR Lop LIKE '%{0}%' OR SDT LIKE '%{0}%'",
+                        tuKhoa
+                    );
+                }
+            }
+        }
+
+        // 3. Làm trống các ô nhập liệu
+        private void BtnLamMoi_Click(object? sender, EventArgs e)
         {
             txtMaSV.Clear();
             txtHoTen.Clear();
             txtLop.Clear();
             txtSDT.Clear();
-            txtDiemTB.Clear(); // Đã mở khóa ô Điểm TB
+            txtDiemTB.Clear();
             dtpNgaySinh.Value = DateTime.Now;
             cboGioiTinh.SelectedIndex = -1;
 
             txtMaSV.Focus();
         }
 
-        // 3. Click chọn 1 dòng trên DataGridView để đưa dữ liệu lên TextBox
-        private void DgvSinhVien_CellClick(object sender, DataGridViewCellEventArgs e)
+        // 4. Click chọn 1 dòng trên DataGridView để đưa dữ liệu lên ô nhập
+        private void DgvSinhVien_CellClick(object? sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
             {
@@ -65,18 +124,15 @@ namespace UDSV
                 cboGioiTinh.Text = row.Cells["GioiTinh"].Value?.ToString();
                 txtLop.Text = row.Cells["Lop"].Value?.ToString();
                 txtSDT.Text = row.Cells["SDT"].Value?.ToString();
-
-                // Đã mở khóa: Lấy dữ liệu điểm từ DataGridView hiển thị lên TextBox
                 txtDiemTB.Text = row.Cells["DiemTB"].Value?.ToString();
             }
         }
 
-        // 4. Hàm hỗ trợ gom dữ liệu từ Form thành đối tượng DTO
+        // 5. Hàm hỗ trợ gom dữ liệu từ Form thành đối tượng DTO
         private SinhVienDTO LayDuLieuTuForm()
         {
             decimal? diemTB = null;
 
-            // Đã mở khóa: Ép kiểu dữ liệu từ TextBox sang dạng số thập phân (decimal)
             if (decimal.TryParse(txtDiemTB.Text.Trim(), out decimal d))
                 diemTB = d;
 
@@ -91,8 +147,8 @@ namespace UDSV
             );
         }
 
-        // 5. Thêm Sinh Viên
-        private void BtnThem_Click(object sender, EventArgs e)
+        // 6. Thêm Sinh Viên
+        private void BtnThem_Click(object? sender, EventArgs e)
         {
             SinhVienDTO sv = LayDuLieuTuForm();
             if (svBLL.ThemSinhVien(sv, out string error))
@@ -107,8 +163,8 @@ namespace UDSV
             }
         }
 
-        // 6. Sửa Sinh Viên
-        private void BtnSua_Click(object sender, EventArgs e)
+        // 7. Sửa Sinh Viên
+        private void BtnSua_Click(object? sender, EventArgs e)
         {
             SinhVienDTO sv = LayDuLieuTuForm();
             if (svBLL.SuaSinhVien(sv, out string error))
@@ -122,8 +178,8 @@ namespace UDSV
             }
         }
 
-        // 7. Xóa Sinh Viên
-        private void BtnXoa_Click(object sender, EventArgs e)
+        // 8. Xóa Sinh Viên
+        private void BtnXoa_Click(object? sender, EventArgs e)
         {
             if (MessageBox.Show("Bạn có chắc chắn muốn xóa sinh viên này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
