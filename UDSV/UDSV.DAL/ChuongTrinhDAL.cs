@@ -18,7 +18,11 @@ namespace UDSV.DAL
                        m.TenMH,
                        m.SoTinChi,
                        c.BatBuoc,
-                       c.HocKy
+                       c.HocKy,
+                       c.Thu,
+                       c.TietBD,
+                       c.TietKT,
+                       c.GiangVien
                 FROM ChuongTrinhChiTiet c
                 INNER JOIN MonHoc m ON m.MaMH = c.MaMH
                 WHERE c.MaKhoa = @MaKhoa
@@ -42,8 +46,8 @@ namespace UDSV.DAL
 
         public bool Them(ChuongTrinhDTO dong)
         {
-            const string query = @"INSERT INTO ChuongTrinhChiTiet (MaKhoa, MaMH, BatBuoc, HocKy)
-                                   VALUES (@MaKhoa, @MaMH, @BatBuoc, @HocKy)";
+            const string query = @"INSERT INTO ChuongTrinhChiTiet (MaKhoa, MaMH, BatBuoc, HocKy, Thu, TietBD, TietKT, GiangVien)
+                                   VALUES (@MaKhoa, @MaMH, @BatBuoc, @HocKy, @Thu, @TietBD, @TietKT, @GiangVien)";
             return DatabaseHelper.ExecuteNonQuery(query, BuildParameters(dong)) == 1;
         }
 
@@ -99,13 +103,17 @@ namespace UDSV.DAL
                         foreach (ChuongTrinhDTO dong in danhSach)
                         {
                             using (SqlCommand ins = new SqlCommand(
-                                       @"INSERT INTO ChuongTrinhChiTiet (MaKhoa, MaMH, BatBuoc, HocKy)
-                                         VALUES (@MaKhoa, @MaMH, @BatBuoc, @HocKy)", conn, tx))
+                                       @"INSERT INTO ChuongTrinhChiTiet (MaKhoa, MaMH, BatBuoc, HocKy, Thu, TietBD, TietKT, GiangVien)
+                                         VALUES (@MaKhoa, @MaMH, @BatBuoc, @HocKy, @Thu, @TietBD, @TietKT, @GiangVien)", conn, tx))
                             {
                                 ins.Parameters.AddWithValue("@MaKhoa", maKhoa ?? "");
                                 ins.Parameters.AddWithValue("@MaMH", dong.MaMH ?? "");
                                 ins.Parameters.AddWithValue("@BatBuoc", dong.BatBuoc);
                                 ins.Parameters.AddWithValue("@HocKy", dong.HocKy);
+                                ins.Parameters.AddWithValue("@Thu", (object?)dong.Thu ?? DBNull.Value);
+                                ins.Parameters.AddWithValue("@TietBD", (object?)dong.TietBD ?? DBNull.Value);
+                                ins.Parameters.AddWithValue("@TietKT", (object?)dong.TietKT ?? DBNull.Value);
+                                ins.Parameters.AddWithValue("@GiangVien", (object?)dong.GiangVien ?? DBNull.Value);
                                 ins.ExecuteNonQuery();
                             }
                         }
@@ -146,7 +154,11 @@ namespace UDSV.DAL
                 new SqlParameter("@MaKhoa", SqlDbType.VarChar, 10) { Value = dong.MaKhoa ?? "" },
                 new SqlParameter("@MaMH", SqlDbType.VarChar, 20) { Value = dong.MaMH ?? "" },
                 new SqlParameter("@BatBuoc", SqlDbType.Bit) { Value = dong.BatBuoc },
-                new SqlParameter("@HocKy", SqlDbType.TinyInt) { Value = dong.HocKy }
+                new SqlParameter("@HocKy", SqlDbType.TinyInt) { Value = dong.HocKy },
+                new SqlParameter("@Thu", SqlDbType.TinyInt) { Value = (object?)dong.Thu ?? DBNull.Value },
+                new SqlParameter("@TietBD", SqlDbType.TinyInt) { Value = (object?)dong.TietBD ?? DBNull.Value },
+                new SqlParameter("@TietKT", SqlDbType.TinyInt) { Value = (object?)dong.TietKT ?? DBNull.Value },
+                new SqlParameter("@GiangVien", SqlDbType.NVarChar, 100) { Value = (object?)dong.GiangVien ?? DBNull.Value }
             };
         }
 

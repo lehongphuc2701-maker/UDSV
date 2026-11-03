@@ -254,6 +254,36 @@ namespace UDSV.BLL
                     error = $"{stt}: môn '{d.MaMH}' bị trùng trong chương trình.";
                     return false;
                 }
+
+                // Lịch học hằng tuần: hoặc để trống cả cụm, hoặc phải đủ và hợp lệ.
+                if (d.Thu.HasValue)
+                {
+                    if (d.Thu < 2 || d.Thu > 8)
+                    {
+                        error = $"{stt} ({d.MaMH}): thứ phải từ 2 (Thứ 2) đến 8 (Chủ nhật).";
+                        return false;
+                    }
+                    if (!d.TietBD.HasValue || !d.TietKT.HasValue)
+                    {
+                        error = $"{stt} ({d.MaMH}): đã chọn thứ thì phải nhập tiết bắt đầu và kết thúc.";
+                        return false;
+                    }
+                    if (d.TietBD < 1 || d.TietKT > 12)
+                    {
+                        error = $"{stt} ({d.MaMH}): tiết phải nằm trong 1..12.";
+                        return false;
+                    }
+                    if (d.TietKT < d.TietBD)
+                    {
+                        error = $"{stt} ({d.MaMH}): tiết kết thúc phải >= tiết bắt đầu.";
+                        return false;
+                    }
+                }
+                else if (d.TietBD.HasValue || d.TietKT.HasValue)
+                {
+                    error = $"{stt} ({d.MaMH}): đã nhập tiết thì phải chọn thứ.";
+                    return false;
+                }
             }
 
             return true;

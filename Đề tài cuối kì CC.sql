@@ -81,14 +81,20 @@ GO
 
 -- 5. Chương trình khung của từng khóa (có học kỳ 1..10)
 CREATE TABLE ChuongTrinhChiTiet (
-    MaKhoa  VARCHAR(10) NOT NULL,
-    MaMH    VARCHAR(20) NOT NULL,
-    BatBuoc BIT         NOT NULL DEFAULT 1,
-    HocKy   TINYINT     NOT NULL DEFAULT 1,
+    MaKhoa    VARCHAR(10)   NOT NULL,
+    MaMH      VARCHAR(20)   NOT NULL,
+    BatBuoc   BIT           NOT NULL DEFAULT 1,
+    HocKy     TINYINT       NOT NULL DEFAULT 1,
+    Thu       TINYINT       NULL,          -- 2 = Thứ 2 … 8 = Chủ nhật; NULL = chưa xếp lịch
+    TietBD    TINYINT       NULL,          -- tiết bắt đầu (1..12)
+    TietKT    TINYINT       NULL,          -- tiết kết thúc
+    GiangVien NVARCHAR(100) NULL,          -- giảng viên dạy lớp này (khác với môn học chung)
     CONSTRAINT PK_ChuongTrinhChiTiet PRIMARY KEY (MaKhoa, MaMH),
     CONSTRAINT FK_CTCT_Khoa FOREIGN KEY (MaKhoa) REFERENCES Khoa(MaKhoa),
     CONSTRAINT FK_CTCT_Mon  FOREIGN KEY (MaMH)   REFERENCES MonHoc(MaMH),
-    CONSTRAINT CK_CTCT_HocKy CHECK (HocKy BETWEEN 1 AND 10)
+    CONSTRAINT CK_CTCT_HocKy CHECK (HocKy BETWEEN 1 AND 10),
+    CONSTRAINT CK_CTCT_Thu   CHECK (Thu IS NULL OR Thu BETWEEN 2 AND 8),
+    CONSTRAINT CK_CTCT_Tiet  CHECK (TietBD IS NULL OR (TietBD BETWEEN 1 AND 12 AND TietKT >= TietBD AND TietKT <= 12))
 );
 GO
 
@@ -261,6 +267,15 @@ INSERT INTO ChuongTrinhChiTiet (MaKhoa, MaMH, BatBuoc, HocKy) VALUES
     ('K25','0101110079',0,10);
 GO
 
+
+-- Xếp lịch mẫu (1 buổi/tuần) cho các môn của K24
+UPDATE ChuongTrinhChiTiet SET Thu = 2, TietBD = 1,  TietKT = 5, GiangVien = N'ThS. Đặng Thế Hân'            WHERE MaKhoa = 'K24' AND MaMH = '0101123762';
+UPDATE ChuongTrinhChiTiet SET Thu = 3, TietBD = 1,  TietKT = 3, GiangVien = N'ThS. Nguyễn Thị Phương Nhung'  WHERE MaKhoa = 'K24' AND MaMH = '0101123622';
+UPDATE ChuongTrinhChiTiet SET Thu = 2, TietBD = 6,  TietKT = 9, GiangVien = N'ThS. Huỳnh Mộng Nghi'          WHERE MaKhoa = 'K24' AND MaMH = '0101123626';
+UPDATE ChuongTrinhChiTiet SET Thu = 4, TietBD = 1,  TietKT = 5, GiangVien = N'TS. Trần Thị B'                WHERE MaKhoa = 'K24' AND MaMH = '0101123764';
+UPDATE ChuongTrinhChiTiet SET Thu = 5, TietBD = 6,  TietKT = 8, GiangVien = N'ThS. Lê Kinh Nam'              WHERE MaKhoa = 'K24' AND MaMH = '0101060016';
+UPDATE ChuongTrinhChiTiet SET Thu = 6, TietBD = 1,  TietKT = 3, GiangVien = N'ThS. Đặng Thế Hân'            WHERE MaKhoa = 'K24' AND MaMH = '0101123601';
+GO
 INSERT INTO SinhVien (MaSV, HoTen, NgaySinh, GioiTinh, MaKhoa, SDT) VALUES
     ('SV001', N'Nguyễn Văn An',    '2006-05-12', N'Nam', 'K24', '0901234567'),
     ('SV002', N'Trần Thị Bình',    '2006-10-20', N'Nữ',  'K24', '0912345678'),

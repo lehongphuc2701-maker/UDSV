@@ -177,6 +177,10 @@ namespace UDSV
                     if (dgvChuongTrinh.Columns.Contains("SoTinChi")) dgvChuongTrinh.Columns["SoTinChi"].HeaderText = "TC";
                     if (dgvChuongTrinh.Columns.Contains("BatBuoc")) dgvChuongTrinh.Columns["BatBuoc"].HeaderText = "Bắt buộc";
                     if (dgvChuongTrinh.Columns.Contains("HocKy")) dgvChuongTrinh.Columns["HocKy"].Visible = false;
+                    if (dgvChuongTrinh.Columns.Contains("Thu")) dgvChuongTrinh.Columns["Thu"].HeaderText = "Thứ (2..8)";
+                    if (dgvChuongTrinh.Columns.Contains("TietBD")) dgvChuongTrinh.Columns["TietBD"].HeaderText = "Tiết BĐ";
+                    if (dgvChuongTrinh.Columns.Contains("TietKT")) dgvChuongTrinh.Columns["TietKT"].HeaderText = "Tiết KT";
+                    if (dgvChuongTrinh.Columns.Contains("GiangVien")) dgvChuongTrinh.Columns["GiangVien"].HeaderText = "Giảng viên";
                 }
 
                 NapHocKy();
@@ -498,6 +502,15 @@ namespace UDSV
             catch (Exception ex) { BaoLoi(ex); }
         }
 
+        /// <summary>Đọc một ô số có thể rỗng (DBNull) thành int?.</summary>
+        private static int? LaySo(DataRow r, string cot)
+        {
+            if (!r.Table.Columns.Contains(cot)) return null;
+            object v = r[cot];
+            if (v == null || v == DBNull.Value) return null;
+            return int.TryParse(v.ToString(), out int so) ? so : (int?)null;
+        }
+
         /// <summary>Đọc TOÀN BỘ chương trình (mọi học kỳ) thành danh sách dòng để lưu một lần.</summary>
         private List<ChuongTrinhDTO> DocLuoi()
         {
@@ -510,7 +523,13 @@ namespace UDSV
                     maDangChon,
                     r["MaMH"].ToString() ?? "",
                     Convert.ToBoolean(r["BatBuoc"]),
-                    _ctFull.Columns.Contains("HocKy") ? Convert.ToInt32(r["HocKy"]) : 1));
+                    _ctFull.Columns.Contains("HocKy") ? Convert.ToInt32(r["HocKy"]) : 1,
+                    LaySo(r, "Thu"),
+                    LaySo(r, "TietBD"),
+                    LaySo(r, "TietKT"),
+                    _ctFull.Columns.Contains("GiangVien") && r["GiangVien"] != DBNull.Value
+                        ? r["GiangVien"].ToString()
+                        : null));
             }
             return ds;
         }

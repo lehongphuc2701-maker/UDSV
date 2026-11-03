@@ -72,7 +72,6 @@ namespace UDSV
             if (dgvMonHoc.Columns.Contains("MaMH")) dgvMonHoc.Columns["MaMH"].HeaderText = "Mã MH";
             if (dgvMonHoc.Columns.Contains("TenMH")) dgvMonHoc.Columns["TenMH"].HeaderText = "Tên môn học";
             if (dgvMonHoc.Columns.Contains("SoTinChi")) dgvMonHoc.Columns["SoTinChi"].HeaderText = "Số tín chỉ";
-            if (dgvMonHoc.Columns.Contains("GiangVien")) dgvMonHoc.Columns["GiangVien"].HeaderText = "Giảng viên";
         }
 
         private MonHocDTO LayDuLieuTuForm()
@@ -83,8 +82,7 @@ namespace UDSV
             {
                 MaMH = txtMaMH.Text,
                 TenMH = txtTenMH.Text,
-                SoTinChi = soTinChi,
-                GiangVien = txtGiangVien.Text
+                SoTinChi = soTinChi
             };
         }
 
@@ -189,7 +187,6 @@ namespace UDSV
             txtMaMH.Text = maDangChon;
             txtTenMH.Text = item["TenMH"].ToString() ?? "";
             txtSoTinChi.Text = item["SoTinChi"].ToString() ?? "";
-            txtGiangVien.Text = item["GiangVien"].ToString() ?? "";
 
             txtMaMH.ReadOnly = true;
         }
@@ -202,7 +199,6 @@ namespace UDSV
             txtMaMH.Clear();
             txtTenMH.Clear();
             txtSoTinChi.Clear();
-            txtGiangVien.Clear();
             txtMaMH.ReadOnly = false;
             dgvMonHoc.ClearSelection();
             txtMaMH.Focus();

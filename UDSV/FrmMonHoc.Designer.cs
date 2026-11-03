@@ -1,4 +1,4 @@
-﻿namespace UDSV
+namespace UDSV
 {
     partial class FrmMonHoc
     {
@@ -30,7 +30,6 @@
         {
             label1 = new Label();
             groupBox1 = new GroupBox();
-            txtGiangVien = new TextBox();
             txtSoTinChi = new TextBox();
             txtTenMH = new TextBox();
             txtMaMH = new TextBox();
@@ -61,7 +60,6 @@
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(txtGiangVien);
             groupBox1.Controls.Add(txtSoTinChi);
             groupBox1.Controls.Add(txtTenMH);
             groupBox1.Controls.Add(txtMaMH);
@@ -76,16 +74,6 @@
             groupBox1.TabIndex = 2;
             groupBox1.TabStop = false;
             groupBox1.Text = "Thông tin môn học";
-            // 
-            // txtGiangVien
-            // 
-            txtGiangVien.Location = new Point(397, 110);
-            txtGiangVien.Name = "txtGiangVien";
-            txtGiangVien.Size = new Size(125, 27);
-            txtGiangVien.TabIndex = 7;
-            // 
-            // txtSoTinChi
-            // 
             txtSoTinChi.Location = new Point(117, 103);
             txtSoTinChi.Name = "txtSoTinChi";
             txtSoTinChi.Size = new Size(125, 27);
@@ -223,7 +211,6 @@
         private Label label4;
         private Label label3;
         private Label label2;
-        private TextBox txtGiangVien;
         private Button btnThem;
         private Button btnSua;
         private Button btnXoa;
