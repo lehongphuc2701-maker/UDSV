@@ -1,0 +1,3 @@
+# Không để git tự chuyển LF <-> CRLF: mỗi lần chuyển là một lần ghi đè file
+# đang được Visual Studio mở, và VS sẽ báo lỗi resx khó hiểu.
+* -text
