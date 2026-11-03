@@ -8,7 +8,7 @@ namespace UDSV.DAL
     /// <summary>Truy cập bảng MonHoc.</summary>
     public class MonHocDAL : IMonHocDAL
     {
-        private const string SelectColumns = "MaMH, TenMH, SoTinChi, GiangVien";
+        private const string SelectColumns = "MaMH, TenMH, SoTinChi";   // Giảng viên giờ thuộc lớp của khóa
 
         // 1. Danh sách môn học
         public DataTable LayDanhSachMonHoc()

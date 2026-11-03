@@ -61,7 +61,7 @@ namespace UDSV
             label1.Name = "label1";
             label1.Size = new Size(380, 41);
             label1.TabIndex = 0;
-            label1.Text = "QUẢN LÝ KHÓA & CHƯƠNG TRÌNH";
+            label1.Text = "QUẢN LÝ CHƯƠNG TRÌNH KHÓA";
             // 
             // groupBox1
             // 
@@ -340,7 +340,7 @@ namespace UDSV
             Controls.Add(label1);
             Name = "FrmKhoa";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Quản lý khóa & chương trình";
+            Text = "Quản lý chương trình khóa";
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);

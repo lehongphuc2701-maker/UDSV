@@ -80,7 +80,7 @@ namespace UDSV
             btnKhoa.Name = "btnKhoa";
             btnKhoa.Size = new Size(231, 35);
             btnKhoa.TabIndex = 4;
-            btnKhoa.Text = "4. QUẢN LÝ KHÓA";
+            btnKhoa.Text = "4. QUẢN LÝ CT KHÓA";
             btnKhoa.UseVisualStyleBackColor = false;
             // 
             // btnKetQua

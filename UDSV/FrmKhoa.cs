@@ -72,7 +72,7 @@ namespace UDSV
             // Mã khóa là khoá chính: không bao giờ gõ tay.
             txtMaKhoa.ReadOnly = true;
 
-            Text = "Quản lý chương trình học";
+            Text = "Quản lý chương trình khóa";
 
             // Nút chốt chương trình — đặt cùng hàng với các nút khác, phía bên phải
             btnKhoaTC = new Button
