@@ -8,29 +8,26 @@ namespace UDSV.BLL
 {
     /// <summary>
     /// Tầng nghiệp vụ của sinh viên: kiểm tra dữ liệu trước khi cho DAL chạm vào CSDL.
-    /// Quy tắc ở đây chạy giống nhau dù người dùng vào bằng WinForms hay bất kỳ giao diện nào khác.
+    /// Sinh viên thuộc đúng MỘT khóa; khóa quyết định chương trình nào áp cho người này.
     /// </summary>
     public class SinhVienBLL
     {
         private readonly ISinhVienDAL svDAL;
+        private readonly IKhoaDAL khoaDAL;
         private static readonly ILogger log = AppLog.For<SinhVienBLL>();
 
-        /// <summary>Dùng thật trong ứng dụng: DAL nói chuyện với SQL Server.</summary>
-        public SinhVienBLL() : this(new SinhVienDAL()) { }
+        /// <summary>Dùng thật trong ứng dụng.</summary>
+        public SinhVienBLL() : this(new SinhVienDAL(), new KhoaDAL()) { }
 
-        /// <summary>Dùng cho Unit Test: truyền vào một DAL giả, không cần CSDL.</summary>
-        public SinhVienBLL(ISinhVienDAL dal)
+        /// <summary>Dùng cho Unit Test: truyền DAL giả, không cần CSDL.</summary>
+        public SinhVienBLL(ISinhVienDAL sinhVienDal, IKhoaDAL khoaDal)
         {
-            svDAL = dal ?? throw new ArgumentNullException(nameof(dal));
+            svDAL = sinhVienDal ?? throw new ArgumentNullException(nameof(sinhVienDal));
+            khoaDAL = khoaDal ?? throw new ArgumentNullException(nameof(khoaDal));
         }
 
-        // 1. Danh sách sinh viên cho lưới
-        public DataTable LayDanhSachSinhVien()
-        {
-            return svDAL.LayDanhSachSinhVien();
-        }
+        public DataTable LayDanhSachSinhVien() => svDAL.LayDanhSachSinhVien();
 
-        // 2. Tìm kiếm: từ khoá rỗng thì trả về tất cả
         public DataTable TimKiemSinhVien(string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword))
@@ -39,16 +36,19 @@ namespace UDSV.BLL
             return svDAL.TimKiemSinhVien(keyword.Trim());
         }
 
-        // 3. Thêm sinh viên mới
         public bool ThemSinhVien(SinhVienDTO sv, out string error)
         {
-            if (!ChuanHoaVaKiemTra(sv, out error))
+            if (!KiemTraDuLieu(sv, out error))
             {
                 log.LogWarning("Từ chối thêm sinh viên {MaSV}: {Loi}", sv?.MaSV, error);
                 return false;
             }
-
-            // Kiểm tra trùng mã trước khi chèn (DB vẫn là chốt chặn cuối nhờ PRIMARY KEY)
+            if (!khoaDAL.KiemTraTonTai(sv.MaKhoa))
+            {
+                error = $"Khóa '{sv.MaKhoa}' không tồn tại.";
+                log.LogWarning("Từ chối thêm sinh viên {MaSV}: khóa lạ", sv.MaSV);
+                return false;
+            }
             if (svDAL.KiemTraMaTonTai(sv.MaSV))
             {
                 error = $"Mã sinh viên '{sv.MaSV}' đã tồn tại!";
@@ -57,78 +57,56 @@ namespace UDSV.BLL
             }
 
             bool ok = svDAL.ThemSinhVien(sv);
-            if (ok) log.LogInformation("Thêm sinh viên {MaSV} - {HoTen} thành công", sv.MaSV, sv.HoTen);
+            if (ok) log.LogInformation("Thêm sinh viên {MaSV} - {HoTen} ({Khoa})", sv.MaSV, sv.HoTen, sv.MaKhoa);
             return ok;
         }
 
-        // 4. Cập nhật sinh viên
         public bool SuaSinhVien(SinhVienDTO sv, out string error)
         {
-            if (!ChuanHoaVaKiemTra(sv, out error))
+            if (!KiemTraDuLieu(sv, out error))
             {
                 log.LogWarning("Từ chối sửa sinh viên {MaSV}: {Loi}", sv?.MaSV, error);
                 return false;
             }
+            if (!khoaDAL.KiemTraTonTai(sv.MaKhoa))
+            {
+                error = $"Khóa '{sv.MaKhoa}' không tồn tại.";
+                return false;
+            }
 
             bool ok = svDAL.SuaSinhVien(sv);
-            if (ok) log.LogInformation("Cập nhật sinh viên {MaSV} thành công", sv.MaSV);
-            else log.LogWarning("Sửa sinh viên {MaSV} không tìm thấy dòng nào", sv.MaSV);
+            if (ok) log.LogInformation("Cập nhật sinh viên {MaSV}", sv.MaSV);
             return ok;
         }
 
-        // 5. Xoá sinh viên
         public bool XoaSinhVien(string maSV, out string error)
         {
             error = "";
-
             if (string.IsNullOrWhiteSpace(maSV))
             {
                 error = "Hãy chọn sinh viên cần xoá!";
-                log.LogWarning("Từ chối xoá: chưa chọn sinh viên");
                 return false;
             }
 
             bool ok = svDAL.XoaSinhVien(maSV.Trim());
-            if (ok) log.LogInformation("Xoá sinh viên {MaSV} thành công", maSV);
-            else log.LogWarning("Xoá sinh viên {MaSV} không tìm thấy dòng nào", maSV);
+            if (ok) log.LogInformation("Xoá sinh viên {MaSV}", maSV);
             return ok;
         }
 
-        /// <summary>
-        /// Chỉ kiểm tra dữ liệu, không ghi CSDL — dùng cho Unit Test và cho UI muốn báo lỗi sớm.
-        /// </summary>
+        /// <summary>Chỉ kiểm tra quy tắc, không chạm CSDL — dùng cho Unit Test.</summary>
         public static bool KiemTraDuLieu(SinhVienDTO sv, out string error)
         {
+            error = "";
+
             if (sv == null)
             {
                 error = "Dữ liệu sinh viên rỗng.";
                 return false;
             }
-            return ChuanHoaVaKiemTra(sv, out error);
-        }
-
-        /// <summary>
-        /// Điểm trung bình hệ 4 hợp lệ khi nằm trong đoạn [0, 4].
-        /// null = sinh viên chưa có điểm, vẫn hợp lệ.
-        /// Tách thành hàm riêng để Unit Test kiểm tra được mà không cần CSDL (Chương 7).
-        /// </summary>
-        public static bool IsValidGPA(decimal? diemTB)
-        {
-            if (diemTB == null) return true;
-            return diemTB.Value >= 0m && diemTB.Value <= 4m;
-        }
-
-        /// <summary>
-        /// Cắt khoảng trắng thừa và áp toàn bộ quy tắc nghiệp vụ.
-        /// Trả về false kèm câu thông báo tiếng Việt để UI hiển thị thẳng cho người dùng.
-        /// </summary>
-        private static bool ChuanHoaVaKiemTra(SinhVienDTO sv, out string error)
-        {
-            error = "";
 
             sv.MaSV = (sv.MaSV ?? "").Trim();
             sv.HoTen = (sv.HoTen ?? "").Trim();
-            sv.Lop = (sv.Lop ?? "").Trim();
+            sv.MaKhoa = (sv.MaKhoa ?? "").Trim();
             sv.SDT = (sv.SDT ?? "").Trim();
             sv.GioiTinh = (sv.GioiTinh ?? "").Trim();
 
@@ -157,14 +135,9 @@ namespace UDSV.BLL
                 error = "Họ tên không được dài quá 100 ký tự.";
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(sv.Lop))
+            if (string.IsNullOrWhiteSpace(sv.MaKhoa))
             {
-                error = "Lớp không được để trống!";
-                return false;
-            }
-            if (sv.Lop.Length > 50)
-            {
-                error = "Tên lớp không được dài quá 50 ký tự.";
+                error = "Sinh viên phải thuộc một khóa.";
                 return false;
             }
             if (sv.NgaySinh.Date > DateTime.Today)
@@ -195,14 +168,8 @@ namespace UDSV.BLL
                     return false;
                 }
             }
-            if (!IsValidGPA(sv.DiemTB))
-            {
-                error = "Điểm trung bình phải nằm trong khoảng 0 đến 4.";
-                return false;
-            }
 
             return true;
         }
     }
 }
-

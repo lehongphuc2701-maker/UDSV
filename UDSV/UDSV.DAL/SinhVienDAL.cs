@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using UDSV.DTO;
@@ -10,93 +11,79 @@ namespace UDSV.DAL
     /// </summary>
     public class SinhVienDAL : ISinhVienDAL
     {
-        private const string SelectColumns = "MaSV, HoTen, NgaySinh, GioiTinh, Lop, SDT, DiemTB";
+        // Kèm TenKhoa để lưới hiện tên khóa thay vì chỉ mã
+        private const string SelectColumns =
+            "sv.MaSV, sv.HoTen, sv.NgaySinh, sv.GioiTinh, sv.MaKhoa, kh.TenKhoa, sv.SDT";
 
-        // 1. Lấy toàn bộ danh sách sinh viên
+        private const string FromJoin =
+            "FROM SinhVien sv INNER JOIN Khoa kh ON kh.MaKhoa = sv.MaKhoa";
+
         public DataTable LayDanhSachSinhVien()
         {
-            string query = $"SELECT {SelectColumns} FROM SinhVien ORDER BY MaSV";
+            string query = $"SELECT {SelectColumns} {FromJoin} ORDER BY sv.MaSV";
             return DatabaseHelper.GetData(query);
         }
 
-        // 2. Tìm theo mã hoặc họ tên (LIKE, tham số hoá)
         public DataTable TimKiemSinhVien(string keyword)
         {
-            string query = $@"SELECT {SelectColumns} FROM SinhVien
-                              WHERE MaSV LIKE @Keyword OR HoTen LIKE @Keyword
-                              ORDER BY MaSV";
+            string query = $@"SELECT {SelectColumns} {FromJoin}
+                              WHERE sv.MaSV LIKE @Keyword OR sv.HoTen LIKE @Keyword
+                              ORDER BY sv.MaSV";
 
             SqlParameter keywordParam = new SqlParameter("@Keyword", SqlDbType.NVarChar, 100)
             {
-                Value = "%" + keyword + "%"
+                Value = "%" + (keyword ?? "") + "%"
             };
             return DatabaseHelper.GetData(query, keywordParam);
         }
 
-        // 3. Lấy một sinh viên theo mã
         public DataTable LaySinhVienTheoMa(string maSV)
         {
-            string query = $"SELECT {SelectColumns} FROM SinhVien WHERE MaSV = @MaSV";
-            SqlParameter maParam = new SqlParameter("@MaSV", SqlDbType.VarChar, 20) { Value = maSV };
-            return DatabaseHelper.GetData(query, maParam);
+            string query = $"SELECT {SelectColumns} {FromJoin} WHERE sv.MaSV = @MaSV";
+            SqlParameter p = new SqlParameter("@MaSV", SqlDbType.VarChar, 20) { Value = maSV ?? "" };
+            return DatabaseHelper.GetData(query, p);
         }
 
-        // 4. Kiểm tra mã đã tồn tại chưa (dùng ở BLL trước khi thêm)
         public bool KiemTraMaTonTai(string maSV)
         {
-            string query = "SELECT COUNT(*) FROM SinhVien WHERE MaSV = @MaSV";
-            SqlParameter maParam = new SqlParameter("@MaSV", SqlDbType.VarChar, 20) { Value = maSV };
-            object result = DatabaseHelper.ExecuteScalar(query, maParam);
-            return Convert.ToInt32(result) > 0;
+            const string query = "SELECT COUNT(*) FROM SinhVien WHERE MaSV = @MaSV";
+            SqlParameter p = new SqlParameter("@MaSV", SqlDbType.VarChar, 20) { Value = maSV ?? "" };
+            return Convert.ToInt32(DatabaseHelper.ExecuteScalar(query, p)) > 0;
         }
 
-        // 5. Thêm sinh viên mới
         public bool ThemSinhVien(SinhVienDTO sv)
         {
-            string query = @"INSERT INTO SinhVien (MaSV, HoTen, NgaySinh, GioiTinh, Lop, SDT, DiemTB)
-                             VALUES (@MaSV, @HoTen, @NgaySinh, @GioiTinh, @Lop, @SDT, @DiemTB)";
-
-            int rows = DatabaseHelper.ExecuteNonQuery(query, BuildParameters(sv));
-            return rows == 1;
+            const string query = @"INSERT INTO SinhVien (MaSV, HoTen, NgaySinh, GioiTinh, MaKhoa, SDT)
+                                   VALUES (@MaSV, @HoTen, @NgaySinh, @GioiTinh, @MaKhoa, @SDT)";
+            return DatabaseHelper.ExecuteNonQuery(query, BuildParameters(sv)) == 1;
         }
 
-        // 6. Cập nhật sinh viên (mã sinh viên là khoá nên không đổi)
         public bool SuaSinhVien(SinhVienDTO sv)
         {
-            string query = @"UPDATE SinhVien
-                             SET HoTen = @HoTen, NgaySinh = @NgaySinh,
-                                 GioiTinh = @GioiTinh, Lop = @Lop, SDT = @SDT, DiemTB = @DiemTB
-                             WHERE MaSV = @MaSV";
-
-            int rows = DatabaseHelper.ExecuteNonQuery(query, BuildParameters(sv));
-            return rows == 1;
+            const string query = @"UPDATE SinhVien
+                                   SET HoTen = @HoTen, NgaySinh = @NgaySinh, GioiTinh = @GioiTinh,
+                                       MaKhoa = @MaKhoa, SDT = @SDT
+                                   WHERE MaSV = @MaSV";
+            return DatabaseHelper.ExecuteNonQuery(query, BuildParameters(sv)) == 1;
         }
 
-        // 7. Xoá sinh viên theo mã
         public bool XoaSinhVien(string maSV)
         {
-            string query = "DELETE FROM SinhVien WHERE MaSV = @MaSV";
-            SqlParameter maParam = new SqlParameter("@MaSV", SqlDbType.VarChar, 20) { Value = maSV };
-            int rows = DatabaseHelper.ExecuteNonQuery(query, maParam);
-            return rows == 1;
+            const string query = "DELETE FROM SinhVien WHERE MaSV = @MaSV";
+            SqlParameter p = new SqlParameter("@MaSV", SqlDbType.VarChar, 20) { Value = maSV ?? "" };
+            return DatabaseHelper.ExecuteNonQuery(query, p) == 1;
         }
 
-        /// <summary>
-        /// Gom tham số dùng chung cho INSERT và UPDATE.
-        /// Dùng kiểu dữ liệu tường minh thay vì AddWithValue để tránh SQL Server tự đoán kiểu.
-        /// </summary>
         private static SqlParameter[] BuildParameters(SinhVienDTO sv)
         {
             return new SqlParameter[]
             {
-                new SqlParameter("@MaSV", SqlDbType.VarChar, 20) { Value = sv.MaSV },
-                new SqlParameter("@HoTen", SqlDbType.NVarChar, 100) { Value = sv.HoTen },
+                new SqlParameter("@MaSV", SqlDbType.VarChar, 20) { Value = sv.MaSV ?? "" },
+                new SqlParameter("@HoTen", SqlDbType.NVarChar, 100) { Value = sv.HoTen ?? "" },
                 new SqlParameter("@NgaySinh", SqlDbType.Date) { Value = sv.NgaySinh },
-                new SqlParameter("@GioiTinh", SqlDbType.NVarChar, 10) { Value = (object)sv.GioiTinh ?? DBNull.Value },
-                new SqlParameter("@Lop", SqlDbType.VarChar, 50) { Value = sv.Lop },
-                new SqlParameter("@SDT", SqlDbType.VarChar, 15) { Value = (object)sv.SDT ?? DBNull.Value },
-                new SqlParameter("@DiemTB", SqlDbType.Decimal) { Precision = 4, Scale = 2,
-                                                                 Value = (object)sv.DiemTB ?? DBNull.Value }
+                new SqlParameter("@GioiTinh", SqlDbType.NVarChar, 10) { Value = (object?)sv.GioiTinh ?? DBNull.Value },
+                new SqlParameter("@MaKhoa", SqlDbType.VarChar, 10) { Value = sv.MaKhoa ?? "" },
+                new SqlParameter("@SDT", SqlDbType.VarChar, 15) { Value = (object?)sv.SDT ?? DBNull.Value }
             };
         }
     }

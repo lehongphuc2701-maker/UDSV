@@ -7,32 +7,40 @@ using UDSV.DTO;
 namespace UDSV.BLL
 {
     /// <summary>
-    /// Nghiệp vụ lịch học. Mỗi buổi học nối một môn với một sinh viên,
-    /// nên phải kiểm tra cả hai mã có thật trước khi ghi.
+    /// Nghiệp vụ lịch học. Một buổi học thuộc về MỘT MÔN: môn phải tồn tại, ngày và ca hợp lệ.
+    /// Không còn gắn với sinh viên — thời khoá biểu của sinh viên được suy ra từ kết quả của họ.
     /// </summary>
     public class LichHocBLL
     {
-        private readonly LichHocDAL lhDAL = new LichHocDAL();
-        private readonly SinhVienDAL svDAL = new SinhVienDAL();
-        private readonly MonHocDAL mhDAL = new MonHocDAL();
+        private readonly ILichHocDAL lhDAL;
+        private readonly IMonHocDAL mhDAL;
         private static readonly ILogger log = AppLog.For<LichHocBLL>();
 
-        public DataTable LayDanhSachLichHoc()
+        public LichHocBLL() : this(new LichHocDAL(), new MonHocDAL()) { }
+
+        public LichHocBLL(ILichHocDAL lichHocDal, IMonHocDAL monHocDal)
         {
-            return lhDAL.LayDanhSachLichHoc();
+            lhDAL = lichHocDal ?? throw new ArgumentNullException(nameof(lichHocDal));
+            mhDAL = monHocDal ?? throw new ArgumentNullException(nameof(monHocDal));
         }
+
+        public DataTable LayDanhSachLichHoc() => lhDAL.LayDanhSachLichHoc();
+
+        public DataTable LayTheoMon(string maMH) => lhDAL.LayTheoMon(maMH);
+
+        /// <summary>Thời khoá biểu của sinh viên = buổi học của các môn sinh viên đang học.</summary>
+        public DataTable LayTheoSinhVien(string maSV) => lhDAL.LayTheoSinhVien(maSV);
 
         public bool ThemLichHoc(LichHocDTO lh, out string error)
         {
             if (!KiemTra(lh, out error))
             {
-                log.LogWarning("Từ chối thêm lịch học: {Loi}", error);
+                log.LogWarning("Từ chối thêm buổi học: {Loi}", error);
                 return false;
             }
 
             bool ok = lhDAL.ThemLichHoc(lh);
-            if (ok) log.LogInformation("Thêm lịch học: môn {MaMH}, SV {MaSV}, ngày {Ngay:dd/MM/yyyy}",
-                                       lh.MaMH, lh.MaSV, lh.NgayHoc);
+            if (ok) log.LogInformation("Thêm buổi học môn {MaMH} ngày {Ngay:dd/MM/yyyy}", lh.MaMH, lh.NgayHoc);
             return ok;
         }
 
@@ -41,63 +49,50 @@ namespace UDSV.BLL
             if (lh.MaLich <= 0)
             {
                 error = "Hãy chọn một buổi học trong bảng để sửa.";
-                log.LogWarning("Từ chối sửa lịch học: chưa chọn dòng");
                 return false;
             }
             if (!KiemTra(lh, out error))
             {
-                log.LogWarning("Từ chối sửa lịch học {MaLich}: {Loi}", lh.MaLich, error);
+                log.LogWarning("Từ chối sửa buổi học {MaLich}: {Loi}", lh.MaLich, error);
                 return false;
             }
 
             bool ok = lhDAL.SuaLichHoc(lh);
-            if (ok) log.LogInformation("Cập nhật lịch học {MaLich} thành công", lh.MaLich);
+            if (ok) log.LogInformation("Cập nhật buổi học {MaLich}", lh.MaLich);
             return ok;
         }
 
         public bool XoaLichHoc(int maLich, out string error)
         {
             error = "";
-
             if (maLich <= 0)
             {
                 error = "Hãy chọn một buổi học trong bảng để xoá.";
-                log.LogWarning("Từ chối xoá lịch học: chưa chọn dòng");
                 return false;
             }
 
             bool ok = lhDAL.XoaLichHoc(maLich);
-            if (ok) log.LogInformation("Xoá lịch học {MaLich} thành công", maLich);
+            if (ok) log.LogInformation("Xoá buổi học {MaLich}", maLich);
             return ok;
         }
 
-        private bool KiemTra(LichHocDTO lh, out string error)
+        /// <summary>Quy tắc thuần, không chạm CSDL — dùng cho Unit Test.</summary>
+        public static bool KiemTraDuLieu(LichHocDTO lh, out string error)
         {
             error = "";
+            if (lh == null)
+            {
+                error = "Dữ liệu buổi học rỗng.";
+                return false;
+            }
 
             lh.MaMH = (lh.MaMH ?? "").Trim();
-            lh.MaSV = (lh.MaSV ?? "").Trim();
             lh.CaHoc = (lh.CaHoc ?? "").Trim();
             lh.PhongHoc = (lh.PhongHoc ?? "").Trim();
 
             if (string.IsNullOrWhiteSpace(lh.MaMH))
             {
                 error = "Hãy chọn môn học.";
-                return false;
-            }
-            if (!mhDAL.KiemTraMaTonTai(lh.MaMH))
-            {
-                error = $"Môn học '{lh.MaMH}' không tồn tại.";
-                return false;
-            }
-            if (string.IsNullOrWhiteSpace(lh.MaSV))
-            {
-                error = "Hãy chọn sinh viên.";
-                return false;
-            }
-            if (!svDAL.KiemTraMaTonTai(lh.MaSV))
-            {
-                error = $"Sinh viên '{lh.MaSV}' không tồn tại.";
                 return false;
             }
             if (string.IsNullOrWhiteSpace(lh.CaHoc))
@@ -118,6 +113,20 @@ namespace UDSV.BLL
             if (lh.NgayHoc.Year < 2000)
             {
                 error = "Ngày học không hợp lệ.";
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool KiemTra(LichHocDTO lh, out string error)
+        {
+            if (!KiemTraDuLieu(lh, out error))
+                return false;
+
+            if (!mhDAL.KiemTraMaTonTai(lh.MaMH))
+            {
+                error = $"Môn học '{lh.MaMH}' không tồn tại.";
                 return false;
             }
 

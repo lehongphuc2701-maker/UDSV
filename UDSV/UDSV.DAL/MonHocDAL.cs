@@ -6,7 +6,7 @@ using UDSV.DTO;
 namespace UDSV.DAL
 {
     /// <summary>Truy cập bảng MonHoc.</summary>
-    public class MonHocDAL
+    public class MonHocDAL : IMonHocDAL
     {
         private const string SelectColumns = "MaMH, TenMH, SoTinChi, GiangVien";
 

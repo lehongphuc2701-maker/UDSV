@@ -8,10 +8,7 @@ using UDSV.DTO;
 
 namespace UDSV.Tests
 {
-    /// <summary>
-    /// DAL giả: giữ sinh viên trong bộ nhớ thay vì gọi SQL Server.
-    /// Nhờ có interface ISinhVienDAL, các test dưới đây chạy được trên máy không có CSDL.
-    /// </summary>
+    /// <summary>DAL giả cho sinh viên: giữ dữ liệu trong bộ nhớ, không cần SQL Server.</summary>
     internal sealed class SinhVienDALGia : ISinhVienDAL
     {
         private readonly List<SinhVienDTO> duLieu = new List<SinhVienDTO>();
@@ -25,15 +22,13 @@ namespace UDSV.Tests
             dt.Columns.Add("HoTen", typeof(string));
             dt.Columns.Add("NgaySinh", typeof(DateTime));
             dt.Columns.Add("GioiTinh", typeof(string));
-            dt.Columns.Add("Lop", typeof(string));
+            dt.Columns.Add("MaKhoa", typeof(string));
+            dt.Columns.Add("TenKhoa", typeof(string));
             dt.Columns.Add("SDT", typeof(string));
-            dt.Columns.Add("DiemTB", typeof(decimal));
 
             foreach (SinhVienDTO sv in ds)
-            {
-                dt.Rows.Add(sv.MaSV, sv.HoTen, sv.NgaySinh, sv.GioiTinh, sv.Lop, sv.SDT,
-                            sv.DiemTB.HasValue ? (object)sv.DiemTB.Value : DBNull.Value);
-            }
+                dt.Rows.Add(sv.MaSV, sv.HoTen, sv.NgaySinh, sv.GioiTinh, sv.MaKhoa, "Khóa " + sv.MaKhoa, sv.SDT);
+
             return dt;
         }
 
@@ -44,8 +39,7 @@ namespace UDSV.Tests
                 s.MaSV.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
                 s.HoTen.Contains(keyword, StringComparison.OrdinalIgnoreCase)));
 
-        public DataTable LaySinhVienTheoMa(string maSV) =>
-            ThanhBang(duLieu.FindAll(s => s.MaSV == maSV));
+        public DataTable LaySinhVienTheoMa(string maSV) => ThanhBang(duLieu.FindAll(s => s.MaSV == maSV));
 
         public bool KiemTraMaTonTai(string maSV) => duLieu.Exists(s => s.MaSV == maSV);
 
@@ -53,28 +47,59 @@ namespace UDSV.Tests
 
         public bool SuaSinhVien(SinhVienDTO sv)
         {
-            int viTri = duLieu.FindIndex(s => s.MaSV == sv.MaSV);
-            if (viTri < 0) return false;
-            duLieu[viTri] = sv;
+            int i = duLieu.FindIndex(s => s.MaSV == sv.MaSV);
+            if (i < 0) return false;
+            duLieu[i] = sv;
             return true;
         }
 
         public bool XoaSinhVien(string maSV) => duLieu.RemoveAll(s => s.MaSV == maSV) == 1;
     }
 
+    /// <summary>DAL giả cho khóa — chỉ cần biết khóa có tồn tại hay không.</summary>
+    internal sealed class KhoaDALGia : IKhoaDAL
+    {
+        private readonly List<KhoaDTO> duLieu = new List<KhoaDTO>();
+
+        public KhoaDALGia(params string[] maKhoa)
+        {
+            foreach (string m in maKhoa)
+                duLieu.Add(new KhoaDTO(m, "Khóa " + m, 2024, 2028, 27, 6));
+        }
+
+        public DataTable LayDanhSach() => new DataTable();
+
+        public KhoaDTO? LayTheoMa(string maKhoa) => duLieu.Find(k => k.MaKhoa == maKhoa);
+
+        public bool KiemTraTonTai(string maKhoa) => duLieu.Exists(k => k.MaKhoa == maKhoa);
+
+        public int DemSinhVien(string maKhoa) => 0;
+
+        public bool Them(KhoaDTO khoa) { duLieu.Add(khoa); return true; }
+
+        public bool Sua(KhoaDTO khoa) => true;
+
+        public bool Xoa(string maKhoa) => duLieu.RemoveAll(k => k.MaKhoa == maKhoa) == 1;
+    }
+
     /// <summary>
-    /// Mười test theo danh sách Chương 7 của giảng viên.
-    /// Không test nào cần SQL Server: quy tắc thuần kiểm tra trực tiếp, phần cần ghi dữ liệu
-    /// dùng SinhVienDALGia.
+    /// Bộ test nền của mô hình mới: quy tắc sinh viên, điểm, và phép cộng tín chỉ.
+    /// Không test nào cần SQL Server — quy tắc thuần kiểm tra trực tiếp, phần cần ghi dữ liệu
+    /// dùng DAL giả.
     /// </summary>
     [TestClass]
     public class SinhVienTests
     {
-        /// <summary>Một sinh viên hợp lệ làm mốc cho các test.</summary>
         private static SinhVienDTO HopLe() => new SinhVienDTO(
-            "SV001", "Nguyễn Văn An", new DateTime(2005, 5, 12), "Nam", "CNTT01", "0901234567", 3.45m);
+            "SV001", "Nguyễn Văn An", new DateTime(2006, 5, 12), "Nam", "K24", "0901234567");
 
-        // 1
+        private static SinhVienBLL TaoBLL(out SinhVienDALGia svDal)
+        {
+            svDal = new SinhVienDALGia();
+            return new SinhVienBLL(svDal, new KhoaDALGia("K24", "K25"));
+        }
+
+        // 1. Phép cộng tín chỉ của chương trình
         [TestMethod]
         public void Add_ReturnsCorrectSum()
         {
@@ -87,32 +112,32 @@ namespace UDSV.Tests
             Assert.AreEqual(10, MonHocBLL.TongTinChi(dt));
         }
 
-        // 2 — dữ liệu biên dưới
+        // 2 — biên dưới
         [TestMethod]
-        public void IsValidGPA_Zero_ReturnsTrue()
+        public void Diem_Zero_ReturnsTrue()
         {
-            Assert.IsTrue(SinhVienBLL.IsValidGPA(0m));
+            Assert.IsTrue(KetQuaBLL.KiemTraDiem(0m, out string error), error);
         }
 
-        // 3 — dữ liệu biên trên
+        // 3 — biên trên
         [TestMethod]
-        public void IsValidGPA_Four_ReturnsTrue()
+        public void Diem_Four_ReturnsTrue()
         {
-            Assert.IsTrue(SinhVienBLL.IsValidGPA(4m));
+            Assert.IsTrue(KetQuaBLL.KiemTraDiem(4m, out string error), error);
         }
 
-        // 4 — dữ liệu không hợp lệ
+        // 4 — âm
         [TestMethod]
-        public void IsValidGPA_Negative_ReturnsFalse()
+        public void Diem_Negative_ReturnsFalse()
         {
-            Assert.IsFalse(SinhVienBLL.IsValidGPA(-0.1m));
+            Assert.IsFalse(KetQuaBLL.KiemTraDiem(-0.1m, out _));
         }
 
         // 5 — vượt biên
         [TestMethod]
-        public void IsValidGPA_AboveFour_ReturnsFalse()
+        public void Diem_AboveFour_ReturnsFalse()
         {
-            Assert.IsFalse(SinhVienBLL.IsValidGPA(4.01m));
+            Assert.IsFalse(KetQuaBLL.KiemTraDiem(4.01m, out _));
         }
 
         // 6
@@ -131,27 +156,25 @@ namespace UDSV.Tests
         public void FullName_Normal_ReturnsTrue()
         {
             SinhVienDTO sv = HopLe();
-
             Assert.IsTrue(SinhVienBLL.KiemTraDuLieu(sv, out string error), error);
         }
 
-        // 8
+        // 8 — sinh viên phải thuộc một khóa
         [TestMethod]
-        public void ClassName_Empty_ReturnsFalse()
+        public void Khoa_Empty_ReturnsFalse()
         {
             SinhVienDTO sv = HopLe();
-            sv.Lop = "";
+            sv.MaKhoa = "";
 
             Assert.IsFalse(SinhVienBLL.KiemTraDuLieu(sv, out string error));
-            StringAssert.Contains(error, "Lớp");
+            StringAssert.Contains(error, "khóa");
         }
 
-        // 9 — ghi qua DAL giả, không cần CSDL
+        // 9
         [TestMethod]
         public void CreateStudent_Valid_ReturnsTrue()
         {
-            SinhVienDALGia dal = new SinhVienDALGia();
-            SinhVienBLL bll = new SinhVienBLL(dal);
+            SinhVienBLL bll = TaoBLL(out SinhVienDALGia dal);
 
             Assert.IsTrue(bll.ThemSinhVien(HopLe(), out string error), error);
             Assert.AreEqual(1, dal.LayDanhSachSinhVien().Rows.Count);
@@ -161,11 +184,10 @@ namespace UDSV.Tests
         [TestMethod]
         public void SearchStudent_Found_ReturnsStudent()
         {
-            SinhVienDALGia dal = new SinhVienDALGia();
+            SinhVienBLL bll = TaoBLL(out SinhVienDALGia dal);
             dal.ThemSan(HopLe());
-            dal.ThemSan(new SinhVienDTO("SV002", "Trần Thị Bình", new DateTime(2005, 10, 20), "Nữ", "CNTT01", "0912345678", 3.72m));
+            dal.ThemSan(new SinhVienDTO("SV002", "Trần Thị Bình", new DateTime(2006, 10, 20), "Nữ", "K24", "0912345678"));
 
-            SinhVienBLL bll = new SinhVienBLL(dal);
             DataTable ketQua = bll.TimKiemSinhVien("SV001");
 
             Assert.AreEqual(1, ketQua.Rows.Count);

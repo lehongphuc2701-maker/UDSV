@@ -14,7 +14,6 @@ namespace UDSV
     public partial class FrmLichHoc : Form
     {
         private readonly LichHocBLL lichHocBLL = new LichHocBLL();
-        private readonly SinhVienBLL sinhVienBLL = new SinhVienBLL();
         private readonly MonHocBLL monHocBLL = new MonHocBLL();
 
         private int maLichDangChon = 0;
@@ -71,11 +70,6 @@ namespace UDSV
             cboMonHoc.DataSource = dtMonHoc;
             cboMonHoc.DisplayMember = "TenMH";
             cboMonHoc.ValueMember = "MaMH";
-
-            DataTable dtSinhVien = sinhVienBLL.LayDanhSachSinhVien();
-            cboSinhVien.DataSource = dtSinhVien;
-            cboSinhVien.DisplayMember = "HoTen";
-            cboSinhVien.ValueMember = "MaSV";
         }
 
         private void TaiDuLieu()
@@ -99,8 +93,6 @@ namespace UDSV
             if (dgvLichHoc.Columns.Contains("MaLich")) dgvLichHoc.Columns["MaLich"].Visible = false;
             if (dgvLichHoc.Columns.Contains("MaMH")) dgvLichHoc.Columns["MaMH"].HeaderText = "Mã MH";
             if (dgvLichHoc.Columns.Contains("TenMH")) dgvLichHoc.Columns["TenMH"].HeaderText = "Tên môn học";
-            if (dgvLichHoc.Columns.Contains("MaSV")) dgvLichHoc.Columns["MaSV"].HeaderText = "Mã SV";
-            if (dgvLichHoc.Columns.Contains("HoTen")) dgvLichHoc.Columns["HoTen"].HeaderText = "Họ tên";
             if (dgvLichHoc.Columns.Contains("NgayHoc"))
             {
                 dgvLichHoc.Columns["NgayHoc"].HeaderText = "Ngày học";
@@ -116,7 +108,6 @@ namespace UDSV
             {
                 MaLich = maLichDangChon,
                 MaMH = cboMonHoc.SelectedValue?.ToString() ?? "",
-                MaSV = cboSinhVien.SelectedValue?.ToString() ?? "",
                 NgayHoc = dtpNgayHoc.Value,
                 CaHoc = cboCaHoc.Text,
                 PhongHoc = txtPhongHoc.Text
@@ -223,7 +214,6 @@ namespace UDSV
             maLichDangChon = Convert.ToInt32(item["MaLich"]);
 
             if (item["MaMH"] != DBNull.Value) cboMonHoc.SelectedValue = item["MaMH"].ToString();
-            if (item["MaSV"] != DBNull.Value) cboSinhVien.SelectedValue = item["MaSV"].ToString();
 
             if (item["NgayHoc"] != DBNull.Value &&
                 DateTime.TryParse(item["NgayHoc"].ToString(), out DateTime ngay))
@@ -244,7 +234,6 @@ namespace UDSV
             cboCaHoc.SelectedIndex = 0;
             dtpNgayHoc.Value = DateTime.Today;
             if (cboMonHoc.Items.Count > 0) cboMonHoc.SelectedIndex = 0;
-            if (cboSinhVien.Items.Count > 0) cboSinhVien.SelectedIndex = 0;
             dgvLichHoc.ClearSelection();
             TaiDuLieu();
         }
