@@ -31,6 +31,10 @@ namespace UDSV.BLL
         /// <summary>Thời khoá biểu của sinh viên = buổi học của các môn sinh viên đang học.</summary>
         public DataTable LayTheoSinhVien(string maSV) => lhDAL.LayTheoSinhVien(maSV);
 
+        /// <summary>Buổi học trong tuần của một khóa + học kỳ — dữ liệu cho lưới thời khoá biểu.</summary>
+        public DataTable LayTheoTuan(string maKhoa, int hocKy, DateTime tuNgay, DateTime denNgay)
+            => lhDAL.LayTheoTuan(maKhoa, hocKy, tuNgay, denNgay);
+
         public bool ThemLichHoc(LichHocDTO lh, out string error)
         {
             if (!KiemTra(lh, out error))

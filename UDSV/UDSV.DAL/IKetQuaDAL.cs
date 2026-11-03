@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Data;
 using UDSV.DTO;
 
@@ -22,5 +23,17 @@ namespace UDSV.DAL
         /// và điểm >= 2.0 (hệ 4).
         /// </summary>
         int TinhTinChiTichLuy(string maSV);
+
+        /// <summary>
+        /// Bảng điểm của một môn trong một khóa: MỌI sinh viên của khóa (kể cả chưa có điểm),
+        /// nên dùng LEFT JOIN. Cột: MaSV, HoTen, Diem.
+        /// </summary>
+        DataTable LayBangDiem(string maKhoa, string maMH);
+
+        /// <summary>
+        /// Ghi cả bảng điểm trong một transaction: dòng có điểm thì thêm/cập nhật,
+        /// dòng để trống thì xoá kết quả (coi như chưa học).
+        /// </summary>
+        bool LuuBangDiem(string maMH, IList<DongDiem> danhSach);
     }
 }

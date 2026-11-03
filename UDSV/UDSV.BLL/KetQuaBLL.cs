@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using Microsoft.Extensions.Logging;
 using UDSV.DAL;
@@ -35,6 +36,57 @@ namespace UDSV.BLL
 
         /// <summary>Tín chỉ tích luỹ — chỉ tính môn thuộc chương trình của khóa và điểm đạt.</summary>
         public int TinhTinChiTichLuy(string maSV) => kqDAL.TinhTinChiTichLuy(maSV);
+
+        /// <summary>Bảng điểm của một môn: mọi sinh viên của khóa, kèm điểm (nếu có).</summary>
+        public DataTable LayBangDiem(string maKhoa, string maMH) => kqDAL.LayBangDiem(maKhoa, maMH);
+
+        /// <summary>
+        /// Lưu cả bảng điểm một lần. Kiểm tra xong mới ghi; ghi trong một transaction.
+        /// Ô để trống = chưa có điểm (xoá kết quả).
+        /// </summary>
+        public bool LuuBangDiem(string maMH, IList<DongDiem> danhSach, out string error)
+        {
+            error = "";
+            if (string.IsNullOrWhiteSpace(maMH))
+            {
+                error = "Hãy chọn môn học trước khi lưu.";
+                return false;
+            }
+            if (danhSach == null || danhSach.Count == 0)
+            {
+                error = "Chưa có sinh viên nào trong bảng điểm.";
+                return false;
+            }
+            if (!mhDAL.KiemTraMaTonTai(maMH))
+            {
+                error = $"Môn học '{maMH}' không tồn tại.";
+                return false;
+            }
+
+            foreach (DongDiem d in danhSach)
+            {
+                if (string.IsNullOrWhiteSpace(d.MaSV))
+                {
+                    error = "Có dòng thiếu mã sinh viên.";
+                    return false;
+                }
+                if (!KiemTraDiem(d.Diem, out string loiDiem))
+                {
+                    error = $"Sinh viên {d.MaSV}: {loiDiem}";
+                    return false;
+                }
+            }
+
+            bool ok = kqDAL.LuuBangDiem(maMH, danhSach);
+            if (ok)
+            {
+                int coDiem = 0;
+                foreach (DongDiem d in danhSach) if (d.Diem != null) coDiem++;
+                log.LogInformation("Lưu bảng điểm môn {MaMH}: {CoDiem}/{Tong} sinh viên có điểm",
+                                   maMH, coDiem, danhSach.Count);
+            }
+            return ok;
+        }
 
         /// <summary>
         /// Nhập điểm cho một (sinh viên, môn). Nếu đã có dòng thì SỬA, chưa có thì THÊM —

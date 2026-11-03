@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using UDSV.DTO;
 
@@ -11,6 +12,12 @@ namespace UDSV.DAL
 
         /// <summary>Thời khoá biểu của sinh viên = buổi học của các môn sinh viên đang có kết quả.</summary>
         DataTable LayTheoSinhVien(string maSV);
+
+        /// <summary>
+        /// Buổi học trong một tuần của một khóa + học kỳ (môn thuộc chương trình của khóa ở học kỳ đó).
+        /// Cột: MaLich, MaMH, TenMH, GiangVien, NgayHoc, CaHoc, TietBD, TietKT, PhongHoc.
+        /// </summary>
+        DataTable LayTheoTuan(string maKhoa, int hocKy, DateTime tuNgay, DateTime denNgay);
 
         bool ThemLichHoc(LichHocDTO lh);
         bool SuaLichHoc(LichHocDTO lh);

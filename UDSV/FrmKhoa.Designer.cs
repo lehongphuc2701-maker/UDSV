@@ -35,6 +35,8 @@ namespace UDSV
             dgvKhoa = new DataGridView();
             groupBox2 = new GroupBox();
             lblTrangThai = new Label();
+            labelHocKy = new Label();
+            cboHocKy = new ComboBox();
             dgvChuongTrinh = new DataGridView();
             cboMonHoc = new ComboBox();
             btnThemMon = new Button();
@@ -188,7 +190,7 @@ namespace UDSV
             // 
             btnThem.BackColor = Color.Lime;
             btnThem.ForeColor = Color.Black;
-            btnThem.Location = new Point(30, 178);
+            btnThem.Location = new Point(30, 596);
             btnThem.Name = "btnThem";
             btnThem.Size = new Size(100, 30);
             btnThem.TabIndex = 2;
@@ -198,7 +200,7 @@ namespace UDSV
             // btnSua
             // 
             btnSua.BackColor = Color.Orange;
-            btnSua.Location = new Point(145, 178);
+            btnSua.Location = new Point(145, 596);
             btnSua.Name = "btnSua";
             btnSua.Size = new Size(100, 30);
             btnSua.TabIndex = 3;
@@ -208,7 +210,7 @@ namespace UDSV
             // btnXoa
             // 
             btnXoa.BackColor = Color.Red;
-            btnXoa.Location = new Point(260, 178);
+            btnXoa.Location = new Point(260, 596);
             btnXoa.Name = "btnXoa";
             btnXoa.Size = new Size(100, 30);
             btnXoa.TabIndex = 4;
@@ -218,7 +220,7 @@ namespace UDSV
             // btnLamMoi
             // 
             btnLamMoi.BackColor = Color.PaleTurquoise;
-            btnLamMoi.Location = new Point(375, 178);
+            btnLamMoi.Location = new Point(375, 596);
             btnLamMoi.Name = "btnLamMoi";
             btnLamMoi.Size = new Size(100, 30);
             btnLamMoi.TabIndex = 5;
@@ -237,6 +239,8 @@ namespace UDSV
             // groupBox2
             // 
             groupBox2.Controls.Add(lblTrangThai);
+            groupBox2.Controls.Add(labelHocKy);
+            groupBox2.Controls.Add(cboHocKy);
             groupBox2.Controls.Add(dgvChuongTrinh);
             groupBox2.Controls.Add(cboMonHoc);
             groupBox2.Controls.Add(btnThemMon);
@@ -297,6 +301,22 @@ namespace UDSV
             btnXoaMon.Text = "Xoá môn";
             btnXoaMon.UseVisualStyleBackColor = false;
             // 
+            // labelHocKy
+            // 
+            labelHocKy.AutoSize = true;
+            labelHocKy.Location = new Point(330, 32);
+            labelHocKy.Name = "labelHocKy";
+            labelHocKy.Size = new Size(60, 20);
+            labelHocKy.Text = "Học kỳ";
+            // 
+            // cboHocKy
+            // 
+            cboHocKy.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboHocKy.Location = new Point(400, 28);
+            cboHocKy.Name = "cboHocKy";
+            cboHocKy.Size = new Size(110, 28);
+            cboHocKy.TabIndex = 12;
+            // 
             // lblTongTC
             // 
             lblTongTC.AutoSize = true;
@@ -309,7 +329,7 @@ namespace UDSV
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1131, 590);
+            ClientSize = new Size(1131, 650);
             Controls.Add(groupBox2);
             Controls.Add(dgvKhoa);
             Controls.Add(btnLamMoi);
@@ -345,9 +365,9 @@ namespace UDSV
         private Button btnThem, btnSua, btnXoa, btnLamMoi;
         private DataGridView dgvKhoa;
         private GroupBox groupBox2;
-        private Label lblTrangThai, lblTongTC;
+        private Label lblTrangThai, lblTongTC, labelHocKy;
         private DataGridView dgvChuongTrinh;
-        private ComboBox cboMonHoc;
+        private ComboBox cboMonHoc, cboHocKy;
         private Button btnThemMon, btnXoaMon;
     }
 }

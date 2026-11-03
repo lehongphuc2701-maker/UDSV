@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
@@ -9,146 +10,218 @@ using UDSV.DTO;
 namespace UDSV
 {
     /// <summary>
-    /// Nhập điểm cho từng sinh viên ở từng môn, và hiện tín chỉ tích luỹ ngay trên đầu màn hình.
-    /// Một dòng kết quả = một cặp (sinh viên, môn); lưu lần hai là SỬA, không tạo dòng mới.
+    /// Nhập điểm theo lớp: chọn Khóa → Kỳ → Môn, lưới hiện mọi sinh viên của khóa với cột điểm.
+    /// Sửa điểm ngay trên lưới rồi bấm "Lưu điểm". Ô trống = chưa có điểm.
     /// </summary>
     public partial class FrmKetQua : Form
     {
         private readonly KetQuaBLL kqBLL = new KetQuaBLL();
-        private readonly SinhVienBLL svBLL = new SinhVienBLL();
-        private readonly MonHocBLL mhBLL = new MonHocBLL();
         private readonly KhoaBLL khoaBLL = new KhoaBLL();
+        private readonly ChuongTrinhBLL ctBLL = new ChuongTrinhBLL();
 
         public FrmKetQua()
         {
             InitializeComponent();
 
             Load += FrmKetQua_Load;
-            cboSinhVien.SelectedIndexChanged += (s, e) => TaiKetQua();
-            chkChuaCoDiem.CheckedChanged += (s, e) => numDiem.Enabled = !chkChuaCoDiem.Checked;
+            cboKhoa.SelectedIndexChanged += CboKhoa_Changed;
+            cboKy.SelectedIndexChanged += CboKy_Changed;
+            cboMonHoc.SelectedIndexChanged += CboMonHoc_Changed;
             btnLuu.Click += BtnLuu_Click;
-            btnXoa.Click += BtnXoa_Click;
         }
+
+        private string MaKhoaChon => LayGiaTri(cboKhoa, "MaKhoa");
+        private string MaMonChon => LayGiaTri(cboMonHoc, "MaMH");
+
+        /// <summary>
+        /// Học kỳ đang chọn. Phải phòng trường hợp ComboBox còn đang binding:
+        /// lúc đó SelectedValue trả về DataRowView chứ không phải số → Convert.ToInt32 sẽ ném lỗi.
+        /// </summary>
+        private int KyChon
+        {
+            get
+            {
+                object giaTri = LayGiaTriRaw(cboKy, "HocKy");
+                return giaTri != null && int.TryParse(giaTri.ToString(), out int ky) ? ky : 0;
+            }
+        }
+
+        /// <summary>Đọc giá trị của ComboBox an toàn, kể cả khi đang binding dở.</summary>
+        private static object LayGiaTriRaw(ComboBox cbo, string tenCot)
+        {
+            object giaTri = cbo.SelectedValue;
+
+            if (giaTri is DataRowView dong)
+                giaTri = dong.Row.Table.Columns.Contains(tenCot) ? dong[tenCot] : null;
+
+            if (giaTri == null || giaTri == DBNull.Value) return null;
+            return giaTri;
+        }
+
+        private static string LayGiaTri(ComboBox cbo, string tenCot)
+            => LayGiaTriRaw(cbo, tenCot)?.ToString() ?? "";
 
         private void FrmKetQua_Load(object sender, EventArgs e)
         {
-            NapCombo();
-            TaiKetQua();
+            try
+            {
+                cboKhoa.DataSource = khoaBLL.LayDanhSach();
+                cboKhoa.DisplayMember = "MaKhoa";
+                cboKhoa.ValueMember = "MaKhoa";
+
+                XoaKyVaMon();
+            }
+            catch (Exception ex) { BaoLoi(ex); }
         }
 
-        private void NapCombo()
-        {
-            cboSinhVien.DataSource = svBLL.LayDanhSachSinhVien();
-            cboSinhVien.DisplayMember = "MaSV";
-            cboSinhVien.ValueMember = "MaSV";
+        // ---------- Chuỗi chọn: khóa → kỳ → môn ----------
 
-            cboMonHoc.DataSource = mhBLL.LayDanhSachMonHoc();
-            cboMonHoc.DisplayMember = "TenMH";
-            cboMonHoc.ValueMember = "MaMH";
+        private void CboKhoa_Changed(object sender, EventArgs e)
+        {
+            try
+            {
+                XoaKyVaMon();
+
+                if (MaKhoaChon.Length == 0) return;
+
+                DataTable dsKy = ctBLL.LayHocKy(MaKhoaChon);
+                if (dsKy.Rows.Count == 0)
+                {
+                    lblThongTin.Text = $"Khóa {MaKhoaChon} chưa có chương trình.";
+                    lblThongTin.ForeColor = Color.OrangeRed;
+                    return;
+                }
+
+                cboKy.SelectedIndexChanged -= CboKy_Changed;
+                cboKy.DataSource = dsKy;
+                cboKy.DisplayMember = "HocKy";
+                cboKy.ValueMember = "HocKy";
+                cboKy.SelectedIndexChanged += CboKy_Changed;
+            }
+            catch (Exception ex) { BaoLoi(ex); }
         }
 
-        private string MaSVDangChon => cboSinhVien.SelectedValue?.ToString() ?? "";
-        private string MaMHDangChon => cboMonHoc.SelectedValue?.ToString() ?? "";
-
-        private void TaiKetQua()
+        private void CboKy_Changed(object sender, EventArgs e)
         {
-            string maSV = MaSVDangChon;
-            if (maSV.Length == 0) return;
+            try
+            {
+                cboMonHoc.DataSource = null;
+                dgvBangDiem.DataSource = null;
+
+                if (MaKhoaChon.Length == 0 || KyChon <= 0) return;
+
+                DataTable dsMon = ctBLL.LayMonTheoKy(MaKhoaChon, KyChon);
+                if (dsMon.Rows.Count == 0)
+                {
+                    lblThongTin.Text = $"Học kỳ {KyChon} của khóa {MaKhoaChon} không có môn nào.";
+                    lblThongTin.ForeColor = Color.OrangeRed;
+                    return;
+                }
+
+                cboMonHoc.SelectedIndexChanged -= CboMonHoc_Changed;
+                cboMonHoc.DataSource = dsMon;
+                cboMonHoc.DisplayMember = "TenMH";
+                cboMonHoc.ValueMember = "MaMH";
+                cboMonHoc.SelectedIndexChanged += CboMonHoc_Changed;
+            }
+            catch (Exception ex) { BaoLoi(ex); }
+        }
+
+        private void CboMonHoc_Changed(object sender, EventArgs e) => TaiBangDiem();
+
+        // ---------- Lưới ----------
+
+        private void TaiBangDiem()
+        {
+            if (MaKhoaChon.Length == 0 || MaMonChon.Length == 0) return;
 
             try
             {
-                dgvKetQua.DataSource = kqBLL.LayTheoSinhVien(maSV);
+                dgvBangDiem.DataSource = kqBLL.LayBangDiem(MaKhoaChon, MaMonChon);
                 DatTieuDeCot();
-                CapNhatTinChi(maSV);
+
+                lblThongTin.Text = $"Khóa {MaKhoaChon} — Kỳ {KyChon} — {cboMonHoc.Text}: " +
+                                   $"{dgvBangDiem.Rows.Count} sinh viên";
+                lblThongTin.ForeColor = Color.DarkGreen;
             }
-            catch (Exception ex)
-            {
-                BaoLoi(ex);
-            }
+            catch (Exception ex) { BaoLoi(ex); }
         }
 
         private void DatTieuDeCot()
         {
-            if (dgvKetQua.Columns.Count == 0) return;
+            if (dgvBangDiem.Columns.Count == 0) return;
 
-            if (dgvKetQua.Columns.Contains("MaMH")) dgvKetQua.Columns["MaMH"].HeaderText = "Mã MH";
-            if (dgvKetQua.Columns.Contains("TenMH")) dgvKetQua.Columns["TenMH"].HeaderText = "Tên môn học";
-            if (dgvKetQua.Columns.Contains("SoTinChi")) dgvKetQua.Columns["SoTinChi"].HeaderText = "TC";
-            if (dgvKetQua.Columns.Contains("Diem"))
+            if (dgvBangDiem.Columns.Contains("MaSV"))
             {
-                dgvKetQua.Columns["Diem"].HeaderText = "Điểm (hệ 4)";
-                dgvKetQua.Columns["Diem"].DefaultCellStyle.Format = "0.00";
+                dgvBangDiem.Columns["MaSV"].HeaderText = "Mã sinh viên";
+                dgvBangDiem.Columns["MaSV"].ReadOnly = true;
             }
-            if (dgvKetQua.Columns.Contains("LanNhap"))
+            if (dgvBangDiem.Columns.Contains("HoTen"))
             {
-                dgvKetQua.Columns["LanNhap"].HeaderText = "Lần nhập";
-                dgvKetQua.Columns["LanNhap"].DefaultCellStyle.Format = "dd/MM/yyyy HH:mm";
+                dgvBangDiem.Columns["HoTen"].HeaderText = "Tên sinh viên";
+                dgvBangDiem.Columns["HoTen"].ReadOnly = true;
+            }
+            if (dgvBangDiem.Columns.Contains("Diem"))
+            {
+                dgvBangDiem.Columns["Diem"].HeaderText = "Điểm";
+                dgvBangDiem.Columns["Diem"].DefaultCellStyle.Format = "0.00";
             }
         }
 
-        /// <summary>Câu trả lời cho "còn thiếu bao nhiêu tín chỉ" — tính lại từ kết quả mỗi lần xem.</summary>
-        private void CapNhatTinChi(string maSV)
-        {
-            int daCo = kqBLL.TinhTinChiTichLuy(maSV);
-
-            string maKhoa = "";
-            DataTable dsSv = svBLL.LayDanhSachSinhVien();
-            DataRow[] tim = dsSv.Select($"MaSV = '{maSV}'");
-            if (tim.Length > 0) maKhoa = tim[0]["MaKhoa"].ToString() ?? "";
-
-            int mucTieu = khoaBLL.LayTheoMa(maKhoa)?.TongTCBatBuoc ?? 0;
-            lblTongTC.Text = $"Tín chỉ tích luỹ: {daCo} / {mucTieu}   (khóa {maKhoa})";
-        }
-
-        // ---------- Sự kiện ----------
+        // ---------- Lưu cả bảng ----------
 
         private void BtnLuu_Click(object sender, EventArgs e)
         {
-            decimal? diem = chkChuaCoDiem.Checked ? (decimal?)null : numDiem.Value;
+            if (MaMonChon.Length == 0)
+            {
+                MessageBox.Show(this, "Chọn khóa, kỳ và môn học trước khi lưu.", "Chưa chọn",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
 
             try
             {
-                if (!kqBLL.NhapDiem(MaSVDangChon, MaMHDangChon, diem, out string error))
+                List<DongDiem> ds = new List<DongDiem>();
+                foreach (DataGridViewRow row in dgvBangDiem.Rows)
+                {
+                    if (row.IsNewRow) continue;
+                    if (row.DataBoundItem is not DataRowView item) continue;
+
+                    string maSV = item["MaSV"].ToString() ?? "";
+                    object giaTri = item["Diem"];
+
+                    decimal? diem = null;
+                    if (giaTri != DBNull.Value && giaTri != null
+                        && decimal.TryParse(giaTri.ToString(), out decimal so))
+                    {
+                        diem = so;
+                    }
+
+                    ds.Add(new DongDiem(maSV, diem));
+                }
+
+                if (!kqBLL.LuuBangDiem(MaMonChon, ds, out string error))
                 {
                     MessageBox.Show(this, error, "Không lưu được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                TaiKetQua();
-                MessageBox.Show(this, "Đã lưu điểm.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, $"Đã lưu điểm cho {ds.Count} sinh viên.", "Thành công",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                TaiBangDiem();
             }
-            catch (Exception ex)
-            {
-                BaoLoi(ex);
-            }
+            catch (Exception ex) { BaoLoi(ex); }
         }
 
-        private void BtnXoa_Click(object sender, EventArgs e)
+        // ---------- Tiện ích ----------
+
+        private void XoaKyVaMon()
         {
-            if (dgvKetQua.CurrentRow?.DataBoundItem is not DataRowView item)
-            {
-                MessageBox.Show(this, "Hãy chọn một dòng trong bảng điểm.", "Chưa chọn",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            string maMH = item["MaMH"].ToString() ?? "";
-            if (MessageBox.Show(this, $"Xoá kết quả môn '{maMH}' của sinh viên '{MaSVDangChon}'?", "Xác nhận",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
-
-            try
-            {
-                if (!kqBLL.XoaKetQua(MaSVDangChon, maMH, out string error))
-                {
-                    MessageBox.Show(this, error, "Không xoá được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                TaiKetQua();
-            }
-            catch (Exception ex)
-            {
-                BaoLoi(ex);
-            }
+            cboKy.DataSource = null;
+            cboMonHoc.DataSource = null;
+            dgvBangDiem.DataSource = null;
+            lblThongTin.Text = "Chọn khóa → kỳ → môn học để nhập điểm";
+            lblThongTin.ForeColor = Color.DarkGreen;
         }
 
         private void BaoLoi(Exception ex)

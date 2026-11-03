@@ -1,8 +1,8 @@
 namespace UDSV.DTO
 {
     /// <summary>
-    /// Một dòng trong chương trình của khóa: môn nào thuộc khóa nào, bắt buộc hay tự chọn.
-    /// Bảng này bị khoá khi khóa đã có sinh viên (luật thực thi ở BLL).
+    /// Một dòng trong chương trình khung của khóa: môn nào, thuộc học kỳ nào (1..10),
+    /// bắt buộc hay tự chọn.
     /// </summary>
     public class ChuongTrinhDTO
     {
@@ -12,13 +12,17 @@ namespace UDSV.DTO
         /// <summary>true = bắt buộc, false = tự chọn.</summary>
         public bool BatBuoc { get; set; }
 
+        /// <summary>Học kỳ trong chương trình (1..10) — khác với học kỳ niên khóa.</summary>
+        public int HocKy { get; set; } = 1;
+
         public ChuongTrinhDTO() { }
 
-        public ChuongTrinhDTO(string maKhoa, string maMH, bool batBuoc)
+        public ChuongTrinhDTO(string maKhoa, string maMH, bool batBuoc, int hocKy = 1)
         {
             MaKhoa = maKhoa;
             MaMH = maMH;
             BatBuoc = batBuoc;
+            HocKy = hocKy;
         }
     }
 }

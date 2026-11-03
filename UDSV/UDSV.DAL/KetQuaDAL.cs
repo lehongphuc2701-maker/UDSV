@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using UDSV.DTO;
 
 namespace UDSV.DAL
@@ -106,6 +108,78 @@ namespace UDSV.DAL
                 new SqlParameter("@MaSV", SqlDbType.VarChar, 20) { Value = maSV ?? "" },
                 new SqlParameter("@MaMH", SqlDbType.VarChar, 20) { Value = maMH ?? "" }
             };
+        }
+
+        /// <summary>Mọi sinh viên của khóa + điểm của họ ở môn này (NULL nếu chưa có).</summary>
+        public DataTable LayBangDiem(string maKhoa, string maMH)
+        {
+            const string query = @"
+                SELECT sv.MaSV, sv.HoTen, kq.Diem
+                FROM SinhVien sv
+                LEFT JOIN KetQua kq ON kq.MaSV = sv.MaSV AND kq.MaMH = @MaMH
+                WHERE sv.MaKhoa = @MaKhoa
+                ORDER BY sv.MaSV";
+
+            SqlParameter[] ps =
+            {
+                new SqlParameter("@MaKhoa", SqlDbType.VarChar, 10) { Value = maKhoa ?? "" },
+                new SqlParameter("@MaMH", SqlDbType.VarChar, 20) { Value = maMH ?? "" }
+            };
+            return DatabaseHelper.GetData(query, ps);
+        }
+
+        /// <summary>
+        /// Ghi cả bảng điểm trong một transaction: hoặc tất cả cùng vào, hoặc không đổi gì.
+        /// Dòng có điểm → xoá rồi thêm lại. Dòng để trống → chỉ xoá (chưa có điểm).
+        /// </summary>
+        public bool LuuBangDiem(string maMH, IList<DongDiem> danhSach)
+        {
+            using (SqlConnection conn = DatabaseHelper.GetConnection())
+            {
+                conn.Open();
+                using (SqlTransaction tx = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        foreach (DongDiem d in danhSach)
+                        {
+                            using (SqlCommand del = new SqlCommand(
+                                       "DELETE FROM KetQua WHERE MaMH = @MaMH AND MaSV = @MaSV", conn, tx))
+                            {
+                                del.Parameters.AddWithValue("@MaMH", maMH ?? "");
+                                del.Parameters.AddWithValue("@MaSV", d.MaSV ?? "");
+                                del.ExecuteNonQuery();
+                            }
+
+                            if (d.Diem == null) continue;
+
+                            using (SqlCommand ins = new SqlCommand(
+                                       @"INSERT INTO KetQua (MaSV, MaMH, Diem, LanNhap)
+                                         VALUES (@MaSV, @MaMH, @Diem, GETDATE())", conn, tx))
+                            {
+                                ins.Parameters.AddWithValue("@MaSV", d.MaSV ?? "");
+                                ins.Parameters.AddWithValue("@MaMH", maMH ?? "");
+                                ins.Parameters.Add(new SqlParameter("@Diem", SqlDbType.Decimal)
+                                {
+                                    Precision = 4,
+                                    Scale = 2,
+                                    Value = d.Diem.Value
+                                });
+                                ins.ExecuteNonQuery();
+                            }
+                        }
+
+                        tx.Commit();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        tx.Rollback();
+                        AppLog.For<KetQuaDAL>().LogError(ex, "Lưu bảng điểm môn {MaMH} thất bại, đã rollback", maMH);
+                        throw;
+                    }
+                }
+            }
         }
     }
 }
