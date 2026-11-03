@@ -33,7 +33,6 @@ namespace UDSV
             txtSoTinChi = new TextBox();
             txtTenMH = new TextBox();
             txtMaMH = new TextBox();
-            label5 = new Label();
             label4 = new Label();
             label3 = new Label();
             label2 = new Label();
@@ -63,7 +62,6 @@ namespace UDSV
             groupBox1.Controls.Add(txtSoTinChi);
             groupBox1.Controls.Add(txtTenMH);
             groupBox1.Controls.Add(txtMaMH);
-            groupBox1.Controls.Add(label5);
             groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(label2);
@@ -92,15 +90,6 @@ namespace UDSV
             txtMaMH.Name = "txtMaMH";
             txtMaMH.Size = new Size(125, 27);
             txtMaMH.TabIndex = 4;
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(297, 110);
-            label5.Name = "label5";
-            label5.Size = new Size(79, 20);
-            label5.TabIndex = 3;
-            label5.Text = "Giảng viên";
             // 
             // label4
             // 
@@ -207,7 +196,6 @@ namespace UDSV
         private TextBox txtSoTinChi;
         private TextBox txtTenMH;
         private TextBox txtMaMH;
-        private Label label5;
         private Label label4;
         private Label label3;
         private Label label2;
