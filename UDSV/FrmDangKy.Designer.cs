@@ -1,4 +1,4 @@
-﻿namespace UDSV
+namespace UDSV
 {
     partial class FrmDangKy
     {
@@ -28,182 +28,296 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
+            pnlLeft = new Controls.GradientPanel();
             pictureBox1 = new PictureBox();
-            label2 = new Label();
+            lblBrand1 = new Label();
+            lblBrand2 = new Label();
+            lblBrandSub = new Label();
+            lblClose = new Label();
+            lblTitle = new Label();
+            lblSubtitle = new Label();
+            lblFieldTK = new Label();
+            pnlDK_TaiKhoan = new Controls.TextBoxContainer();
             txtDK_TaiKhoan = new TextBox();
+            lblFieldMK = new Label();
+            pnlDK_MatKhau = new Controls.TextBoxContainer();
             txtDK_MatKhau = new TextBox();
-            label3 = new Label();
-            label4 = new Label();
+            lblFieldNLMK = new Label();
+            pnlDK_NhapLaiMK = new Controls.TextBoxContainer();
             txtDK_NhapLaiMK = new TextBox();
+            lblFieldHT = new Label();
+            pnlDK_HoTen = new Controls.TextBoxContainer();
             txtDK_HoTen = new TextBox();
-            label5 = new Label();
-            groupBox1 = new GroupBox();
-            btnDangKy = new Button();
+            btnDangKy = new Controls.GradientButton();
             btnQuayLai = new Button();
+
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            groupBox1.SuspendLayout();
+            pnlLeft.SuspendLayout();
             SuspendLayout();
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 163);
-            label1.ForeColor = SystemColors.HotTrack;
-            label1.Location = new Point(277, 9);
-            label1.Name = "label1";
-            label1.Size = new Size(267, 41);
-            label1.TabIndex = 1;
-            label1.Text = "Đăng kí tài khoản";
-            // 
-            // pictureBox1
-            // 
+
+            // ──────────────────────────────
+            // pnlLeft - Panel gradient bên trái
+            // ──────────────────────────────
+            pnlLeft.Dock = DockStyle.Left;
+            pnlLeft.Size = new Size(380, 600);
+            pnlLeft.ColorStart = Color.FromArgb(102, 126, 234);
+            pnlLeft.ColorEnd = Color.FromArgb(118, 75, 162);
+            pnlLeft.Name = "pnlLeft";
+            pnlLeft.TabIndex = 100;
+
+            // ──────────────────────────────
+            // pictureBox1 - Hình minh họa
+            // ──────────────────────────────
             pictureBox1.Image = Properties.Resources.images__1_;
-            pictureBox1.Location = new Point(26, 119);
+            pictureBox1.Location = new Point(100, 100);
+            pictureBox1.Size = new Size(180, 180);
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.BackColor = Color.Transparent;
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(229, 202);
-            pictureBox1.TabIndex = 8;
             pictureBox1.TabStop = false;
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(26, 34);
-            label2.Name = "label2";
-            label2.Size = new Size(103, 20);
-            label2.TabIndex = 9;
-            label2.Text = "Tên tài khoản";
-            // 
-            // txtDK_TaiKhoan
-            // 
-            txtDK_TaiKhoan.Location = new Point(142, 31);
+
+            // ──────────────────────────────
+            // lblBrand1 - "HỆ THỐNG"
+            // ──────────────────────────────
+            lblBrand1.AutoSize = true;
+            lblBrand1.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
+            lblBrand1.ForeColor = Color.White;
+            lblBrand1.BackColor = Color.Transparent;
+            lblBrand1.Location = new Point(62, 310);
+            lblBrand1.Name = "lblBrand1";
+            lblBrand1.Text = "HỆ THỐNG";
+
+            // ──────────────────────────────
+            // lblBrand2 - "QUẢN LÝ SINH VIÊN"
+            // ──────────────────────────────
+            lblBrand2.AutoSize = true;
+            lblBrand2.Font = new Font("Segoe UI", 12F);
+            lblBrand2.ForeColor = Color.FromArgb(220, 255, 255, 255);
+            lblBrand2.BackColor = Color.Transparent;
+            lblBrand2.Location = new Point(64, 363);
+            lblBrand2.Name = "lblBrand2";
+            lblBrand2.Text = "QUẢN LÝ SINH VIÊN";
+
+            // ──────────────────────────────
+            // lblBrandSub
+            // ──────────────────────────────
+            lblBrandSub.AutoSize = true;
+            lblBrandSub.Font = new Font("Segoe UI", 9F);
+            lblBrandSub.ForeColor = Color.FromArgb(180, 255, 255, 255);
+            lblBrandSub.BackColor = Color.Transparent;
+            lblBrandSub.Location = new Point(64, 400);
+            lblBrandSub.Name = "lblBrandSub";
+            lblBrandSub.Text = "Tạo tài khoản mới để bắt đầu";
+
+            // ──────────────────────────────
+            // lblClose - Nút đóng ✕
+            // ──────────────────────────────
+            lblClose.AutoSize = false;
+            lblClose.Font = new Font("Segoe UI", 14F);
+            lblClose.ForeColor = Color.FromArgb(180, 180, 180);
+            lblClose.Location = new Point(910, 8);
+            lblClose.Size = new Size(32, 32);
+            lblClose.Text = "✕";
+            lblClose.TextAlign = ContentAlignment.MiddleCenter;
+            lblClose.Cursor = Cursors.Hand;
+            lblClose.Name = "lblClose";
+
+            // ──────────────────────────────
+            // lblTitle - "Đăng Ký Tài Khoản"
+            // ──────────────────────────────
+            lblTitle.AutoSize = true;
+            lblTitle.Font = new Font("Segoe UI", 24F, FontStyle.Bold);
+            lblTitle.ForeColor = Color.FromArgb(45, 52, 54);
+            lblTitle.Location = new Point(450, 45);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Text = "Đăng Ký Tài Khoản";
+
+            // ──────────────────────────────
+            // lblSubtitle
+            // ──────────────────────────────
+            lblSubtitle.AutoSize = true;
+            lblSubtitle.Font = new Font("Segoe UI", 10F);
+            lblSubtitle.ForeColor = Color.FromArgb(99, 110, 114);
+            lblSubtitle.Location = new Point(455, 100);
+            lblSubtitle.Name = "lblSubtitle";
+            lblSubtitle.Text = "Điền thông tin bên dưới để tạo tài khoản mới.";
+
+            // ──────────────────────────────
+            // Field 1: Tên tài khoản
+            // ──────────────────────────────
+            lblFieldTK.AutoSize = true;
+            lblFieldTK.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblFieldTK.ForeColor = Color.FromArgb(99, 110, 114);
+            lblFieldTK.Location = new Point(455, 148);
+            lblFieldTK.Name = "lblFieldTK";
+            lblFieldTK.Text = "Tên tài khoản";
+
+            pnlDK_TaiKhoan.Location = new Point(452, 175);
+            pnlDK_TaiKhoan.Size = new Size(410, 46);
+            pnlDK_TaiKhoan.Name = "pnlDK_TaiKhoan";
+            pnlDK_TaiKhoan.TabIndex = 10;
+
             txtDK_TaiKhoan.Name = "txtDK_TaiKhoan";
-            txtDK_TaiKhoan.Size = new Size(125, 27);
-            txtDK_TaiKhoan.TabIndex = 10;
-            // 
-            // txtDK_MatKhau
-            // 
-            txtDK_MatKhau.Location = new Point(142, 77);
+            txtDK_TaiKhoan.TabIndex = 0;
+
+            // ──────────────────────────────
+            // Field 2: Mật khẩu
+            // ──────────────────────────────
+            lblFieldMK.AutoSize = true;
+            lblFieldMK.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblFieldMK.ForeColor = Color.FromArgb(99, 110, 114);
+            lblFieldMK.Location = new Point(455, 231);
+            lblFieldMK.Name = "lblFieldMK";
+            lblFieldMK.Text = "Mật khẩu";
+
+            pnlDK_MatKhau.Location = new Point(452, 258);
+            pnlDK_MatKhau.Size = new Size(410, 46);
+            pnlDK_MatKhau.Name = "pnlDK_MatKhau";
+            pnlDK_MatKhau.TabIndex = 11;
+
             txtDK_MatKhau.Name = "txtDK_MatKhau";
-            txtDK_MatKhau.Size = new Size(125, 27);
-            txtDK_MatKhau.TabIndex = 11;
+            txtDK_MatKhau.TabIndex = 1;
             txtDK_MatKhau.UseSystemPasswordChar = true;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(26, 77);
-            label3.Name = "label3";
-            label3.Size = new Size(75, 20);
-            label3.TabIndex = 13;
-            label3.Text = "Mật khẩu";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(26, 160);
-            label4.Name = "label4";
-            label4.Size = new Size(93, 20);
-            label4.TabIndex = 14;
-            label4.Text = "Nhập lại mk";
-            // 
-            // txtDK_NhapLaiMK
-            // 
-            txtDK_NhapLaiMK.Location = new Point(142, 160);
+
+            // ──────────────────────────────
+            // Field 3: Nhập lại mật khẩu
+            // ──────────────────────────────
+            lblFieldNLMK.AutoSize = true;
+            lblFieldNLMK.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblFieldNLMK.ForeColor = Color.FromArgb(99, 110, 114);
+            lblFieldNLMK.Location = new Point(455, 314);
+            lblFieldNLMK.Name = "lblFieldNLMK";
+            lblFieldNLMK.Text = "Nhập lại mật khẩu";
+
+            pnlDK_NhapLaiMK.Location = new Point(452, 341);
+            pnlDK_NhapLaiMK.Size = new Size(410, 46);
+            pnlDK_NhapLaiMK.Name = "pnlDK_NhapLaiMK";
+            pnlDK_NhapLaiMK.TabIndex = 12;
+
             txtDK_NhapLaiMK.Name = "txtDK_NhapLaiMK";
-            txtDK_NhapLaiMK.Size = new Size(125, 27);
-            txtDK_NhapLaiMK.TabIndex = 15;
+            txtDK_NhapLaiMK.TabIndex = 2;
             txtDK_NhapLaiMK.UseSystemPasswordChar = true;
-            // 
-            // txtDK_HoTen
-            // 
-            txtDK_HoTen.Location = new Point(142, 220);
+
+            // ──────────────────────────────
+            // Field 4: Họ và tên
+            // ──────────────────────────────
+            lblFieldHT.AutoSize = true;
+            lblFieldHT.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblFieldHT.ForeColor = Color.FromArgb(99, 110, 114);
+            lblFieldHT.Location = new Point(455, 397);
+            lblFieldHT.Name = "lblFieldHT";
+            lblFieldHT.Text = "Họ và tên";
+
+            pnlDK_HoTen.Location = new Point(452, 424);
+            pnlDK_HoTen.Size = new Size(410, 46);
+            pnlDK_HoTen.Name = "pnlDK_HoTen";
+            pnlDK_HoTen.TabIndex = 13;
+
             txtDK_HoTen.Name = "txtDK_HoTen";
-            txtDK_HoTen.Size = new Size(125, 27);
-            txtDK_HoTen.TabIndex = 16;
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(26, 223);
-            label5.Name = "label5";
-            label5.Size = new Size(96, 20);
-            label5.TabIndex = 17;
-            label5.Text = "Nhập họ tên";
-            // 
-            // groupBox1
-            // 
-            groupBox1.BackColor = SystemColors.ScrollBar;
-            groupBox1.Controls.Add(label2);
-            groupBox1.Controls.Add(txtDK_HoTen);
-            groupBox1.Controls.Add(label5);
-            groupBox1.Controls.Add(txtDK_TaiKhoan);
-            groupBox1.Controls.Add(label3);
-            groupBox1.Controls.Add(txtDK_NhapLaiMK);
-            groupBox1.Controls.Add(txtDK_MatKhau);
-            groupBox1.Controls.Add(label4);
-            groupBox1.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 163);
-            groupBox1.ForeColor = SystemColors.Highlight;
-            groupBox1.Location = new Point(355, 119);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(344, 263);
-            groupBox1.TabIndex = 18;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Biểu mẫu đăng kí";
-            // 
-            // btnDangKy
-            // 
-            btnDangKy.BackColor = SystemColors.MenuHighlight;
-            btnDangKy.Location = new Point(485, 421);
+            txtDK_HoTen.TabIndex = 3;
+
+            // ──────────────────────────────
+            // btnDangKy - Nút đăng ký gradient
+            // ──────────────────────────────
+            btnDangKy.Location = new Point(452, 492);
+            btnDangKy.Size = new Size(410, 48);
+            btnDangKy.Text = "ĐĂNG KÝ";
+            btnDangKy.TabIndex = 4;
             btnDangKy.Name = "btnDangKy";
-            btnDangKy.Size = new Size(94, 29);
-            btnDangKy.TabIndex = 19;
-            btnDangKy.Text = "Đăng kí";
-            btnDangKy.UseVisualStyleBackColor = false;
-            // 
-            // btnQuayLai
-            // 
-            btnQuayLai.BackColor = Color.Red;
-            btnQuayLai.Location = new Point(200, 421);
+
+            // ──────────────────────────────
+            // btnQuayLai - Link quay lại đăng nhập
+            // ──────────────────────────────
+            btnQuayLai.FlatStyle = FlatStyle.Flat;
+            btnQuayLai.FlatAppearance.BorderSize = 0;
+            btnQuayLai.FlatAppearance.MouseOverBackColor = Color.White;
+            btnQuayLai.FlatAppearance.MouseDownBackColor = Color.White;
+            btnQuayLai.BackColor = Color.White;
+            btnQuayLai.ForeColor = Color.FromArgb(102, 126, 234);
+            btnQuayLai.Font = new Font("Segoe UI", 10F);
+            btnQuayLai.Cursor = Cursors.Hand;
+            btnQuayLai.Location = new Point(452, 553);
+            btnQuayLai.Size = new Size(410, 35);
+            btnQuayLai.Text = "Đã có tài khoản? Quay về đăng nhập";
+            btnQuayLai.TabIndex = 5;
             btnQuayLai.Name = "btnQuayLai";
-            btnQuayLai.Size = new Size(154, 29);
-            btnQuayLai.TabIndex = 20;
-            btnQuayLai.Text = "Quay về đăng nhập";
             btnQuayLai.UseVisualStyleBackColor = false;
-            // 
+
+            // ──────────────────────────────
+            // Gắn TextBox vào Container
+            // ──────────────────────────────
+            pnlDK_TaiKhoan.AttachTextBox(txtDK_TaiKhoan);
+            pnlDK_MatKhau.AttachTextBox(txtDK_MatKhau);
+            pnlDK_NhapLaiMK.AttachTextBox(txtDK_NhapLaiMK);
+            pnlDK_HoTen.AttachTextBox(txtDK_HoTen);
+
+            // ──────────────────────────────
+            // Thêm controls vào panel trái
+            // ──────────────────────────────
+            pnlLeft.Controls.Add(lblBrandSub);
+            pnlLeft.Controls.Add(lblBrand2);
+            pnlLeft.Controls.Add(lblBrand1);
+            pnlLeft.Controls.Add(pictureBox1);
+
+            // ──────────────────────────────
             // FrmDangKy
-            // 
+            // ──────────────────────────────
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(845, 513);
+            BackColor = Color.White;
+            ClientSize = new Size(950, 600);
+            FormBorderStyle = FormBorderStyle.None;
+            StartPosition = FormStartPosition.CenterScreen;
+            DoubleBuffered = true;
+            AcceptButton = btnDangKy;
+            Name = "FrmDangKy";
+            Text = "Đăng ký tài khoản";
+
             Controls.Add(btnQuayLai);
             Controls.Add(btnDangKy);
-            Controls.Add(groupBox1);
-            Controls.Add(pictureBox1);
-            Controls.Add(label1);
-            Name = "FrmDangKy";
-            Text = "FrmDangKy";
+            Controls.Add(pnlDK_HoTen);
+            Controls.Add(lblFieldHT);
+            Controls.Add(pnlDK_NhapLaiMK);
+            Controls.Add(lblFieldNLMK);
+            Controls.Add(pnlDK_MatKhau);
+            Controls.Add(lblFieldMK);
+            Controls.Add(pnlDK_TaiKhoan);
+            Controls.Add(lblFieldTK);
+            Controls.Add(lblSubtitle);
+            Controls.Add(lblTitle);
+            Controls.Add(lblClose);
+            Controls.Add(pnlLeft);
+
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
+            pnlLeft.ResumeLayout(false);
+            pnlLeft.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private Label label1;
+        private Controls.GradientPanel pnlLeft;
         private PictureBox pictureBox1;
-        private Label label2;
+        private Label lblBrand1;
+        private Label lblBrand2;
+        private Label lblBrandSub;
+        private Label lblClose;
+        private Label lblTitle;
+        private Label lblSubtitle;
+        private Label lblFieldTK;
+        private Controls.TextBoxContainer pnlDK_TaiKhoan;
         private TextBox txtDK_TaiKhoan;
+        private Label lblFieldMK;
+        private Controls.TextBoxContainer pnlDK_MatKhau;
         private TextBox txtDK_MatKhau;
-        private Label label3;
-        private Label label4;
+        private Label lblFieldNLMK;
+        private Controls.TextBoxContainer pnlDK_NhapLaiMK;
         private TextBox txtDK_NhapLaiMK;
+        private Label lblFieldHT;
+        private Controls.TextBoxContainer pnlDK_HoTen;
         private TextBox txtDK_HoTen;
-        private Label label5;
-        private GroupBox groupBox1;
-        private Button btnDangKy;
+        private Controls.GradientButton btnDangKy;
         private Button btnQuayLai;
     }
 }
