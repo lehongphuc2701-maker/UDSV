@@ -9,7 +9,7 @@ namespace UDSV
     /// <summary>
     /// Quản lý lịch học — màn hình còn thiếu trong bản giao diện của nhóm.
     /// Mỗi buổi học nối một môn với một sinh viên, nên hai ô chọn lấy dữ liệu
-    /// từ MonHocBLL và SinhVienBLL chứ không gõ tay mã.
+    /// từ MonHocBLL chứ không gõ tay mã.
     /// </summary>
     public partial class FrmLichHoc : Form
     {

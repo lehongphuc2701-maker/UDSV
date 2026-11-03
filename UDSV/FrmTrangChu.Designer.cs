@@ -36,6 +36,8 @@ namespace UDSV
             btnLichHoc = new Button();
             btnMonHoc = new Button();
             btnSinhVien = new Button();
+            btnKhoa = new Button();
+            btnKetQua = new Button();
             imageList1 = new ImageList(components);
             imageList2 = new ImageList(components);
             pictureBox1 = new PictureBox();
@@ -61,6 +63,8 @@ namespace UDSV
             groupBox1.Controls.Add(btnLichHoc);
             groupBox1.Controls.Add(btnMonHoc);
             groupBox1.Controls.Add(btnSinhVien);
+            groupBox1.Controls.Add(btnKhoa);
+            groupBox1.Controls.Add(btnKetQua);
             groupBox1.ForeColor = SystemColors.HotTrack;
             groupBox1.Location = new Point(9, 69);
             groupBox1.Name = "groupBox1";
@@ -69,10 +73,30 @@ namespace UDSV
             groupBox1.TabStop = false;
             groupBox1.Text = "Bảng điều khiển";
             // 
+            // btnKhoa
+            // 
+            btnKhoa.BackColor = Color.MediumPurple;
+            btnKhoa.Location = new Point(6, 193);
+            btnKhoa.Name = "btnKhoa";
+            btnKhoa.Size = new Size(231, 35);
+            btnKhoa.TabIndex = 4;
+            btnKhoa.Text = "4. QUẢN LÝ KHÓA";
+            btnKhoa.UseVisualStyleBackColor = false;
+            // 
+            // btnKetQua
+            // 
+            btnKetQua.BackColor = Color.Gold;
+            btnKetQua.Location = new Point(6, 248);
+            btnKetQua.Name = "btnKetQua";
+            btnKetQua.Size = new Size(231, 35);
+            btnKetQua.TabIndex = 5;
+            btnKetQua.Text = "5. QUẢN LÝ KẾT QUẢ";
+            btnKetQua.UseVisualStyleBackColor = false;
+            // 
             // btnDangXuat
             // 
             btnDangXuat.BackColor = SystemColors.ButtonShadow;
-            btnDangXuat.Location = new Point(6, 342);
+            btnDangXuat.Location = new Point(6, 330);
             btnDangXuat.Name = "btnDangXuat";
             btnDangXuat.Size = new Size(231, 34);
             btnDangXuat.TabIndex = 3;
@@ -82,7 +106,7 @@ namespace UDSV
             // btnLichHoc
             // 
             btnLichHoc.BackColor = Color.Red;
-            btnLichHoc.Location = new Point(6, 232);
+            btnLichHoc.Location = new Point(6, 138);
             btnLichHoc.Name = "btnLichHoc";
             btnLichHoc.Size = new Size(231, 35);
             btnLichHoc.TabIndex = 2;
@@ -92,7 +116,7 @@ namespace UDSV
             // btnMonHoc
             // 
             btnMonHoc.BackColor = Color.DarkOrange;
-            btnMonHoc.Location = new Point(2, 134);
+            btnMonHoc.Location = new Point(6, 83);
             btnMonHoc.Name = "btnMonHoc";
             btnMonHoc.Size = new Size(235, 39);
             btnMonHoc.TabIndex = 1;
@@ -102,7 +126,7 @@ namespace UDSV
             // btnSinhVien
             // 
             btnSinhVien.BackColor = Color.LawnGreen;
-            btnSinhVien.Location = new Point(6, 36);
+            btnSinhVien.Location = new Point(6, 28);
             btnSinhVien.Name = "btnSinhVien";
             btnSinhVien.Size = new Size(236, 41);
             btnSinhVien.TabIndex = 0;
@@ -166,6 +190,8 @@ namespace UDSV
         private Button btnLichHoc;
         private Button btnMonHoc;
         private Button btnSinhVien;
+        private Button btnKhoa;
+        private Button btnKetQua;
         private ImageList imageList1;
         private ImageList imageList2;
         private PictureBox pictureBox1;

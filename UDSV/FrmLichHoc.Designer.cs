@@ -32,8 +32,6 @@ namespace UDSV
             groupBox1 = new GroupBox();
             label2 = new Label();
             cboMonHoc = new ComboBox();
-            label3 = new Label();
-            cboSinhVien = new ComboBox();
             label4 = new Label();
             dtpNgayHoc = new DateTimePicker();
             label5 = new Label();
@@ -64,8 +62,6 @@ namespace UDSV
             // 
             groupBox1.Controls.Add(label2);
             groupBox1.Controls.Add(cboMonHoc);
-            groupBox1.Controls.Add(label3);
-            groupBox1.Controls.Add(cboSinhVien);
             groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(dtpNgayHoc);
             groupBox1.Controls.Add(label5);
@@ -98,24 +94,6 @@ namespace UDSV
             cboMonHoc.Name = "cboMonHoc";
             cboMonHoc.Size = new Size(300, 28);
             cboMonHoc.TabIndex = 1;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(430, 35);
-            label3.Name = "label3";
-            label3.Size = new Size(72, 20);
-            label3.TabIndex = 2;
-            label3.Text = "Sinh viên";
-            // 
-            // cboSinhVien
-            // 
-            cboSinhVien.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboSinhVien.FormattingEnabled = true;
-            cboSinhVien.Location = new Point(510, 30);
-            cboSinhVien.Name = "cboSinhVien";
-            cboSinhVien.Size = new Size(370, 28);
-            cboSinhVien.TabIndex = 3;
             // 
             // label4
             // 
@@ -249,8 +227,6 @@ namespace UDSV
         private GroupBox groupBox1;
         private Label label2;
         private ComboBox cboMonHoc;
-        private Label label3;
-        private ComboBox cboSinhVien;
         private Label label4;
         private DateTimePicker dtpNgayHoc;
         private Label label5;

@@ -27,6 +27,8 @@ namespace UDSV
             btnSinhVien.Click += BtnSinhVien_Click;
             btnMonHoc.Click += BtnMonHoc_Click;
             btnLichHoc.Click += BtnLichHoc_Click;
+            btnKhoa.Click += BtnKhoa_Click;
+            btnKetQua.Click += BtnKetQua_Click;
             btnDangXuat.Click += BtnDangXuat_Click;
         }
 
@@ -56,6 +58,22 @@ namespace UDSV
         private void BtnLichHoc_Click(object sender, EventArgs e)
         {
             using (FrmLichHoc frm = new FrmLichHoc())
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void BtnKhoa_Click(object sender, EventArgs e)
+        {
+            using (FrmKhoa frm = new FrmKhoa())
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void BtnKetQua_Click(object sender, EventArgs e)
+        {
+            using (FrmKetQua frm = new FrmKetQua())
             {
                 frm.ShowDialog(this);
             }
