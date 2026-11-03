@@ -74,6 +74,3 @@ INSERT INTO LichHoc (MaMH, MaSV, NgayHoc, CaHoc, PhongHoc) VALUES ('MH01', 'SV00
 INSERT INTO LichHoc (MaMH, MaSV, NgayHoc, CaHoc, PhongHoc) VALUES ('MH01', 'SV002', '2026-10-28', N'Ca 1 (07:00 - 11:00)', 'P.301');
 INSERT INTO LichHoc (MaMH, MaSV, NgayHoc, CaHoc, PhongHoc) VALUES ('MH02', 'SV003', '2026-10-29', N'Ca 2 (13:00 - 17:00)', 'P.205');
 GO
-
-ALTER TABLE SinhVien ADD DiemTB FLOAT;
-GO
