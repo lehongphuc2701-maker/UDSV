@@ -18,14 +18,16 @@ namespace UDSV.BLL
     {
         private readonly IChuongTrinhDAL ctDAL;
         private readonly IKhoaDAL khoaDAL;
+        private readonly IMonHocDAL mhDAL;
         private static readonly ILogger log = AppLog.For<ChuongTrinhBLL>();
 
-        public ChuongTrinhBLL() : this(new ChuongTrinhDAL(), new KhoaDAL()) { }
+        public ChuongTrinhBLL() : this(new ChuongTrinhDAL(), new KhoaDAL(), new MonHocDAL()) { }
 
-        public ChuongTrinhBLL(IChuongTrinhDAL chuongTrinhDal, IKhoaDAL khoaDal)
+        public ChuongTrinhBLL(IChuongTrinhDAL chuongTrinhDal, IKhoaDAL khoaDal, IMonHocDAL monHocDal)
         {
             ctDAL = chuongTrinhDal ?? throw new ArgumentNullException(nameof(chuongTrinhDal));
             khoaDAL = khoaDal ?? throw new ArgumentNullException(nameof(khoaDal));
+            mhDAL = monHocDal ?? throw new ArgumentNullException(nameof(monHocDal));
         }
 
         public DataTable LayTheoKhoa(string maKhoa) => ctDAL.LayTheoKhoa(maKhoa);
@@ -58,9 +60,50 @@ namespace UDSV.BLL
                 return false;
             }
 
+            KhoaDTO? khoa = khoaDAL.LayTheoMa(dong.MaKhoa);
+            if (khoa == null)
+            {
+                error = $"Khóa '{dong.MaKhoa}' không tồn tại.";
+                return false;
+            }
+
+            int? tinChi = TimTinChi(dong.MaMH);
+            if (tinChi == null)
+            {
+                error = $"Môn học '{dong.MaMH}' không tồn tại.";
+                return false;
+            }
+
+            // TRẦN TÍN CHỈ: không được đẩy tổng vượt mức đã khai báo của khóa.
+            // Muốn thêm môn mới thì phải bớt một môn khác trước — đó là cách giữ cho
+            // yêu cầu tốt nghiệp của khóa không bị trôi.
+            int tran = dong.BatBuoc ? khoa.TongTCBatBuoc : khoa.TongTCTuChon;
+            int hienTai = ctDAL.TongTinChi(dong.MaKhoa, dong.BatBuoc);
+
+            if (hienTai + tinChi.Value > tran)
+            {
+                error = $"Không thêm được: chương trình sẽ vượt trần {tran} tín chỉ " +
+                        $"(hiện có {hienTai}, môn này {tinChi.Value}).\n" +
+                        "Hãy bớt một môn khác trước khi thêm.";
+                log.LogWarning("Từ chối thêm {MaMH}: {HienTai}+{TinChi} > trần {Tran} của {MaKhoa}",
+                               dong.MaMH, hienTai, tinChi.Value, tran, dong.MaKhoa);
+                return false;
+            }
+
             bool ok = ctDAL.Them(dong);
             if (ok) log.LogInformation("Thêm môn {MaMH} vào chương trình {MaKhoa}", dong.MaMH, dong.MaKhoa);
             return ok;
+        }
+
+        /// <summary>Tra số tín chỉ của một môn trong danh mục (null nếu không có).</summary>
+        private int? TimTinChi(string maMH)
+        {
+            foreach (System.Data.DataRow r in mhDAL.LayDanhSachMonHoc().Rows)
+            {
+                if (string.Equals(r["MaMH"]?.ToString(), maMH, StringComparison.OrdinalIgnoreCase))
+                    return Convert.ToInt32(r["SoTinChi"]);
+            }
+            return null;
         }
 
         public bool XoaMonKhoiChuongTrinh(string maKhoa, string maMH, out string error)
