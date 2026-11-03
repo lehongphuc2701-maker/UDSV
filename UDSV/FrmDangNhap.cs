@@ -1,104 +1,123 @@
 using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using UDSV.BLL;
-using UDSV.DTO;
+using UDSV.DTO; // Gọi tầng BLL
 
 namespace UDSV
 {
-    /// <summary>
-    /// Màn hình đăng nhập — cửa vào duy nhất của ứng dụng.
-    /// Đúng sai do TaiKhoanBLL quyết định; form chỉ hiển thị kết quả.
-    /// </summary>
     public partial class FrmDangNhap : Form
     {
+        // Khởi tạo BLL xử lý tài khoản
         private readonly TaiKhoanBLL tkBLL = new TaiKhoanBLL();
+
+        // --- Hỗ trợ kéo form không viền ---
+        [DllImport("user32.dll")]
+        private static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        [DllImport("user32.dll")]
+        private static extern bool ReleaseCapture();
 
         public FrmDangNhap()
         {
             InitializeComponent();
-            GanSuKien();
-        }
+            SetupUI();
 
-        private void GanSuKien()
-        {
-            Shown += FrmDangNhap_Shown;
+            // Gắn sự kiện cho các nút
             btnDangNhap.Click += BtnDangNhap_Click;
             btnChuyenDangKy.Click += BtnChuyenDangKy_Click;
-            txtMatKhau.KeyDown += TxtMatKhau_KeyDown;
         }
 
-        private void FrmDangNhap_Shown(object sender, EventArgs e)
+        // --- Hiệu ứng đổ bóng cho form không viền ---
+        protected override CreateParams CreateParams
         {
-            txtTaiKhoan.Focus();
+            get
+            {
+                var cp = base.CreateParams;
+                cp.ClassStyle |= 0x00020000; // CS_DROPSHADOW
+                return cp;
+            }
         }
 
-        // ---------- Đăng nhập ----------
+        // --- THIẾT LẬP GIAO DIỆN HIỆN ĐẠI ---
+        private void SetupUI()
+        {
+            // Kéo form khi nhấn chuột vào panel trái hoặc vùng trống
+            pnlLeft.MouseDown += DragForm_MouseDown;
+            this.MouseDown += DragForm_MouseDown;
 
+            // Nút đóng ✕
+            lblClose.Click += (s, e) => Application.Exit();
+            lblClose.MouseEnter += (s, e) => lblClose.ForeColor = Color.FromArgb(231, 76, 60);
+            lblClose.MouseLeave += (s, e) => lblClose.ForeColor = Color.FromArgb(180, 180, 180);
+
+            // Hiệu ứng hover cho link đăng ký
+            btnChuyenDangKy.MouseEnter += (s, e) => btnChuyenDangKy.ForeColor = Color.FromArgb(118, 75, 162);
+            btnChuyenDangKy.MouseLeave += (s, e) => btnChuyenDangKy.ForeColor = Color.FromArgb(102, 126, 234);
+        }
+
+        // --- KÉO FORM ---
+        private void DragForm_MouseDown(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(Handle, 0xA1, 0x2, 0); // WM_NCLBUTTONDOWN, HT_CAPTION
+            }
+        }
+
+        // --- XỬ LÝ NÚT ĐĂNG NHẬP ---
         private void BtnDangNhap_Click(object sender, EventArgs e)
         {
-            DangNhap();
-        }
+            string taiKhoan = txtTaiKhoan.Text.Trim();
+            string matKhau = txtMatKhau.Text.Trim();
 
-        private void TxtMatKhau_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
+            // 1. Kiểm tra rỗng
+            if (string.IsNullOrEmpty(taiKhoan) || string.IsNullOrEmpty(matKhau))
             {
-                e.SuppressKeyPress = true;
-                DangNhap();
+                MessageBox.Show("Vui lòng nhập đầy đủ tài khoản và mật khẩu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtTaiKhoan.Focus();
+                return;
             }
-        }
 
-        private void DangNhap()
-        {
-            try
+            // 2. Gọi BLL kiểm tra Database thật — BLL trả về DTO và thông báo lỗi cụ thể
+            if (tkBLL.DangNhap(taiKhoan, matKhau, out TaiKhoanDTO tkDangNhap, out string loiDangNhap))
             {
-                if (!tkBLL.DangNhap(txtTaiKhoan.Text, txtMatKhau.Text,
-                                    out TaiKhoanDTO taiKhoan, out string error))
-                {
-                    MessageBox.Show(this, error, "Đăng nhập thất bại",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtMatKhau.Clear();
-                    txtMatKhau.Focus();
-                    return;
-                }
-
-                MoTrangChu(taiKhoan);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message, "Lỗi kết nối CSDL",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        /// <summary>Mở trang chủ dạng hộp thoại; ẩn form đăng nhập cho tới khi quay lại.</summary>
-        private void MoTrangChu(TaiKhoanDTO taiKhoan)
-        {
-            using (FrmTrangChu trangChu = new FrmTrangChu(taiKhoan))
-            {
+                // Đăng nhập thành công -> Ẩn form Đăng nhập
                 this.Hide();
-                trangChu.ShowDialog(this);
-                this.Show();
 
+                // Mở form Trang chủ, truyền tài khoản để trang chủ chào đúng tên người dùng
+                FrmTrangChu frmTrangChu = new FrmTrangChu(tkDangNhap);
+                frmTrangChu.ShowDialog();
+
+                // Khi form Trang chủ bị đóng, xóa trắng ô nhập và hiện lại Đăng nhập
+                txtTaiKhoan.Clear();
                 txtMatKhau.Clear();
+                this.Show();
                 txtTaiKhoan.Focus();
             }
+            else
+            {
+                // Đăng nhập thất bại: ưu tiên thông báo cụ thể của BLL
+                string thongBao = string.IsNullOrWhiteSpace(loiDangNhap)
+                    ? "Tài khoản hoặc mật khẩu không đúng!"
+                    : loiDangNhap;
+                MessageBox.Show(thongBao, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        // ---------- Chuyển sang đăng ký ----------
-
+        // --- XỬ LÝ NÚT CHUYỂN SANG FORM ĐĂNG KÝ ---
         private void BtnChuyenDangKy_Click(object sender, EventArgs e)
         {
-            using (FrmDangKy dangKy = new FrmDangKy())
-            {
-                if (dangKy.ShowDialog(this) == DialogResult.OK)
-                {
-                    // Đăng ký xong: điền sẵn tên tài khoản vừa tạo
-                    txtTaiKhoan.Text = dangKy.TenTaiKhoanVuaTao;
-                    txtMatKhau.Clear();
-                    txtMatKhau.Focus();
-                }
-            }
+            // Ẩn form Đăng nhập hiện tại
+            this.Hide();
+
+            // Mở form Đăng ký
+            FrmDangKy frmDangKy = new FrmDangKy();
+            frmDangKy.ShowDialog();
+
+            // Khi tắt form Đăng ký, hiện lại form Đăng nhập
+            this.Show();
         }
     }
 }
