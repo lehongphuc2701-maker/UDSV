@@ -10,8 +10,17 @@ namespace UDSV.BLL
     /// <summary>Nghiệp vụ môn học: kiểm tra dữ liệu trước khi ghi, chặn xoá môn đang có lịch học.</summary>
     public class MonHocBLL
     {
-        private readonly MonHocDAL mhDAL = new MonHocDAL();
+        private readonly IMonHocDAL mhDAL;
         private static readonly ILogger log = AppLog.For<MonHocBLL>();
+
+        /// <summary>Dùng thật trong ứng dụng.</summary>
+        public MonHocBLL() : this(new MonHocDAL()) { }
+
+        /// <summary>Dùng cho Unit Test: truyền DAL giả, không cần CSDL.</summary>
+        public MonHocBLL(IMonHocDAL monHocDal)
+        {
+            mhDAL = monHocDal ?? throw new ArgumentNullException(nameof(monHocDal));
+        }
 
         /// <summary>Danh sách môn: daXoa=false là đang dùng, true là thùng rác.</summary>
         public DataTable LayDanhSach(bool daXoa) => mhDAL.LayDanhSachMonHoc(daXoa);

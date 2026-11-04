@@ -59,13 +59,18 @@ GO
 
 -- 3. Sinh viên
 CREATE TABLE SinhVien (
-    MaSV     VARCHAR(20)   NOT NULL PRIMARY KEY,
-    HoTen    NVARCHAR(100) NOT NULL,
-    NgaySinh DATE          NOT NULL,
-    GioiTinh NVARCHAR(10)  NOT NULL,
-    MaKhoa   VARCHAR(10)   NOT NULL,
-    SDT      VARCHAR(15),
-    CONSTRAINT FK_SinhVien_Khoa FOREIGN KEY (MaKhoa) REFERENCES Khoa(MaKhoa)
+    MaSV      VARCHAR(20)   NOT NULL PRIMARY KEY,
+    HoTen     NVARCHAR(100) NOT NULL,
+    NgaySinh  DATE          NOT NULL,
+    GioiTinh  NVARCHAR(10)  NOT NULL,
+    MaKhoa    VARCHAR(10)   NOT NULL,
+    SDT       VARCHAR(15),
+    -- Trạng thái học tập; 'Đã xóa' là cờ XOÁ MỀM: dòng dữ liệu và điểm vẫn còn nguyên
+    TrangThai NVARCHAR(30)  NOT NULL
+              CONSTRAINT DF_SinhVien_TrangThai DEFAULT N'Chưa tốt nghiệp',
+    CONSTRAINT FK_SinhVien_Khoa FOREIGN KEY (MaKhoa) REFERENCES Khoa(MaKhoa),
+    CONSTRAINT CK_SinhVien_TrangThai
+        CHECK (TrangThai IN (N'Chưa tốt nghiệp', N'Đã thôi học', N'Đã tốt nghiệp', N'Đã xóa'))
 );
 GO
 
@@ -75,6 +80,8 @@ CREATE TABLE MonHoc (
     TenMH     NVARCHAR(150) NOT NULL,
     SoTinChi  INT           NOT NULL,
     GiangVien NVARCHAR(100),
+    -- Cờ XOÁ MỀM: 1 = đã chuyển vào thùng rác, vẫn phục hồi được
+    DaXoa     BIT           NOT NULL CONSTRAINT DF_MonHoc_DaXoa DEFAULT 0,
     CONSTRAINT CK_MonHoc_TC CHECK (SoTinChi BETWEEN 1 AND 10)
 );
 GO

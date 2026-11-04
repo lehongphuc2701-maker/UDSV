@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using UDSV.BLL;
+using UDSV.Controls;
 using UDSV.DTO;
 
 namespace UDSV
@@ -15,14 +16,82 @@ namespace UDSV
         private readonly SinhVienBLL bll = new SinhVienBLL();
         private readonly KhoaBLL khoaBLL = new KhoaBLL();
 
+        /// <summary>Mục đầu tiên của bộ lọc — không lọc theo trạng thái nào cả.</summary>
+        private const string TatCaTrangThai = "Tất cả";
+
+        private static readonly string[] CacTrangThai =
+        {
+            TatCaTrangThai, "Chưa tốt nghiệp", "Đã thôi học", "Đã tốt nghiệp", "Đã xóa"
+        };
+
+        // Hai điều khiển thêm bằng mã (không sửa file Designer): lọc trạng thái + nút Phục hồi
+        private Label lblTrangThai = null!;
+        private ComboBox cboTrangThai = null!;
+        private GradientButton btnPhucHoi = null!;
+
         // Mã của dòng đang chọn; rỗng nghĩa là đang ở chế độ thêm mới
         private string maDangChon = "";
 
         public FrmSinhVien()
         {
             InitializeComponent();
+            TaoBoLocTrangThai();
+            TaoNutPhucHoi();
             GanSuKien();
             CauHinhLuoi();
+        }
+
+        /// <summary>
+        /// Bộ lọc trạng thái đặt ở dải tiêu đề của vùng danh sách, nằm giữa tiêu đề
+        /// "DANH SÁCH SINH VIÊN" và ô tìm kiếm. Toạ độ lấy theo các control có sẵn
+        /// (không viết số cứng) để không lệch khi form được phóng to theo tỉ lệ DPI.
+        /// </summary>
+        private void TaoBoLocTrangThai()
+        {
+            lblTrangThai = new Label
+            {
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(90, 100, 115),
+                Name = "lblTrangThai",
+                Text = "Trạng thái:"
+            };
+
+            cboTrangThai = new ComboBox
+            {
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 10F),
+                FormattingEnabled = true,
+                Name = "cboTrangThai"
+            };
+            cboTrangThai.Items.AddRange(CacTrangThai);
+
+            lblTrangThai.Location = new Point(lblListTitle.Right + 26, lblSearch.Top);
+            cboTrangThai.Location = new Point(lblTrangThai.Right + 8, txtTimKiem.Top);
+
+            // Chừa 16px trước nhãn "Tìm kiếm:" để hai bộ lọc không chạm nhau
+            int conLai = lblSearch.Left - 16 - cboTrangThai.Left;
+            cboTrangThai.Width = Math.Max(160, Math.Min(260, conLai));
+
+            cardData.Controls.Add(lblTrangThai);
+            cardData.Controls.Add(cboTrangThai);
+        }
+
+        /// <summary>Nút Phục hồi đặt ngay bên trái nút Xóa trong thẻ nhập liệu.</summary>
+        private void TaoNutPhucHoi()
+        {
+            btnPhucHoi = new GradientButton
+            {
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                Name = "btnPhucHoi",
+                Radius = 12,
+                Size = new Size(145, 42),
+                Text = "♻ Phục hồi",
+                Location = new Point(btnXoa.Left - 160, btnXoa.Top)   // cách nút Xóa 15px
+            };
+
+            cardInput.Controls.Add(btnPhucHoi);
         }
 
         /// <summary>Designer của nhóm chưa gắn sự kiện, nên gắn ở đây để không phải sửa file Designer.</summary>
@@ -32,6 +101,7 @@ namespace UDSV
             btnThem.Click += BtnThem_Click;
             btnSua.Click += BtnSua_Click;
             btnXoa.Click += BtnXoa_Click;
+            btnPhucHoi.Click += BtnPhucHoi_Click;
             btnLamMoi.Click += BtnLamMoi_Click;
             btnTimKiem.Click += BtnTimKiem_Click;
             dgvSinhVien.CellClick += DgvSinhVien_CellClick;
@@ -53,6 +123,12 @@ namespace UDSV
         {
             NapComboKhoa();
             cboGioiTinh.SelectedIndex = 0;
+
+            // Đặt mục mặc định TRƯỚC khi gắn sự kiện, để lúc mở form chỉ tải dữ liệu một lần
+            cboTrangThai.SelectedIndex = 0;
+            cboTrangThai.SelectedIndexChanged += CboTrangThai_Changed;
+            CapNhatNutPhucHoi();
+
             TaiDuLieu();
         }
 
@@ -78,13 +154,28 @@ namespace UDSV
 
         // ---------- Nạp dữ liệu ----------
 
+        /// <summary>Trạng thái đang lọc; null nghĩa là "Tất cả" (không lọc gì).</summary>
+        private string? TrangThaiDangLoc
+        {
+            get
+            {
+                string chon = cboTrangThai.SelectedItem?.ToString() ?? "";
+                return chon.Length == 0 || chon == TatCaTrangThai ? null : chon;
+            }
+        }
+
         private void TaiDuLieu(string keyword = "")
         {
             try
             {
-                DataTable dt = string.IsNullOrWhiteSpace(keyword)
-                    ? bll.LayDanhSachSinhVien()
-                    : bll.TimKiemSinhVien(keyword);
+                // Bộ lọc trạng thái chạy dưới CSDL (LayTheoTrangThai); ô tìm kiếm lọc tiếp
+                // trên đúng bảng vừa tải, nên hai bộ lọc dùng chung được với nhau.
+                DataTable dt = bll.LayTheoTrangThai(TrangThaiDangLoc);
+
+                string tuKhoa = (keyword ?? "").Trim().Replace("'", "''");
+                dt.DefaultView.RowFilter = string.IsNullOrEmpty(tuKhoa)
+                    ? ""
+                    : $"MaSV LIKE '%{tuKhoa}%' OR HoTen LIKE '%{tuKhoa}%'";
 
                 dgvSinhVien.DataSource = dt;
                 DatTieuDeCot();
@@ -112,6 +203,12 @@ namespace UDSV
             if (dgvSinhVien.Columns.Contains("MaKhoa")) dgvSinhVien.Columns["MaKhoa"].HeaderText = "Mã khóa";
             if (dgvSinhVien.Columns.Contains("TenKhoa")) dgvSinhVien.Columns["TenKhoa"].HeaderText = "Tên khóa";
             if (dgvSinhVien.Columns.Contains("SDT")) dgvSinhVien.Columns["SDT"].HeaderText = "SĐT";
+            if (dgvSinhVien.Columns.Contains("TrangThai"))
+            {
+                dgvSinhVien.Columns["TrangThai"].HeaderText = "Trạng thái";
+                dgvSinhVien.Columns["TrangThai"].ReadOnly = true;
+                dgvSinhVien.Columns["TrangThai"].FillWeight = 110;
+            }
         }
 
         // ---------- Lấy dữ liệu từ form ----------
@@ -180,6 +277,10 @@ namespace UDSV
             }
         }
 
+        /// <summary>
+        /// Xoá MỀM: chỉ đổi TrangThai sang 'Đã xóa', dòng dữ liệu và điểm vẫn còn nguyên.
+        /// Nhờ vậy có thể phục hồi ở bộ lọc "Đã xóa".
+        /// </summary>
         private void BtnXoa_Click(object? sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(maDangChon))
@@ -191,7 +292,9 @@ namespace UDSV
 
             DialogResult confirm = MessageBox.Show(
                 this,
-                $"Bạn có chắc muốn xoá sinh viên {maDangChon} - {txtHoTen.Text}?",
+                $"Bạn có chắc muốn xoá sinh viên {maDangChon} - {txtHoTen.Text}?\n\n" +
+                "Sinh viên sẽ chuyển sang trạng thái 'Đã xóa' (không mất dữ liệu) " +
+                "và có thể phục hồi sau.",
                 "Xác nhận xoá",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
@@ -200,14 +303,53 @@ namespace UDSV
 
             try
             {
-                if (!bll.XoaSinhVien(maDangChon, out string error))
+                if (!bll.XoaMem(maDangChon, out string error))
                 {
                     MessageBox.Show(this, error, "Không xoá được",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                MessageBox.Show(this, "Đã xoá sinh viên.", "Thành công",
+                MessageBox.Show(this, "Đã chuyển sinh viên sang trạng thái 'Đã xóa'.",
+                    "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LamMoi();
+            }
+            catch (Exception ex)
+            {
+                BaoLoi(ex);
+            }
+        }
+
+        /// <summary>Phục hồi sinh viên đã xoá mềm — chỉ dùng được khi đang xem "Đã xóa".</summary>
+        private void BtnPhucHoi_Click(object? sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(maDangChon))
+            {
+                MessageBox.Show(this, "Hãy chọn một sinh viên trong danh sách 'Đã xóa' để phục hồi.",
+                    "Chưa chọn dòng", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            DialogResult confirm = MessageBox.Show(
+                this,
+                $"Phục hồi sinh viên {maDangChon} - {txtHoTen.Text}?\n\n" +
+                "Sinh viên sẽ trở lại trạng thái 'Chưa tốt nghiệp'.",
+                "Xác nhận phục hồi",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (confirm != DialogResult.Yes) return;
+
+            try
+            {
+                if (!bll.PhucHoi(maDangChon, out string error))
+                {
+                    MessageBox.Show(this, error, "Không phục hồi được",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                MessageBox.Show(this, "Đã phục hồi sinh viên.", "Thành công",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LamMoi();
             }
@@ -215,6 +357,29 @@ namespace UDSV
             {
                 BaoLoi(ex);
             }
+        }
+
+        private void CboTrangThai_Changed(object? sender, EventArgs e)
+        {
+            CapNhatNutPhucHoi();
+
+            // Đổi bộ lọc thì dòng đang chọn không còn ý nghĩa
+            maDangChon = "";
+            dgvSinhVien.ClearSelection();
+
+            TaiDuLieu(txtTimKiem.Text);
+        }
+
+        /// <summary>Nút Phục hồi chỉ bật khi đang xem thùng rác; tắt thì đổi sang màu xám.</summary>
+        private void CapNhatNutPhucHoi()
+        {
+            bool bat = TrangThaiDangLoc == "Đã xóa";
+
+            btnPhucHoi.Enabled = bat;
+            btnPhucHoi.Cursor = bat ? Cursors.Hand : Cursors.Default;
+            btnPhucHoi.GradientStart = bat ? Color.FromArgb(26, 188, 156) : Color.FromArgb(189, 195, 199);
+            btnPhucHoi.GradientEnd = bat ? Color.FromArgb(22, 160, 133) : Color.FromArgb(149, 165, 166);
+            btnPhucHoi.Invalidate();
         }
 
         private void BtnLamMoi_Click(object? sender, EventArgs e)
@@ -281,6 +446,7 @@ namespace UDSV
             dtpNgaySinh.Value = DateTime.Today;
             dgvSinhVien.ClearSelection();
             txtMaSV.Focus();
+            // Giữ nguyên bộ lọc trạng thái: đó là cách xem danh sách, không phải dữ liệu nhập
             TaiDuLieu();
         }
 

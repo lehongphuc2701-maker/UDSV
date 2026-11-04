@@ -114,15 +114,46 @@ namespace UDSV.Tests
     {
         private readonly List<MonHocDTO> ds = new List<MonHocDTO>();
 
+        // Các khóa đang dùng từng môn (đặt sẵn khi dựng test) và cờ xoá mềm
+        private readonly Dictionary<string, List<string>> khoaDangDung = new Dictionary<string, List<string>>();
+        private readonly HashSet<string> daXoaThat = new HashSet<string>();
+
         public MonHocDALGia(params (string MaMH, int SoTinChi)[] mons)
         {
             foreach ((string ma, int tc) in mons)
                 ds.Add(new MonHocDTO { MaMH = ma, TenMH = "Môn " + ma, SoTinChi = tc, GiangVien = "GV" });
         }
 
+        /// <summary>Đặt sẵn "môn này đang nằm trong chương trình của các khóa" để test luật chặn xoá.</summary>
+        public void DatKhoaDangDung(string maMH, params string[] maKhoas) =>
+            khoaDangDung[maMH] = new List<string>(maKhoas);
+
+        /// <summary>Cờ xoá mềm hiện tại của môn — để test kiểm tra BLL có ghi hay không.</summary>
+        public bool DaXoa(string maMH) => daXoaThat.Contains(maMH);
+
         public DataTable LayDanhSachMonHoc(bool daXoa) => new DataTable();
-        public bool DatCoXoa(string maMH, bool daXoa) => true;
-        public DataTable CacKhoaDangDung(string maMH) => new DataTable();
+
+        /// <summary>Mô phỏng UPDATE ... WHERE MaMH = @MaMH: không có dòng nào thì trả về false.</summary>
+        public bool DatCoXoa(string maMH, bool daXoa)
+        {
+            if (!ds.Exists(m => m.MaMH == maMH)) return false;
+
+            if (daXoa) daXoaThat.Add(maMH);
+            else daXoaThat.Remove(maMH);
+            return true;
+        }
+
+        public DataTable CacKhoaDangDung(string maMH)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("MaKhoa", typeof(string));
+
+            if (khoaDangDung.TryGetValue(maMH ?? "", out List<string>? khoas))
+                foreach (string k in khoas) dt.Rows.Add(k);
+
+            return dt;
+        }
+
         public DataTable LayDanhSachMonHoc()
         {
             DataTable dt = new DataTable();

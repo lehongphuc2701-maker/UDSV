@@ -188,11 +188,38 @@ namespace UDSV
 
                 cboMonHoc.SelectedIndexChanged -= CboMonHoc_Changed;
                 cboMonHoc.DataSource = dsMon;
-                cboMonHoc.DisplayMember = "TenMH";
+                cboMonHoc.DisplayMember = ThemCotHienThiMon(dsMon);
                 cboMonHoc.ValueMember = "MaMH";
                 cboMonHoc.SelectedIndexChanged += CboMonHoc_Changed;
             }
             catch (Exception ex) { BaoLoi(ex); }
+        }
+
+        /// <summary>
+        /// Gắn thêm cột hiển thị cho ComboBox môn: môn không nằm trong chương trình của kỳ này
+        /// (chỉ còn vì sinh viên đã có điểm) được ghi chú " (ngoài chương trình)".
+        /// Không bỏ môn nào khỏi danh sách — điểm đã nhập phải luôn xem và sửa được.
+        /// Trả về tên cột để dùng làm DisplayMember.
+        /// </summary>
+        private static string ThemCotHienThiMon(DataTable dsMon)
+        {
+            const string cotHienThi = "TenHienThi";
+            bool coCotNgoai = dsMon.Columns.Contains("NgoaiChuongTrinh");
+
+            if (!dsMon.Columns.Contains(cotHienThi))
+                dsMon.Columns.Add(cotHienThi, typeof(string));
+
+            foreach (DataRow dong in dsMon.Rows)
+            {
+                string ten = dong["TenMH"]?.ToString() ?? "";
+                bool ngoai = coCotNgoai
+                             && dong["NgoaiChuongTrinh"] != DBNull.Value
+                             && Convert.ToBoolean(dong["NgoaiChuongTrinh"]);
+
+                dong[cotHienThi] = ngoai ? ten + " (ngoài chương trình)" : ten;
+            }
+
+            return cotHienThi;
         }
 
         private void CboMonHoc_Changed(object sender, EventArgs e) => TaiBangDiem();
