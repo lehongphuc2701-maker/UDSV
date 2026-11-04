@@ -21,6 +21,9 @@ namespace UDSV
         private const int SoTiet = 12;
         private TableLayoutPanel? tblTuan;
 
+        /// <summary>Đang vẽ: chặn các lần gọi VeTuan() lồng nhau (mỗi lần là một lần nháy).</summary>
+        private bool _dangVe;
+
         private static readonly string[] Thu =
             { "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật" };
 
@@ -33,8 +36,8 @@ namespace UDSV
             Application.AddMessageFilter(new LocChuot(this));
 
             Load += FrmLichHoc_Load;
-            cboKhoa.SelectedIndexChanged += (s, e) => { NapKy(); VeTuan(); };
-            cboKy.SelectedIndexChanged += (s, e) => VeTuan();
+            cboKhoa.SelectedIndexChanged += (s, e) => { NapKy(); VeTuan(); };   // NapKy đã gỡ CboKy_Changed nên chỉ vẽ 1 lần
+            cboKy.SelectedIndexChanged += CboKy_Changed;
         }
 
         private void FrmLichHoc_Load(object? sender, EventArgs e)
@@ -97,6 +100,11 @@ namespace UDSV
                 BackColor = Color.White
             };
 
+            // Bật vẽ kép: giảm hẳn hiện tượng nháy khi dựng lại nhiều control.
+            typeof(Control)
+                .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                ?.SetValue(tblTuan, true);
+
             tblTuan.ColumnStyles.Clear();
             tblTuan.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 68));
             for (int i = 0; i < 7; i++)
@@ -106,83 +114,101 @@ namespace UDSV
 
             tblTuan.RowStyles.Clear();
             tblTuan.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
-            for (int i = 0; i < SoTiet; i++)
-            {
-                tblTuan.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / SoTiet));
-            }
+            for (int i = 0; i < SoTiet; i++) tblTuan.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / SoTiet));
 
             pnlTuan.Controls.Clear();
             pnlTuan.Controls.Add(tblTuan);
+
+            DungKhung();
         }
 
-        private void VeTuan()
+        /// <summary>
+        /// Khung cố định của lưới (ô góc + 7 cột thứ + 12 hàng tiết).
+        /// Chỉ dựng MỘT lần: trước đây mỗi lần đổi Khóa/Kỳ lại xoá và tạo lại 20 nhãn này,
+        /// cộng thêm không tạm dừng layout nên màn hình nháy nhiều lần.
+        /// </summary>
+        private void DungKhung()
         {
             if (tblTuan == null) return;
 
-            tblTuan.Controls.Clear();
-
-            // Ô góc trên bên trái: Tiết
-            var lblGocTiet = new Label
-            {
-                Text = "Tiết \\ Thứ",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font("Segoe UI", 8.5F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(71, 85, 105),
-                BackColor = Color.FromArgb(241, 245, 249)
-            };
-            tblTuan.Controls.Add(lblGocTiet, 0, 0);
-
-            // Các cột Thứ 2 đến Chủ nhật
-            for (int i = 0; i < 7; i++)
-            {
-                bool isCuoiTuan = (i >= 5);
-                var lblThu = new Label
-                {
-                    Text = Thu[i],
-                    Dock = DockStyle.Fill,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
-                    ForeColor = isCuoiTuan ? Color.FromArgb(180, 83, 9) : Color.FromArgb(30, 41, 59),
-                    BackColor = isCuoiTuan ? Color.FromArgb(254, 243, 199) : Color.FromArgb(248, 250, 252)
-                };
-                tblTuan.Controls.Add(lblThu, i + 1, 0);
-            }
-
-            // Các hàng Tiết 1 đến Tiết 12
-            for (int t = 1; t <= SoTiet; t++)
-            {
-                var lblTiet = new Label
-                {
-                    Text = $"Tiết {t}",
-                    Dock = DockStyle.Fill,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Font = new Font("Segoe UI", 8.2F, FontStyle.Regular),
-                    ForeColor = Color.FromArgb(100, 116, 139),
-                    BackColor = Color.FromArgb(248, 250, 252)
-                };
-                tblTuan.Controls.Add(lblTiet, 0, t);
-            }
-
-            if (MaKhoaChon.Length == 0 || KyChon <= 0)
-            {
-                lblThongTin.Text = "Chọn Khóa và Kỳ để xem thời khóa biểu";
-                lblThongTin.ForeColor = Color.FromArgb(100, 116, 139);
-                return;
-            }
-
+            tblTuan.SuspendLayout();
             try
             {
-                DataTable ds = ctBLL.LayTuanMau(MaKhoaChon, KyChon);
+                tblTuan.Controls.Add(new Label
+                {
+                    Text = "Tiết \\ Thứ",
+                    Dock = DockStyle.Fill,
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    Font = new Font("Segoe UI", 8.5F, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(71, 85, 105),
+                    BackColor = Color.FromArgb(241, 245, 249)
+                }, 0, 0);
+
+                for (int i = 0; i < 7; i++)
+                {
+                    bool isCuoiTuan = (i >= 5);
+                    tblTuan.Controls.Add(new Label
+                    {
+                        Text = Thu[i],
+                        Dock = DockStyle.Fill,
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+                        ForeColor = isCuoiTuan ? Color.FromArgb(180, 83, 9) : Color.FromArgb(30, 41, 59),
+                        BackColor = isCuoiTuan ? Color.FromArgb(254, 243, 199) : Color.FromArgb(248, 250, 252)
+                    }, i + 1, 0);
+                }
+
+                for (int t = 1; t <= SoTiet; t++)
+                {
+                    tblTuan.Controls.Add(new Label
+                    {
+                        Text = $"Tiết {t}",
+                        Dock = DockStyle.Fill,
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Font = new Font("Segoe UI", 8.2F, FontStyle.Regular),
+                        ForeColor = Color.FromArgb(100, 116, 139),
+                        BackColor = Color.FromArgb(248, 250, 252)
+                    }, 0, t);
+                }
+            }
+            finally { tblTuan.ResumeLayout(false); }
+        }
+
+        /// <summary>Chỉ thay các khối buổi học; khung lưới giữ nguyên nên không nháy.</summary>
+        private void VeTuan()
+        {
+            if (tblTuan == null || _dangVe) return;
+
+            _dangVe = true;
+            tblTuan.SuspendLayout();
+            try
+            {
+                // Bỏ các khối cũ (control có Tag là DataRow), giữ khung.
+                for (int i = tblTuan.Controls.Count - 1; i >= 0; i--)
+                {
+                    if (tblTuan.Controls[i].Tag is DataRow) tblTuan.Controls.RemoveAt(i);
+                }
+
+                string maKhoa = MaKhoaChon;
+                int ky = KyChon;
+
+                if (maKhoa.Length == 0 || ky <= 0)
+                {
+                    lblThongTin.Text = "Chọn Khóa và Kỳ để xem thời khóa biểu";
+                    lblThongTin.ForeColor = Color.FromArgb(100, 116, 139);
+                    return;
+                }
+
+                DataTable ds = ctBLL.LayTuanMau(maKhoa, ky);
 
                 if (ds.Rows.Count == 0)
                 {
-                    lblThongTin.Text = $"Khóa {MaKhoaChon} - Kỳ {KyChon}: Chưa có lịch học mẫu";
+                    lblThongTin.Text = $"Khóa {maKhoa} - Kỳ {ky}: Chưa có lịch học mẫu";
                     lblThongTin.ForeColor = Color.FromArgb(239, 68, 68);
                     return;
                 }
 
-                lblThongTin.Text = $"Khóa {MaKhoaChon} - Kỳ {KyChon}: Có {ds.Rows.Count} buổi học / tuần";
+                lblThongTin.Text = $"Khóa {maKhoa} - Kỳ {ky}: Có {ds.Rows.Count} buổi học / tuần";
                 lblThongTin.ForeColor = Color.FromArgb(5, 150, 105);
 
                 foreach (DataRow r in ds.Rows)
@@ -203,8 +229,12 @@ namespace UDSV
                 }
             }
             catch (Exception ex) { BaoLoi(ex); }
+            finally
+            {
+                tblTuan.ResumeLayout(true);
+                _dangVe = false;
+            }
         }
-
         /// <summary>Khối lịch học hiển thị dạng Card phẳng với màu nhấn trang nhã</summary>
         private Panel TaoKhoi(DataRow r)
         {
