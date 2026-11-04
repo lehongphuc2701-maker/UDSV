@@ -137,7 +137,9 @@ namespace UDSV
                 cboKhoa.DisplayMember = "MaKhoa";
                 cboKhoa.ValueMember = "MaKhoa";
 
-                XoaKyVaMon();
+                // Gán DataSource xong thì SelectedValue mới có giá trị. Phải tự nạp chuỗi
+                // khóa → kỳ → môn, vì sự kiện SelectedIndexChanged không bắn trong lúc bind.
+                CboKhoa_Changed(cboKhoa, EventArgs.Empty);
             }
             catch (Exception ex) { BaoLoi(ex); }
         }
@@ -165,6 +167,9 @@ namespace UDSV
                 cboKy.DisplayMember = "HocKy";
                 cboKy.ValueMember = "HocKy";
                 cboKy.SelectedIndexChanged += CboKy_Changed;
+
+                // Handler bị gỡ trong lúc bind nên danh sách môn không tự nạp — gọi thẳng.
+                CboKy_Changed(cboKy, EventArgs.Empty);
             }
             catch (Exception ex) { BaoLoi(ex); }
         }
