@@ -6,7 +6,7 @@ using UDSV.DTO;
 namespace UDSV.BLL
 {
     /// <summary>
-    /// Nghiệp vụ tài khoản: đăng nhập và đăng ký.
+    /// Nghiệp vụ tài khoản: đăng nhập, đăng ký và đổi mật khẩu.
     /// UI không tự so sánh mật khẩu với CSDL — mọi thứ đi qua đây.
     /// </summary>
     public class TaiKhoanBLL
@@ -108,6 +108,74 @@ namespace UDSV.BLL
             TaiKhoanDTO tk = new TaiKhoanDTO(username, password, hoTen);
             bool ok = tkDAL.ThemTaiKhoan(tk);
             if (ok) log.LogInformation("Đăng ký tài khoản mới: {Username} ({HoTen})", username, hoTen);
+            return ok;
+        }
+
+        // 3. Đổi mật khẩu
+        public bool DoiMatKhau(string username, string matKhauCu, string matKhauMoi, string nhapLaiMK, out string error)
+        {
+            error = "";
+
+            username = (username ?? "").Trim();
+            matKhauCu = matKhauCu ?? "";
+            matKhauMoi = matKhauMoi ?? "";
+            nhapLaiMK = nhapLaiMK ?? "";
+
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                error = "Tên tài khoản không hợp lệ!";
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(matKhauCu))
+            {
+                error = "Vui lòng nhập mật khẩu hiện tại!";
+                return false;
+            }
+
+            if (!tkDAL.KiemTraMatKhau(username, matKhauCu))
+            {
+                error = "Mật khẩu hiện tại không chính xác!";
+                log.LogWarning("Đổi mật khẩu bị từ chối cho {Username}: sai mật khẩu hiện tại", username);
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(matKhauMoi))
+            {
+                error = "Mật khẩu mới không được để trống!";
+                return false;
+            }
+
+            if (matKhauMoi.Length < 6)
+            {
+                error = "Mật khẩu mới phải có ít nhất 6 ký tự!";
+                log.LogWarning("Đổi mật khẩu bị từ chối cho {Username}: mật khẩu mới quá ngắn", username);
+                return false;
+            }
+
+            if (matKhauMoi.Length > 100)
+            {
+                error = "Mật khẩu mới không được dài quá 100 ký tự!";
+                return false;
+            }
+
+            if (matKhauMoi == matKhauCu)
+            {
+                error = "Mật khẩu mới không được trùng với mật khẩu hiện tại!";
+                return false;
+            }
+
+            if (matKhauMoi != nhapLaiMK)
+            {
+                error = "Xác nhận mật khẩu mới không khớp!";
+                return false;
+            }
+
+            bool ok = tkDAL.DoiMatKhau(username, matKhauMoi);
+            if (ok)
+            {
+                log.LogInformation("Đổi mật khẩu thành công cho tài khoản {Username}", username);
+            }
             return ok;
         }
     }

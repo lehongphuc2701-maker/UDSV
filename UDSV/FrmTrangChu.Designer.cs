@@ -33,15 +33,17 @@ namespace UDSV
             label1 = new Label();
             groupBox1 = new GroupBox();
             btnDangXuat = new Button();
+            btnTaiKhoan = new Button();
+            btnKetQua = new Button();
+            btnKhoa = new Button();
             btnLichHoc = new Button();
             btnMonHoc = new Button();
             btnSinhVien = new Button();
-            btnKhoa = new Button();
-            btnKetQua = new Button();
             imageList1 = new ImageList(components);
             imageList2 = new ImageList(components);
             pictureBox1 = new PictureBox();
             lblXinChao = new Label();
+            btnDoiMKHeader = new Button();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -60,78 +62,89 @@ namespace UDSV
             // groupBox1
             // 
             groupBox1.Controls.Add(btnDangXuat);
+            groupBox1.Controls.Add(btnTaiKhoan);
+            groupBox1.Controls.Add(btnKetQua);
+            groupBox1.Controls.Add(btnKhoa);
             groupBox1.Controls.Add(btnLichHoc);
             groupBox1.Controls.Add(btnMonHoc);
             groupBox1.Controls.Add(btnSinhVien);
-            groupBox1.Controls.Add(btnKhoa);
-            groupBox1.Controls.Add(btnKetQua);
             groupBox1.ForeColor = SystemColors.HotTrack;
             groupBox1.Location = new Point(9, 69);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(269, 410);
+            groupBox1.Size = new Size(269, 415);
             groupBox1.TabIndex = 1;
             groupBox1.TabStop = false;
             groupBox1.Text = "Bảng điều khiển";
-            // 
-            // btnKhoa
-            // 
-            btnKhoa.BackColor = Color.MediumPurple;
-            btnKhoa.Location = new Point(6, 193);
-            btnKhoa.Name = "btnKhoa";
-            btnKhoa.Size = new Size(231, 35);
-            btnKhoa.TabIndex = 4;
-            btnKhoa.Text = "4. QUẢN LÝ CT KHÓA";
-            btnKhoa.UseVisualStyleBackColor = false;
-            // 
-            // btnKetQua
-            // 
-            btnKetQua.BackColor = Color.Gold;
-            btnKetQua.Location = new Point(6, 248);
-            btnKetQua.Name = "btnKetQua";
-            btnKetQua.Size = new Size(231, 35);
-            btnKetQua.TabIndex = 5;
-            btnKetQua.Text = "5. QUẢN LÝ KẾT QUẢ";
-            btnKetQua.UseVisualStyleBackColor = false;
-            // 
-            // btnDangXuat
-            // 
-            btnDangXuat.BackColor = SystemColors.ButtonShadow;
-            btnDangXuat.Location = new Point(6, 330);
-            btnDangXuat.Name = "btnDangXuat";
-            btnDangXuat.Size = new Size(231, 34);
-            btnDangXuat.TabIndex = 3;
-            btnDangXuat.Text = "ĐĂNG XUẤT";
-            btnDangXuat.UseVisualStyleBackColor = false;
-            // 
-            // btnLichHoc
-            // 
-            btnLichHoc.BackColor = Color.Red;
-            btnLichHoc.Location = new Point(6, 138);
-            btnLichHoc.Name = "btnLichHoc";
-            btnLichHoc.Size = new Size(231, 35);
-            btnLichHoc.TabIndex = 2;
-            btnLichHoc.Text = "3. QUẢN LÝ LỊCH HỌC";
-            btnLichHoc.UseVisualStyleBackColor = false;
-            // 
-            // btnMonHoc
-            // 
-            btnMonHoc.BackColor = Color.DarkOrange;
-            btnMonHoc.Location = new Point(6, 83);
-            btnMonHoc.Name = "btnMonHoc";
-            btnMonHoc.Size = new Size(235, 39);
-            btnMonHoc.TabIndex = 1;
-            btnMonHoc.Text = "2. QUẢN LÝ MÔN HỌC";
-            btnMonHoc.UseVisualStyleBackColor = false;
             // 
             // btnSinhVien
             // 
             btnSinhVien.BackColor = Color.LawnGreen;
             btnSinhVien.Location = new Point(6, 28);
             btnSinhVien.Name = "btnSinhVien";
-            btnSinhVien.Size = new Size(236, 41);
+            btnSinhVien.Size = new Size(236, 38);
             btnSinhVien.TabIndex = 0;
             btnSinhVien.Text = "1. QUẢN LÝ SINH VIÊN";
             btnSinhVien.UseVisualStyleBackColor = false;
+            // 
+            // btnMonHoc
+            // 
+            btnMonHoc.BackColor = Color.DarkOrange;
+            btnMonHoc.Location = new Point(6, 76);
+            btnMonHoc.Name = "btnMonHoc";
+            btnMonHoc.Size = new Size(235, 38);
+            btnMonHoc.TabIndex = 1;
+            btnMonHoc.Text = "2. QUẢN LÝ MÔN HỌC";
+            btnMonHoc.UseVisualStyleBackColor = false;
+            // 
+            // btnLichHoc
+            // 
+            btnLichHoc.BackColor = Color.Red;
+            btnLichHoc.Location = new Point(6, 124);
+            btnLichHoc.Name = "btnLichHoc";
+            btnLichHoc.Size = new Size(231, 35);
+            btnLichHoc.TabIndex = 2;
+            btnLichHoc.Text = "3. QUẢN LÝ LỊCH HỌC";
+            btnLichHoc.UseVisualStyleBackColor = false;
+            // 
+            // btnKhoa
+            // 
+            btnKhoa.BackColor = Color.MediumPurple;
+            btnKhoa.Location = new Point(6, 172);
+            btnKhoa.Name = "btnKhoa";
+            btnKhoa.Size = new Size(231, 35);
+            btnKhoa.TabIndex = 3;
+            btnKhoa.Text = "4. QUẢN LÝ CT KHÓA";
+            btnKhoa.UseVisualStyleBackColor = false;
+            // 
+            // btnKetQua
+            // 
+            btnKetQua.BackColor = Color.Gold;
+            btnKetQua.Location = new Point(6, 220);
+            btnKetQua.Name = "btnKetQua";
+            btnKetQua.Size = new Size(231, 35);
+            btnKetQua.TabIndex = 4;
+            btnKetQua.Text = "5. QUẢN LÝ KẾT QUẢ";
+            btnKetQua.UseVisualStyleBackColor = false;
+            // 
+            // btnTaiKhoan
+            // 
+            btnTaiKhoan.BackColor = Color.SkyBlue;
+            btnTaiKhoan.Location = new Point(6, 268);
+            btnTaiKhoan.Name = "btnTaiKhoan";
+            btnTaiKhoan.Size = new Size(231, 35);
+            btnTaiKhoan.TabIndex = 5;
+            btnTaiKhoan.Text = "6. TÀI KHOẢN & ĐỔI MK";
+            btnTaiKhoan.UseVisualStyleBackColor = false;
+            // 
+            // btnDangXuat
+            // 
+            btnDangXuat.BackColor = SystemColors.ButtonShadow;
+            btnDangXuat.Location = new Point(6, 350);
+            btnDangXuat.Name = "btnDangXuat";
+            btnDangXuat.Size = new Size(231, 35);
+            btnDangXuat.TabIndex = 6;
+            btnDangXuat.Text = "ĐĂNG XUẤT";
+            btnDangXuat.UseVisualStyleBackColor = false;
             // 
             // imageList1
             // 
@@ -165,17 +178,34 @@ namespace UDSV
             lblXinChao.TabIndex = 3;
             lblXinChao.Text = "Xin chào,..";
             // 
+            // btnDoiMKHeader
+            // 
+            btnDoiMKHeader.BackColor = Color.White;
+            btnDoiMKHeader.Cursor = Cursors.Hand;
+            btnDoiMKHeader.FlatAppearance.BorderColor = Color.FromArgb(102, 126, 234);
+            btnDoiMKHeader.FlatStyle = FlatStyle.Flat;
+            btnDoiMKHeader.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnDoiMKHeader.ForeColor = Color.FromArgb(102, 126, 234);
+            btnDoiMKHeader.Location = new Point(230, 12);
+            btnDoiMKHeader.Name = "btnDoiMKHeader";
+            btnDoiMKHeader.Size = new Size(140, 32);
+            btnDoiMKHeader.TabIndex = 4;
+            btnDoiMKHeader.Text = "👤 Đổi mật khẩu";
+            btnDoiMKHeader.UseVisualStyleBackColor = false;
+            // 
             // FrmTrangChu
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1256, 599);
+            Controls.Add(btnDoiMKHeader);
             Controls.Add(lblXinChao);
             Controls.Add(pictureBox1);
             Controls.Add(groupBox1);
             Controls.Add(label1);
             Name = "FrmTrangChu";
-            Text = "FrmTrangChu";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Trang chủ - Hệ thống quản lý";
             groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
@@ -192,9 +222,11 @@ namespace UDSV
         private Button btnSinhVien;
         private Button btnKhoa;
         private Button btnKetQua;
+        private Button btnTaiKhoan;
         private ImageList imageList1;
         private ImageList imageList2;
         private PictureBox pictureBox1;
         private Label lblXinChao;
+        private Button btnDoiMKHeader;
     }
 }

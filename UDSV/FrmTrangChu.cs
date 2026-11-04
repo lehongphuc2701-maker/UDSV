@@ -4,10 +4,10 @@ using UDSV.DTO;
 
 namespace UDSV
 {
-    /// <summary>Trang chủ sau khi đăng nhập: điều hướng tới ba màn hình quản lý.</summary>
+    /// <summary>Trang chủ sau khi đăng nhập: điều hướng tới các màn hình quản lý.</summary>
     public partial class FrmTrangChu : Form
     {
-        private readonly TaiKhoanDTO taiKhoanHienTai;
+        private readonly TaiKhoanDTO? taiKhoanHienTai;
 
         /// <summary>Constructor rỗng để Visual Studio Designer mở được form.</summary>
         public FrmTrangChu()
@@ -16,7 +16,7 @@ namespace UDSV
             GanSuKien();
         }
 
-        public FrmTrangChu(TaiKhoanDTO taiKhoan) : this()
+        public FrmTrangChu(TaiKhoanDTO? taiKhoan) : this()
         {
             taiKhoanHienTai = taiKhoan;
         }
@@ -29,17 +29,19 @@ namespace UDSV
             btnLichHoc.Click += BtnLichHoc_Click;
             btnKhoa.Click += BtnKhoa_Click;
             btnKetQua.Click += BtnKetQua_Click;
+            btnTaiKhoan.Click += BtnTaiKhoan_Click;
+            btnDoiMKHeader.Click += BtnTaiKhoan_Click;
             btnDangXuat.Click += BtnDangXuat_Click;
         }
 
-        private void FrmTrangChu_Load(object sender, EventArgs e)
+        private void FrmTrangChu_Load(object? sender, EventArgs e)
         {
             lblXinChao.Text = taiKhoanHienTai == null
                 ? "Xin chào!"
                 : $"Xin chào, {taiKhoanHienTai.HoTen}!";
         }
 
-        private void BtnSinhVien_Click(object sender, EventArgs e)
+        private void BtnSinhVien_Click(object? sender, EventArgs e)
         {
             using (FrmSinhVien frm = new FrmSinhVien())
             {
@@ -47,7 +49,7 @@ namespace UDSV
             }
         }
 
-        private void BtnMonHoc_Click(object sender, EventArgs e)
+        private void BtnMonHoc_Click(object? sender, EventArgs e)
         {
             using (FrmMonHoc frm = new FrmMonHoc())
             {
@@ -55,7 +57,7 @@ namespace UDSV
             }
         }
 
-        private void BtnLichHoc_Click(object sender, EventArgs e)
+        private void BtnLichHoc_Click(object? sender, EventArgs e)
         {
             using (FrmLichHoc frm = new FrmLichHoc())
             {
@@ -63,7 +65,7 @@ namespace UDSV
             }
         }
 
-        private void BtnKhoa_Click(object sender, EventArgs e)
+        private void BtnKhoa_Click(object? sender, EventArgs e)
         {
             using (FrmKhoa frm = new FrmKhoa(taiKhoanHienTai?.Username))
             {
@@ -71,7 +73,7 @@ namespace UDSV
             }
         }
 
-        private void BtnKetQua_Click(object sender, EventArgs e)
+        private void BtnKetQua_Click(object? sender, EventArgs e)
         {
             using (FrmKetQua frm = new FrmKetQua())
             {
@@ -79,7 +81,15 @@ namespace UDSV
             }
         }
 
-        private void BtnDangXuat_Click(object sender, EventArgs e)
+        private void BtnTaiKhoan_Click(object? sender, EventArgs e)
+        {
+            using (FrmThongTinTaiKhoan frm = new FrmThongTinTaiKhoan(taiKhoanHienTai))
+            {
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void BtnDangXuat_Click(object? sender, EventArgs e)
         {
             DialogResult confirm = MessageBox.Show(
                 this, "Đăng xuất và quay về màn hình đăng nhập?",
