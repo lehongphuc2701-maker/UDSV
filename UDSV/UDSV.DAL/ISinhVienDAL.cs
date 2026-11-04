@@ -11,6 +11,8 @@ namespace UDSV.DAL
     public interface ISinhVienDAL
     {
         DataTable LayDanhSachSinhVien();
+    DataTable LayDanhSachTheoTrangThai(string? trangThai);
+    bool DoiTrangThai(string maSV, string trangThai);
         DataTable TimKiemSinhVien(string keyword);
         DataTable LaySinhVienTheoMa(string maSV);
         bool KiemTraMaTonTai(string maSV);

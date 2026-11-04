@@ -7,6 +7,9 @@ namespace UDSV.DAL
     public interface IMonHocDAL
     {
         DataTable LayDanhSachMonHoc();
+    DataTable LayDanhSachMonHoc(bool daXoa);
+    bool DatCoXoa(string maMH, bool daXoa);
+    DataTable CacKhoaDangDung(string maMH);
         bool KiemTraMaTonTai(string maMH);
         bool ThemMonHoc(MonHocDTO mh);
         bool SuaMonHoc(MonHocDTO mh);

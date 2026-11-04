@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using UDSV.DAL;
 using UDSV.DTO;
@@ -11,6 +12,44 @@ namespace UDSV.BLL
     {
         private readonly MonHocDAL mhDAL = new MonHocDAL();
         private static readonly ILogger log = AppLog.For<MonHocBLL>();
+
+        /// <summary>Danh sách môn: daXoa=false là đang dùng, true là thùng rác.</summary>
+        public DataTable LayDanhSach(bool daXoa) => mhDAL.LayDanhSachMonHoc(daXoa);
+
+        /// <summary>
+        /// Xoá mềm. Từ chối nếu môn còn nằm trong chương trình của bất kỳ khóa nào —
+        /// xoá đi thì lưới chương trình sẽ trỏ tới một môn không còn tồn tại.
+        /// </summary>
+        public bool XoaMem(string maMH, out string error)
+        {
+            error = "";
+            DataTable khoa = mhDAL.CacKhoaDangDung(maMH);
+            if (khoa.Rows.Count > 0)
+            {
+                var ds = string.Join(", ", khoa.Rows.Cast<DataRow>().Select(r => r["MaKhoa"]?.ToString()));
+                error = $"Không xoá được môn {maMH} vì đang nằm trong chương trình của khóa: {ds}.\n" +
+                        "Hãy bỏ môn khỏi chương trình trước, hoặc giữ nguyên.";
+                return false;
+            }
+            if (!mhDAL.DatCoXoa(maMH, true))
+            {
+                error = $"Không tìm thấy môn {maMH}.";
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>Bỏ cờ xoá mềm.</summary>
+        public bool PhucHoi(string maMH, out string error)
+        {
+            error = "";
+            if (!mhDAL.DatCoXoa(maMH, false))
+            {
+                error = $"Không tìm thấy môn {maMH}.";
+                return false;
+            }
+            return true;
+        }
 
         public DataTable LayDanhSachMonHoc()
         {

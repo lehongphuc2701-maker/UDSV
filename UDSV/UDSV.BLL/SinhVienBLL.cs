@@ -28,6 +28,33 @@ namespace UDSV.BLL
 
         public DataTable LayDanhSachSinhVien() => svDAL.LayDanhSachSinhVien();
 
+        /// <summary>Danh sách theo trạng thái; null = tất cả.</summary>
+        public DataTable LayTheoTrangThai(string? trangThai) => svDAL.LayDanhSachTheoTrangThai(trangThai);
+
+        /// <summary>Xoá mềm: chỉ đổi trạng thái sang 'Đã xóa', dữ liệu còn nguyên.</summary>
+        public bool XoaMem(string maSV, out string error)
+        {
+            error = "";
+            if (!svDAL.DoiTrangThai(maSV, "Đã xóa"))
+            {
+                error = $"Không tìm thấy sinh viên {maSV} để xoá.";
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>Phục hồi sinh viên đã bị xoá mềm.</summary>
+        public bool PhucHoi(string maSV, out string error)
+        {
+            error = "";
+            if (!svDAL.DoiTrangThai(maSV, "Chưa tốt nghiệp"))
+            {
+                error = $"Không tìm thấy sinh viên {maSV} để phục hồi.";
+                return false;
+            }
+            return true;
+        }
+
         /// <summary>Một sinh viên theo mã (kèm tên khóa) — dùng cho màn hồ sơ của sinh viên.</summary>
         public DataTable LayTheoMa(string maSV) => svDAL.LaySinhVienTheoMa(maSV);
 

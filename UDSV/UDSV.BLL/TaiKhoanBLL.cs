@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 using UDSV.DAL;
+using System.Data;
 using UDSV.DTO;
 
 namespace UDSV.BLL
@@ -42,6 +43,20 @@ namespace UDSV.BLL
                 error = "Sai tên đăng nhập hoặc mật khẩu!";
                 log.LogWarning("Đăng nhập thất bại cho tài khoản {Username}", username);
                 return false;
+            }
+
+            // Sinh viên đã bị xoá mềm thì không cho vào, dù mật khẩu đúng.
+            if (taiKhoan.LaSinhVien && !string.IsNullOrWhiteSpace(taiKhoan.MaSV))
+            {
+                DataTable sv = new SinhVienDAL().LaySinhVienTheoMa(taiKhoan.MaSV);
+                string trangThai = sv.Rows.Count > 0 ? sv.Rows[0]["TrangThai"]?.ToString() ?? "" : "";
+                if (trangThai == "Đã xóa")
+                {
+                    taiKhoan = null;
+                    error = "Tài khoản đã bị vô hiệu hoá. Liên hệ phòng đào tạo để được phục hồi.";
+                    log.LogWarning("Đăng nhập bị chặn: sinh viên đã bị xoá mềm");
+                    return false;
+                }
             }
 
             log.LogInformation("Đăng nhập thành công: {Username} ({HoTen})", taiKhoan.Username, taiKhoan.HoTen);

@@ -33,6 +33,8 @@ namespace UDSV.Tests
             return dt;
         }
 
+        public DataTable LayDanhSachTheoTrangThai(string? trangThai) => new DataTable();
+        public bool DoiTrangThai(string maSV, string trangThai) => true;
         public DataTable LayDanhSachSinhVien() => Bang(ds);
 
         public DataTable TimKiemSinhVien(string keyword) =>
@@ -118,6 +120,9 @@ namespace UDSV.Tests
                 ds.Add(new MonHocDTO { MaMH = ma, TenMH = "Môn " + ma, SoTinChi = tc, GiangVien = "GV" });
         }
 
+        public DataTable LayDanhSachMonHoc(bool daXoa) => new DataTable();
+        public bool DatCoXoa(string maMH, bool daXoa) => true;
+        public DataTable CacKhoaDangDung(string maMH) => new DataTable();
         public DataTable LayDanhSachMonHoc()
         {
             DataTable dt = new DataTable();
