@@ -28,6 +28,10 @@ namespace UDSV
         {
             InitializeComponent();
 
+            // Bộ lọc chuột: thấy MỌI cú click trước khi bất kỳ control nào nuốt mất.
+            // Đây là đường chắc chắn nhất để mở hộp thoại chi tiết buổi học.
+            Application.AddMessageFilter(new LocChuot(this));
+
             Load += FrmLichHoc_Load;
             cboKhoa.SelectedIndexChanged += (s, e) => { NapKy(); VeTuan(); };
             cboKy.SelectedIndexChanged += (s, e) => VeTuan();
@@ -301,6 +305,12 @@ namespace UDSV
         private void Khoi_Click(object? sender, EventArgs e)
         {
             if ((sender as Control)?.Tag is not DataRow r) return;
+            HienChiTiet(r);
+        }
+
+        /// <summary>Hiện hộp thoại đầy đủ cho một buổi học.</summary>
+        internal void HienChiTiet(DataRow r)
+        {
 
             string tenMon = r["TenMH"]?.ToString() ?? "";
             string maMH = r["MaMH"]?.ToString() ?? "";
@@ -320,6 +330,41 @@ namespace UDSV
 
             MessageBox.Show(this, noiDung, "Chi tiết buổi học",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>Bắt WM_LBUTTONUP ở tầng ứng dụng rồi tự tìm khối dưới con trỏ.</summary>
+        private sealed class LocChuot : IMessageFilter
+        {
+            private const int WM_LBUTTONUP = 0x0202;
+            private readonly FrmLichHoc _form;
+
+            public LocChuot(FrmLichHoc form) { _form = form; }
+
+            public bool PreFilterMessage(ref Message m)
+            {
+                if (m.Msg != WM_LBUTTONUP) return false;
+
+                var diem = Cursor.Position;
+                foreach (Control c in TimTat(_form))
+                {
+                    if (c is Panel p && p.Tag is DataRow r &&
+                        p.RectangleToScreen(p.ClientRectangle).Contains(diem))
+                    {
+                        _form.HienChiTiet(r);
+                        return true;      // nuốt luôn, tránh mở hai lần
+                    }
+                }
+                return false;
+            }
+
+            private static System.Collections.Generic.IEnumerable<Control> TimTat(Control goc)
+            {
+                foreach (Control c in goc.Controls)
+                {
+                    yield return c;
+                    foreach (var x in TimTat(c)) yield return x;
+                }
+            }
         }
     }
 }
