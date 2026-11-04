@@ -11,8 +11,9 @@ namespace UDSV
 {
     /// <summary>
     /// Quản lý khóa và chương trình của khóa.
-    /// Điểm nhấn của màn này: chương trình bị KHOÁ ngay khi khóa đã có sinh viên —
-    /// nhãn trạng thái và hai nút thêm/xoá môn phản ánh đúng luật đó.
+    /// Điểm nhấn của màn này: sửa chương trình trên lưới là TỰ DO — thêm/xoá môn chỉ đổi
+    /// bảng trong bộ nhớ, không ghi CSDL. Luật (trùng môn, tổng tín chỉ của khóa đã khoá)
+    /// chỉ chạy khi bấm "Lưu thay đổi"; không bấm thì mọi sửa đổi bị bỏ.
     /// </summary>
     public partial class FrmKhoa : Form
     {
@@ -24,6 +25,12 @@ namespace UDSV
 
         /// <summary>Toàn bộ chương trình của khóa đang chọn (mọi học kỳ); lưới chỉ hiện phần đã lọc.</summary>
         private DataTable? _ctFull;
+
+        /// <summary>Khóa đang chọn, đọc từ CSDL lúc nạp — để nhãn tổng so với số đã khai báo.</summary>
+        private KhoaDTO? _khoaDangChon;
+
+        /// <summary>Đang nạp lại lưới: bỏ qua CellValueChanged phát sinh từ chính việc gán DataSource.</summary>
+        private bool dangNap;
 
         // Màu gốc của các nút, để trả lại khi mở khoá
         private Color mauThemMon, mauXoaMon, mauXoa, mauSua;
@@ -50,6 +57,10 @@ namespace UDSV
             btnThemMon.Click += BtnThemMon_Click;
             btnXoaMon.Click += BtnXoaMon_Click;
 
+            // Tổng tín chỉ trên nhãn phải chạy theo lưới, kể cả khi admin sửa cờ "Bắt buộc".
+            dgvChuongTrinh.CurrentCellDirtyStateChanged += DgvChuongTrinh_CurrentCellDirtyStateChanged;
+            dgvChuongTrinh.CellValueChanged += DgvChuongTrinh_CellValueChanged;
+
             // Lưới danh sách khóa: chỉ để chọn.
             dgvKhoa.ReadOnly = true;
             dgvKhoa.AllowUserToAddRows = false;
@@ -74,13 +85,13 @@ namespace UDSV
 
             Text = "Quản lý chương trình khóa";
 
-            // Nút chốt chương trình — đặt trong cardChuongTrinh ở góc dưới bên phải
+            // Nút chốt chương trình — nằm trên hàng nút của thẻ "Thông tin khóa", ngay sau "Làm mới".
+            // Nút tạo bằng code KHÔNG được form tự co giãn theo font như các nút trong Designer,
+            // nên vị trí được căn theo nút "Làm mới" lúc chạy (xem CanLaiNutKhoaTC).
             btnKhoaTC = new Button
             {
                 Text = "🔒 KHOÁ SỐ TÍN CHỈ",
-                Location = new Point(380, 378),
-                Size = new Size(230, 36),
-                Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
+                Size = new Size(210, 38),
                 BackColor = Color.FromArgb(225, 29, 72),
                 ForeColor = Color.White,
                 Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
@@ -89,9 +100,22 @@ namespace UDSV
                 UseVisualStyleBackColor = false
             };
             btnKhoaTC.FlatAppearance.BorderSize = 0;
-            cardChuongTrinh.Controls.Add(btnKhoaTC);
+            cardKhoa.Controls.Add(btnKhoaTC);
             btnKhoaTC.BringToFront();
             btnKhoaTC.Click += BtnKhoaTC_Click;
+        }
+
+        /// <summary>
+        /// Form co giãn theo font lúc chạy (AutoScaleMode.Font) nên toạ độ trong Designer bị nhân
+        /// với một hệ số; nút tạo bằng code thì không. Vì vậy đặt nó cạnh "Làm mới" theo số đo THẬT,
+        /// sau khi form đã co giãn xong — cùng hàng, cùng chiều cao, cách 20 px.
+        /// </summary>
+        private void CanLaiNutKhoaTC()
+        {
+            if (btnKhoaTC == null) return;
+
+            btnKhoaTC.Size = new Size(210, btnLamMoi.Height);
+            btnKhoaTC.Location = new Point(btnLamMoi.Right + 20, btnLamMoi.Top);
         }
 
         /// <summary>Bật/tắt cả khối ô nhập "Thông tin khóa" (mã, tên, năm, tín chỉ).</summary>
@@ -115,6 +139,7 @@ namespace UDSV
 
         private void FrmKhoa_Load(object sender, EventArgs e)
         {
+            CanLaiNutKhoaTC();
             NapComboMon();
             LamMoi();
         }
@@ -168,6 +193,8 @@ namespace UDSV
 
             try
             {
+                dangNap = true;
+
                 // Giữ TOÀN BỘ chương trình trong bộ nhớ; lưới chỉ hiện phần đã lọc theo học kỳ.
                 // Nhờ vậy sửa ở một học kỳ không làm mất dòng của các học kỳ khác khi lưu.
                 _ctFull = ctBLL.LayTheoKhoa(maDangChon);
@@ -195,6 +222,10 @@ namespace UDSV
             catch (Exception ex)
             {
                 BaoLoi(ex);
+            }
+            finally
+            {
+                dangNap = false;
             }
         }
 
@@ -297,12 +328,36 @@ namespace UDSV
             BatTat(btnXoa, true, mauXoa);
             BatTat(btnSua, true, mauSua);
 
-            int batBuoc = ctBLL.TongTinChi(maDangChon, true);
-            int tuChon = ctBLL.TongTinChi(maDangChon, false);
+            // Giữ lại khóa vừa đọc để nhãn tổng so được với số đã khai báo mà không phải đọc lại CSDL.
+            _khoaDangChon = khoa;
+            CapNhatTongTinChi();
+        }
 
-            string khaiBao = khoa == null ? "—" : $"{khoa.TongTCBatBuoc} + {khoa.TongTCTuChon}";
-            lblTongTC.Text = $"Tổng TC: {batBuoc} bắt buộc + {tuChon} tự chọn   (khai báo: {khaiBao})";
-            lblTongTC.ForeColor = khoa != null && (khoa.TongTCBatBuoc != batBuoc)
+        /// <summary>
+        /// Nhãn tổng tín chỉ, cộng thẳng trên bảng trong bộ nhớ (_ctFull) nên nhảy ngay sau mỗi lần
+        /// thêm / xoá môn hoặc đổi cờ "Bắt buộc" — không đọc CSDL. Phần "(khai báo: ...)" là số đã
+        /// chốt trong bảng Khoa, để admin nhìn một phát là biết lưới đang khớp hay lệch.
+        /// </summary>
+        private void CapNhatTongTinChi()
+        {
+            if (maDangChon.Length == 0)
+            {
+                lblTongTC.Text = "Tổng TC hiện tại: —";
+                lblTongTC.ForeColor = SystemColors.ControlText;
+                return;
+            }
+
+            int batBuoc = TinhTongTuLuoi(true);
+            int tuChon = TinhTongTuLuoi(false);
+
+            string khaiBao = _khoaDangChon == null
+                ? "—"
+                : $"{_khoaDangChon.TongTCBatBuoc} + {_khoaDangChon.TongTCTuChon}";
+
+            lblTongTC.Text = $"Tổng TC hiện tại: {batBuoc} bắt buộc + {tuChon} tự chọn   (khai báo: {khaiBao})";
+            lblTongTC.ForeColor = _khoaDangChon != null
+                                  && (_khoaDangChon.TongTCBatBuoc != batBuoc
+                                      || _khoaDangChon.TongTCTuChon != tuChon)
                 ? Color.OrangeRed
                 : SystemColors.ControlText;
         }
@@ -324,6 +379,23 @@ namespace UDSV
             txtMaKhoa.ReadOnly = true;
 
             TaiChuongTrinh();
+        }
+
+        /// <summary>
+        /// Cột "Bắt buộc" là checkbox: phải ghi giá trị ngay khi bấm thì CellValueChanged mới chạy
+        /// và nhãn tổng tín chỉ mới nhảy theo, thay vì đợi rời ô.
+        /// </summary>
+        private void DgvChuongTrinh_CurrentCellDirtyStateChanged(object? sender, EventArgs e)
+        {
+            if (dgvChuongTrinh.IsCurrentCellDirty && dgvChuongTrinh.CurrentCell is DataGridViewCheckBoxCell)
+                dgvChuongTrinh.CommitEdit(DataGridViewDataErrorContexts.Commit);
+        }
+
+        /// <summary>Sửa cờ "Bắt buộc" hay số tín chỉ trên lưới → tính lại tổng ngay.</summary>
+        private void DgvChuongTrinh_CellValueChanged(object? sender, DataGridViewCellEventArgs e)
+        {
+            if (dangNap || e.RowIndex < 0) return;
+            CapNhatTongTinChi();
         }
 
         private void BtnThem_Click(object sender, EventArgs e)
@@ -426,6 +498,19 @@ namespace UDSV
                 tong += r["SoTinChi"] == DBNull.Value ? 0 : Convert.ToInt32(r["SoTinChi"]);
             }
             return tong;
+        }
+
+        /// <summary>Dòng môn học trong combo "Thêm môn" — nguồn của TenMH và SoTinChi.</summary>
+        private DataRow? DongMonTrongCombo(string maMH)
+        {
+            if (maMH.Length == 0 || cboMonHoc.DataSource is not DataTable dsMon) return null;
+
+            foreach (DataRow r in dsMon.Rows)
+            {
+                if (string.Equals(r["MaMH"]?.ToString(), maMH, StringComparison.OrdinalIgnoreCase))
+                    return r;
+            }
+            return null;
         }
 
         private void BtnXoa_Click(object sender, EventArgs e)
@@ -542,9 +627,14 @@ namespace UDSV
             return ds;
         }
 
+        /// <summary>
+        /// "Thêm môn" chỉ thêm MỘT DÒNG vào bảng trong bộ nhớ — không gọi BLL, không ghi CSDL.
+        /// Luật thật (trùng môn, tổng tín chỉ của khóa đã khoá) chỉ chạy khi bấm "Lưu thay đổi".
+        /// Chặn trùng tại đây chỉ để lưới khỏi có hai dòng cùng một môn — kiểm tra cục bộ, không phải luật.
+        /// </summary>
         private void BtnThemMon_Click(object sender, EventArgs e)
         {
-            if (maDangChon.Length == 0)
+            if (maDangChon.Length == 0 || _ctFull == null)
             {
                 MessageBox.Show(this, "Hãy chọn một khóa.", "Chưa chọn",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -552,25 +642,62 @@ namespace UDSV
             }
 
             string maMH = cboMonHoc.SelectedValue?.ToString() ?? "";
-            int hocKy = HocKyChon > 0 ? HocKyChon : 1;
+            DataRow? mon = DongMonTrongCombo(maMH);
+            if (mon == null)
+            {
+                MessageBox.Show(this, "Hãy chọn một môn học để thêm.", "Chưa chọn",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            string tenMH = mon["TenMH"]?.ToString() ?? "";
+
+            foreach (DataRow r in _ctFull.Rows)
+            {
+                if (!string.Equals(r["MaMH"]?.ToString(), maMH, StringComparison.OrdinalIgnoreCase)) continue;
+
+                MessageBox.Show(this, $"Môn '{tenMH}' đã có trong chương trình.", "Không thêm được",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             try
             {
-                List<ChuongTrinhDTO> ds = DocLuoi();
-                ds.Add(new ChuongTrinhDTO(maDangChon, maMH, true, hocKy));
+                dangNap = true;
 
-                if (!ctBLL.LuuChuongTrinh(maDangChon, ds, out string error))
-                {
-                    MessageBox.Show(this, error, "Không thêm được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                TaiChuongTrinh();
+                DataRow moi = _ctFull.NewRow();
+                moi["MaKhoa"] = maDangChon;
+                moi["MaMH"] = maMH;
+                moi["TenMH"] = mon["TenMH"];
+                moi["SoTinChi"] = mon["SoTinChi"];
+                moi["BatBuoc"] = true;
+                moi["HocKy"] = HocKyChon > 0 ? HocKyChon : 1;
+                // Thứ / Tiết BĐ / Tiết KT / Giảng viên / Phòng học để trống — admin xếp lịch sau.
+                _ctFull.Rows.Add(moi);
             }
-            catch (Exception ex) { BaoLoi(ex); }
+            catch (Exception ex) { BaoLoi(ex); return; }
+            finally { dangNap = false; }
+
+            // Dòng mới mang đúng học kỳ đang lọc, nhưng vẫn lọc lại cho chắc rồi mới tính tổng.
+            ApDungLocHocKy();
+            dgvChuongTrinh.Refresh();
+            CapNhatTongTinChi();
         }
 
+        /// <summary>
+        /// "Xoá môn" chỉ bỏ MỘT DÒNG khỏi bảng trong bộ nhớ — không gọi BLL, không ghi CSDL.
+        /// Dòng lấy từ DataRowView của lưới, mà DataRowView giữ đúng DataRow của _ctFull,
+        /// nên đang lọc học kỳ hay không cũng không xoá nhầm dòng khác.
+        /// </summary>
         private void BtnXoaMon_Click(object sender, EventArgs e)
         {
+            if (maDangChon.Length == 0 || _ctFull == null)
+            {
+                MessageBox.Show(this, "Hãy chọn một khóa.", "Chưa chọn",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             if (dgvChuongTrinh.CurrentRow?.DataBoundItem is not DataRowView item)
             {
                 MessageBox.Show(this, "Hãy chọn một môn trong chương trình.", "Chưa chọn",
@@ -578,19 +705,30 @@ namespace UDSV
                 return;
             }
 
-            string maMH = item["MaMH"].ToString() ?? "";
+            DataRow dong = item.Row;
+            string tenMH = dong.Table.Columns.Contains("TenMH") && dong["TenMH"] != DBNull.Value
+                ? dong["TenMH"].ToString() ?? ""
+                : dong["MaMH"].ToString() ?? "";
+
+            if (MessageBox.Show(this,
+                    $"Xoá môn '{tenMH}' khỏi chương trình?\n" +
+                    "(Chỉ xoá trên lưới — bấm \"Lưu thay đổi\" mới ghi vào CSDL.)",
+                    "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            {
+                return;
+            }
+
             try
             {
-                List<ChuongTrinhDTO> ds = DocLuoi().FindAll(d => d.MaMH != maMH);
-
-                if (!ctBLL.LuuChuongTrinh(maDangChon, ds, out string error))
-                {
-                    MessageBox.Show(this, error, "Không xoá được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                TaiChuongTrinh();
+                dangNap = true;
+                _ctFull.Rows.Remove(dong);
             }
-            catch (Exception ex) { BaoLoi(ex); }
+            catch (Exception ex) { BaoLoi(ex); return; }
+            finally { dangNap = false; }
+
+            ApDungLocHocKy();
+            dgvChuongTrinh.Refresh();
+            CapNhatTongTinChi();
         }
 
         private void BtnLamMoi_Click(object sender, EventArgs e) => LamMoi();
