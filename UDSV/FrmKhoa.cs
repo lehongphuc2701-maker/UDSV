@@ -185,6 +185,7 @@ namespace UDSV
                     if (dgvChuongTrinh.Columns.Contains("TietBD")) dgvChuongTrinh.Columns["TietBD"].HeaderText = "Tiết BĐ";
                     if (dgvChuongTrinh.Columns.Contains("TietKT")) dgvChuongTrinh.Columns["TietKT"].HeaderText = "Tiết KT";
                     if (dgvChuongTrinh.Columns.Contains("GiangVien")) dgvChuongTrinh.Columns["GiangVien"].HeaderText = "Giảng viên";
+                    if (dgvChuongTrinh.Columns.Contains("PhongHoc")) dgvChuongTrinh.Columns["PhongHoc"].HeaderText = "Phòng học";
                 }
 
                 NapHocKy();
@@ -533,6 +534,9 @@ namespace UDSV
                     LaySo(r, "TietKT"),
                     _ctFull.Columns.Contains("GiangVien") && r["GiangVien"] != DBNull.Value
                         ? r["GiangVien"].ToString()
+                        : null,
+                    _ctFull.Columns.Contains("PhongHoc") && r["PhongHoc"] != DBNull.Value
+                        ? r["PhongHoc"].ToString()
                         : null));
             }
             return ds;

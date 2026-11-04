@@ -22,7 +22,8 @@ namespace UDSV.DAL
                        c.Thu,
                        c.TietBD,
                        c.TietKT,
-                       c.GiangVien
+                       c.GiangVien,
+                       c.PhongHoc
                 FROM ChuongTrinhChiTiet c
                 INNER JOIN MonHoc m ON m.MaMH = c.MaMH
                 WHERE c.MaKhoa = @MaKhoa
@@ -46,8 +47,8 @@ namespace UDSV.DAL
 
         public bool Them(ChuongTrinhDTO dong)
         {
-            const string query = @"INSERT INTO ChuongTrinhChiTiet (MaKhoa, MaMH, BatBuoc, HocKy, Thu, TietBD, TietKT, GiangVien)
-                                   VALUES (@MaKhoa, @MaMH, @BatBuoc, @HocKy, @Thu, @TietBD, @TietKT, @GiangVien)";
+            const string query = @"INSERT INTO ChuongTrinhChiTiet (MaKhoa, MaMH, BatBuoc, HocKy, Thu, TietBD, TietKT, GiangVien, PhongHoc)
+                                   VALUES (@MaKhoa, @MaMH, @BatBuoc, @HocKy, @Thu, @TietBD, @TietKT, @GiangVien, @PhongHoc)";
             return DatabaseHelper.ExecuteNonQuery(query, BuildParameters(dong)) == 1;
         }
 
@@ -103,8 +104,8 @@ namespace UDSV.DAL
                         foreach (ChuongTrinhDTO dong in danhSach)
                         {
                             using (SqlCommand ins = new SqlCommand(
-                                       @"INSERT INTO ChuongTrinhChiTiet (MaKhoa, MaMH, BatBuoc, HocKy, Thu, TietBD, TietKT, GiangVien)
-                                         VALUES (@MaKhoa, @MaMH, @BatBuoc, @HocKy, @Thu, @TietBD, @TietKT, @GiangVien)", conn, tx))
+                                       @"INSERT INTO ChuongTrinhChiTiet (MaKhoa, MaMH, BatBuoc, HocKy, Thu, TietBD, TietKT, GiangVien, PhongHoc)
+                                         VALUES (@MaKhoa, @MaMH, @BatBuoc, @HocKy, @Thu, @TietBD, @TietKT, @GiangVien, @PhongHoc)", conn, tx))
                             {
                                 ins.Parameters.AddWithValue("@MaKhoa", maKhoa ?? "");
                                 ins.Parameters.AddWithValue("@MaMH", dong.MaMH ?? "");
@@ -114,6 +115,7 @@ namespace UDSV.DAL
                                 ins.Parameters.AddWithValue("@TietBD", (object?)dong.TietBD ?? DBNull.Value);
                                 ins.Parameters.AddWithValue("@TietKT", (object?)dong.TietKT ?? DBNull.Value);
                                 ins.Parameters.AddWithValue("@GiangVien", (object?)dong.GiangVien ?? DBNull.Value);
+                                ins.Parameters.AddWithValue("@PhongHoc", (object?)dong.PhongHoc ?? DBNull.Value);
                                 ins.ExecuteNonQuery();
                             }
                         }
@@ -158,7 +160,8 @@ namespace UDSV.DAL
                 new SqlParameter("@Thu", SqlDbType.TinyInt) { Value = (object?)dong.Thu ?? DBNull.Value },
                 new SqlParameter("@TietBD", SqlDbType.TinyInt) { Value = (object?)dong.TietBD ?? DBNull.Value },
                 new SqlParameter("@TietKT", SqlDbType.TinyInt) { Value = (object?)dong.TietKT ?? DBNull.Value },
-                new SqlParameter("@GiangVien", SqlDbType.NVarChar, 100) { Value = (object?)dong.GiangVien ?? DBNull.Value }
+                new SqlParameter("@GiangVien", SqlDbType.NVarChar, 100) { Value = (object?)dong.GiangVien ?? DBNull.Value },
+                new SqlParameter("@PhongHoc", SqlDbType.VarChar, 50) { Value = (object?)dong.PhongHoc ?? DBNull.Value }
             };
         }
 
@@ -166,10 +169,35 @@ namespace UDSV.DAL
         /// Thời khoá biểu mẫu của một khóa + học kỳ: mỗi môn một buổi/tuần (Thứ, Tiết BĐ, Tiết KT, GV).
         /// Đây là nguồn cho lưới 7 ngày × 12 tiết.
         /// </summary>
+        /// <summary>
+        /// Chương trình của khóa trong một học kỳ, kèm điểm của sinh viên (null nếu chưa có điểm).
+        /// Dùng cho màn CT Đào tạo ở phía sinh viên.
+        /// </summary>
+        public DataTable LayChuongTrinhCoDiem(string maKhoa, int hocKy, string maSV)
+        {
+            const string query = @"
+                SELECT ct.MaMH, m.TenMH, m.SoTinChi, ct.BatBuoc,
+                       ct.Thu, ct.TietBD, ct.TietKT, ct.GiangVien, ct.PhongHoc,
+                       kq.Diem
+                FROM ChuongTrinhChiTiet ct
+                INNER JOIN MonHoc m ON m.MaMH = ct.MaMH
+                LEFT JOIN KetQua kq ON kq.MaMH = ct.MaMH AND kq.MaSV = @MaSV
+                WHERE ct.MaKhoa = @MaKhoa AND ct.HocKy = @HocKy
+                ORDER BY ct.MaMH";
+
+            SqlParameter[] ps =
+            {
+                new SqlParameter("@MaKhoa", SqlDbType.VarChar, 10) { Value = maKhoa ?? "" },
+                new SqlParameter("@HocKy", SqlDbType.TinyInt) { Value = hocKy },
+                new SqlParameter("@MaSV", SqlDbType.VarChar, 20) { Value = maSV ?? "" }
+            };
+            return DatabaseHelper.GetData(query, ps);
+        }
+
         public DataTable LayTuanMau(string maKhoa, int hocKy)
         {
             const string query = @"
-                SELECT c.MaMH, m.TenMH, c.Thu, c.TietBD, c.TietKT, c.GiangVien
+                SELECT c.MaMH, m.TenMH, c.Thu, c.TietBD, c.TietKT, c.GiangVien, c.PhongHoc
                 FROM ChuongTrinhChiTiet c
                 INNER JOIN MonHoc m ON m.MaMH = c.MaMH
                 WHERE c.MaKhoa = @MaKhoa AND c.HocKy = @HocKy AND c.Thu IS NOT NULL

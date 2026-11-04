@@ -28,6 +28,9 @@ namespace UDSV.BLL
 
         public DataTable LayDanhSachSinhVien() => svDAL.LayDanhSachSinhVien();
 
+        /// <summary>Một sinh viên theo mã (kèm tên khóa) — dùng cho màn hồ sơ của sinh viên.</summary>
+        public DataTable LayTheoMa(string maSV) => svDAL.LaySinhVienTheoMa(maSV);
+
         public DataTable TimKiemSinhVien(string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword))

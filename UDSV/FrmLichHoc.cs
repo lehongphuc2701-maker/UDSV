@@ -21,16 +21,29 @@ namespace UDSV
         private const int SoTiet = 12;
         private TableLayoutPanel? tblTuan;
 
+        /// <summary>Đang vẽ: chặn các lần gọi VeTuan() lồng nhau (mỗi lần là một lần nháy).</summary>
+        private bool _dangVe;
+
         private static readonly string[] Thu =
             { "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật" };
 
-        public FrmLichHoc()
+        /// <summary>Khóa cố định khi mở ở chế độ sinh viên (bỏ hẳn dropdown chọn khóa).</summary>
+        private readonly string? _maKhoaCoDinh;
+
+        public FrmLichHoc() : this(null) { }
+
+        public FrmLichHoc(string? maKhoaCoDinh)
         {
+            _maKhoaCoDinh = maKhoaCoDinh;
             InitializeComponent();
 
+            // Bộ lọc chuột: thấy MỌI cú click trước khi bất kỳ control nào nuốt mất.
+            // Đây là đường chắc chắn nhất để mở hộp thoại chi tiết buổi học.
+            Application.AddMessageFilter(new LocChuot(this));
+
             Load += FrmLichHoc_Load;
-            cboKhoa.SelectedIndexChanged += (s, e) => { NapKy(); VeTuan(); };
-            cboKy.SelectedIndexChanged += (s, e) => VeTuan();
+            cboKhoa.SelectedIndexChanged += (s, e) => { NapKy(); VeTuan(); };   // NapKy đã gỡ CboKy_Changed nên chỉ vẽ 1 lần
+            cboKy.SelectedIndexChanged += CboKy_Changed;
         }
 
         private void FrmLichHoc_Load(object? sender, EventArgs e)
@@ -42,6 +55,14 @@ namespace UDSV
                 cboKhoa.DataSource = khoaBLL.LayDanhSach();
                 cboKhoa.DisplayMember = "MaKhoa";
                 cboKhoa.ValueMember = "MaKhoa";
+
+                if (!string.IsNullOrWhiteSpace(_maKhoaCoDinh))
+                {
+                    // Chế độ sinh viên: khóa cố định, không cho chọn.
+                    cboKhoa.SelectedValue = _maKhoaCoDinh;
+                    cboKhoa.Visible = false;
+                    AnNhanKhoa();
+                }
 
                 NapKy();
                 VeTuan();
@@ -58,6 +79,25 @@ namespace UDSV
                 object? v = cboKy.SelectedValue;
                 if (v is DataRowView dong) v = dong["HocKy"];
                 return v != null && int.TryParse(v.ToString(), out int ky) ? ky : 0;
+            }
+        }
+
+        /// <summary>Ẩn nhãn "Khóa học" đi kèm khi dropdown khóa bị bỏ.</summary>
+        private void AnNhanKhoa()
+        {
+            foreach (Control c in TimTat(this))
+            {
+                if (c is Label l && (l.Text ?? "").Contains("Khóa học", StringComparison.OrdinalIgnoreCase))
+                    l.Visible = false;
+            }
+        }
+
+        private static System.Collections.Generic.IEnumerable<Control> TimTat(Control goc)
+        {
+            foreach (Control c in goc.Controls)
+            {
+                yield return c;
+                foreach (var x in TimTat(c)) yield return x;
             }
         }
 
@@ -93,6 +133,11 @@ namespace UDSV
                 BackColor = Color.White
             };
 
+            // Bật vẽ kép: giảm hẳn hiện tượng nháy khi dựng lại nhiều control.
+            typeof(Control)
+                .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                ?.SetValue(tblTuan, true);
+
             tblTuan.ColumnStyles.Clear();
             tblTuan.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 68));
             for (int i = 0; i < 7; i++)
@@ -102,83 +147,101 @@ namespace UDSV
 
             tblTuan.RowStyles.Clear();
             tblTuan.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
-            for (int i = 0; i < SoTiet; i++)
-            {
-                tblTuan.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / SoTiet));
-            }
+            for (int i = 0; i < SoTiet; i++) tblTuan.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / SoTiet));
 
             pnlTuan.Controls.Clear();
             pnlTuan.Controls.Add(tblTuan);
+
+            DungKhung();
         }
 
-        private void VeTuan()
+        /// <summary>
+        /// Khung cố định của lưới (ô góc + 7 cột thứ + 12 hàng tiết).
+        /// Chỉ dựng MỘT lần: trước đây mỗi lần đổi Khóa/Kỳ lại xoá và tạo lại 20 nhãn này,
+        /// cộng thêm không tạm dừng layout nên màn hình nháy nhiều lần.
+        /// </summary>
+        private void DungKhung()
         {
             if (tblTuan == null) return;
 
-            tblTuan.Controls.Clear();
-
-            // Ô góc trên bên trái: Tiết
-            var lblGocTiet = new Label
-            {
-                Text = "Tiết \\ Thứ",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font("Segoe UI", 8.5F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(71, 85, 105),
-                BackColor = Color.FromArgb(241, 245, 249)
-            };
-            tblTuan.Controls.Add(lblGocTiet, 0, 0);
-
-            // Các cột Thứ 2 đến Chủ nhật
-            for (int i = 0; i < 7; i++)
-            {
-                bool isCuoiTuan = (i >= 5);
-                var lblThu = new Label
-                {
-                    Text = Thu[i],
-                    Dock = DockStyle.Fill,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
-                    ForeColor = isCuoiTuan ? Color.FromArgb(180, 83, 9) : Color.FromArgb(30, 41, 59),
-                    BackColor = isCuoiTuan ? Color.FromArgb(254, 243, 199) : Color.FromArgb(248, 250, 252)
-                };
-                tblTuan.Controls.Add(lblThu, i + 1, 0);
-            }
-
-            // Các hàng Tiết 1 đến Tiết 12
-            for (int t = 1; t <= SoTiet; t++)
-            {
-                var lblTiet = new Label
-                {
-                    Text = $"Tiết {t}",
-                    Dock = DockStyle.Fill,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Font = new Font("Segoe UI", 8.2F, FontStyle.Regular),
-                    ForeColor = Color.FromArgb(100, 116, 139),
-                    BackColor = Color.FromArgb(248, 250, 252)
-                };
-                tblTuan.Controls.Add(lblTiet, 0, t);
-            }
-
-            if (MaKhoaChon.Length == 0 || KyChon <= 0)
-            {
-                lblThongTin.Text = "Chọn Khóa và Kỳ để xem thời khóa biểu";
-                lblThongTin.ForeColor = Color.FromArgb(100, 116, 139);
-                return;
-            }
-
+            tblTuan.SuspendLayout();
             try
             {
-                DataTable ds = ctBLL.LayTuanMau(MaKhoaChon, KyChon);
+                tblTuan.Controls.Add(new Label
+                {
+                    Text = "Tiết \\ Thứ",
+                    Dock = DockStyle.Fill,
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    Font = new Font("Segoe UI", 8.5F, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(71, 85, 105),
+                    BackColor = Color.FromArgb(241, 245, 249)
+                }, 0, 0);
+
+                for (int i = 0; i < 7; i++)
+                {
+                    bool isCuoiTuan = (i >= 5);
+                    tblTuan.Controls.Add(new Label
+                    {
+                        Text = Thu[i],
+                        Dock = DockStyle.Fill,
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+                        ForeColor = isCuoiTuan ? Color.FromArgb(180, 83, 9) : Color.FromArgb(30, 41, 59),
+                        BackColor = isCuoiTuan ? Color.FromArgb(254, 243, 199) : Color.FromArgb(248, 250, 252)
+                    }, i + 1, 0);
+                }
+
+                for (int t = 1; t <= SoTiet; t++)
+                {
+                    tblTuan.Controls.Add(new Label
+                    {
+                        Text = $"Tiết {t}",
+                        Dock = DockStyle.Fill,
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Font = new Font("Segoe UI", 8.2F, FontStyle.Regular),
+                        ForeColor = Color.FromArgb(100, 116, 139),
+                        BackColor = Color.FromArgb(248, 250, 252)
+                    }, 0, t);
+                }
+            }
+            finally { tblTuan.ResumeLayout(false); }
+        }
+
+        /// <summary>Chỉ thay các khối buổi học; khung lưới giữ nguyên nên không nháy.</summary>
+        private void VeTuan()
+        {
+            if (tblTuan == null || _dangVe) return;
+
+            _dangVe = true;
+            tblTuan.SuspendLayout();
+            try
+            {
+                // Bỏ các khối cũ (control có Tag là DataRow), giữ khung.
+                for (int i = tblTuan.Controls.Count - 1; i >= 0; i--)
+                {
+                    if (tblTuan.Controls[i].Tag is DataRow) tblTuan.Controls.RemoveAt(i);
+                }
+
+                string maKhoa = MaKhoaChon;
+                int ky = KyChon;
+
+                if (maKhoa.Length == 0 || ky <= 0)
+                {
+                    lblThongTin.Text = "Chọn Khóa và Kỳ để xem thời khóa biểu";
+                    lblThongTin.ForeColor = Color.FromArgb(100, 116, 139);
+                    return;
+                }
+
+                DataTable ds = ctBLL.LayTuanMau(maKhoa, ky);
 
                 if (ds.Rows.Count == 0)
                 {
-                    lblThongTin.Text = $"Khóa {MaKhoaChon} - Kỳ {KyChon}: Chưa có lịch học mẫu";
+                    lblThongTin.Text = $"Khóa {maKhoa} - Kỳ {ky}: Chưa có lịch học mẫu";
                     lblThongTin.ForeColor = Color.FromArgb(239, 68, 68);
                     return;
                 }
 
-                lblThongTin.Text = $"Khóa {MaKhoaChon} - Kỳ {KyChon}: Có {ds.Rows.Count} buổi học / tuần";
+                lblThongTin.Text = $"Khóa {maKhoa} - Kỳ {ky}: Có {ds.Rows.Count} buổi học / tuần";
                 lblThongTin.ForeColor = Color.FromArgb(5, 150, 105);
 
                 foreach (DataRow r in ds.Rows)
@@ -199,13 +262,18 @@ namespace UDSV
                 }
             }
             catch (Exception ex) { BaoLoi(ex); }
+            finally
+            {
+                tblTuan.ResumeLayout(true);
+                _dangVe = false;
+            }
         }
-
         /// <summary>Khối lịch học hiển thị dạng Card phẳng với màu nhấn trang nhã</summary>
-        private static Panel TaoKhoi(DataRow r)
+        private Panel TaoKhoi(DataRow r)
         {
             string tenMon = r["TenMH"]?.ToString() ?? "";
             string gv = r["GiangVien"] == DBNull.Value ? "" : r["GiangVien"]?.ToString() ?? "";
+            string phong = r["PhongHoc"] == DBNull.Value ? "" : r["PhongHoc"]?.ToString() ?? "";
             int tietBD = Convert.ToInt32(r["TietBD"]);
             int tietKT = Convert.ToInt32(r["TietKT"]);
             string tiet = $"Tiết {tietBD} - {tietKT}";
@@ -265,9 +333,9 @@ namespace UDSV
                 e.Graphics.FillRectangle(barBrush, 0, 0, 4, khoi.Height);
             };
 
-            string thongTinHien = string.IsNullOrWhiteSpace(gv)
-                ? $"{tenMon}\n({tiet})"
-                : $"{tenMon}\n({tiet})\n👤 {gv}";
+            string thongTinHien = $"{tenMon}\n({tiet})";
+            if (!string.IsNullOrWhiteSpace(phong)) thongTinHien += $"\n🏫 {phong}";
+            if (!string.IsNullOrWhiteSpace(gv)) thongTinHien += $"\n👤 {gv}";
 
             var lblContent = new Label
             {
@@ -280,6 +348,13 @@ namespace UDSV
             };
 
             khoi.Controls.Add(lblContent);
+
+            // Bấm vào khối (hoặc vào nhãn nằm trên khối) để xem đầy đủ thông tin.
+            khoi.Tag = r;
+            khoi.Cursor = Cursors.Hand;
+            lblContent.Cursor = Cursors.Hand;
+            khoi.Click += Khoi_Click;
+            lblContent.Click += Khoi_Click;
             return khoi;
         }
 
@@ -287,6 +362,72 @@ namespace UDSV
         {
             AppLog.For<FrmLichHoc>().LogError(ex, "Lỗi ở màn thời khoá biểu");
             MessageBox.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        /// <summary>Bấm vào một buổi học: hiện hộp thoại đầy đủ (khối nhỏ hay bị cắt chữ).</summary>
+        private void Khoi_Click(object? sender, EventArgs e)
+        {
+            if ((sender as Control)?.Tag is not DataRow r) return;
+            HienChiTiet(r);
+        }
+
+        /// <summary>Hiện hộp thoại đầy đủ cho một buổi học.</summary>
+        internal void HienChiTiet(DataRow r)
+        {
+
+            string tenMon = r["TenMH"]?.ToString() ?? "";
+            string maMH = r["MaMH"]?.ToString() ?? "";
+            int thu = Convert.ToInt32(r["Thu"]);
+            string thuTen = thu == 8 ? "Chủ nhật" : $"Thứ {thu}";
+            string gv = r["GiangVien"] == DBNull.Value ? "(chưa phân công)" : r["GiangVien"]?.ToString() ?? "";
+            string phong = r["PhongHoc"] == DBNull.Value ? "(chưa xếp phòng)" : r["PhongHoc"]?.ToString() ?? "";
+
+            string noiDung =
+                $"Môn học     : {tenMon}\r\n" +
+                $"Mã môn      : {maMH}\r\n" +
+                $"Lớp         : {MaKhoaChon} — Học kỳ {KyChon}\r\n" +
+                $"Thứ         : {thuTen}\r\n" +
+                $"Tiết        : {r["TietBD"]} - {r["TietKT"]}\r\n" +
+                $"Phòng học   : {phong}\r\n" +
+                $"Giảng viên  : {gv}";
+
+            MessageBox.Show(this, noiDung, "Chi tiết buổi học",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>Bắt WM_LBUTTONUP ở tầng ứng dụng rồi tự tìm khối dưới con trỏ.</summary>
+        private sealed class LocChuot : IMessageFilter
+        {
+            private const int WM_LBUTTONUP = 0x0202;
+            private readonly FrmLichHoc _form;
+
+            public LocChuot(FrmLichHoc form) { _form = form; }
+
+            public bool PreFilterMessage(ref Message m)
+            {
+                if (m.Msg != WM_LBUTTONUP) return false;
+
+                var diem = Cursor.Position;
+                foreach (Control c in TimTat(_form))
+                {
+                    if (c is Panel p && p.Tag is DataRow r &&
+                        p.RectangleToScreen(p.ClientRectangle).Contains(diem))
+                    {
+                        _form.HienChiTiet(r);
+                        return true;      // nuốt luôn, tránh mở hai lần
+                    }
+                }
+                return false;
+            }
+
+            private static System.Collections.Generic.IEnumerable<Control> TimTat(Control goc)
+            {
+                foreach (Control c in goc.Controls)
+                {
+                    yield return c;
+                    foreach (var x in TimTat(c)) yield return x;
+                }
+            }
         }
     }
 }
