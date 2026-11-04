@@ -260,4 +260,155 @@ namespace UDSV.Controls
             }
         }
     }
+
+    // ══════════════════════════════════════════════
+    //  FEATURE CARD BUTTON - Thẻ chức năng Dashboard
+    // ══════════════════════════════════════════════
+    public class FeatureCardButton : Button
+    {
+        public string Title { get; set; } = "Tiêu đề";
+        public string Description { get; set; } = "Mô tả chức năng";
+        public string IconText { get; set; } = "📁";
+        public Color AccentColor { get; set; } = Color.FromArgb(79, 70, 229);
+        public int Radius { get; set; } = 14;
+        private bool _hover;
+
+        public FeatureCardButton()
+        {
+            FlatStyle = FlatStyle.Flat;
+            FlatAppearance.BorderSize = 0;
+            FlatAppearance.MouseOverBackColor = Color.Transparent;
+            FlatAppearance.MouseDownBackColor = Color.Transparent;
+            BackColor = Color.White;
+            Cursor = Cursors.Hand;
+            Size = new Size(345, 96);
+            DoubleBuffered = true;
+            SetStyle(
+                ControlStyles.AllPaintingInWmPaint |
+                ControlStyles.UserPaint |
+                ControlStyles.OptimizedDoubleBuffer |
+                ControlStyles.ResizeRedraw, true);
+        }
+
+        private static GraphicsPath RoundRect(Rectangle r, int rad)
+        {
+            rad = Math.Min(rad, Math.Min(r.Width, r.Height) / 2);
+            var path = new GraphicsPath();
+            int d = rad * 2;
+            path.AddArc(r.X, r.Y, d, d, 180, 90);
+            path.AddArc(r.Right - d, r.Y, d, d, 270, 90);
+            path.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
+            path.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            var g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+
+            // Xóa nền theo cha
+            g.Clear(Parent?.BackColor ?? Color.FromArgb(243, 244, 246));
+
+            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
+            using var cardPath = RoundRect(rect, Radius);
+
+            // Nền thẻ: màu trắng hoặc ánh màu nhẹ khi hover
+            Color bg = _hover ? Color.FromArgb(252, 253, 255) : Color.White;
+            using (var brush = new SolidBrush(bg))
+            {
+                g.FillPath(brush, cardPath);
+            }
+
+            // Viền thẻ
+            Color borderColor = _hover ? AccentColor : Color.FromArgb(226, 232, 240);
+            float borderWidth = _hover ? 1.8f : 1.2f;
+            using (var pen = new Pen(borderColor, borderWidth))
+            {
+                g.DrawPath(pen, cardPath);
+            }
+
+            // Dải màu nhấn bên trái
+            int barWidth = _hover ? 5 : 4;
+            var barRect = new Rectangle(0, 0, barWidth, Height);
+            using (var clipPath = RoundRect(rect, Radius))
+            {
+                var oldClip = g.Clip;
+                g.SetClip(clipPath);
+                using (var barBrush = new SolidBrush(AccentColor))
+                {
+                    g.FillRectangle(barBrush, 0, 0, barWidth, Height);
+                }
+                g.Clip = oldClip;
+            }
+
+            // Hộp chứa Icon
+            int iconBoxSize = 48;
+            int iconBoxX = 16;
+            int iconBoxY = (Height - iconBoxSize) / 2;
+            var iconRect = new Rectangle(iconBoxX, iconBoxY, iconBoxSize, iconBoxSize);
+            using (var iconPath = RoundRect(iconRect, 10))
+            {
+                Color iconBg = _hover ? AccentColor : Color.FromArgb(20, AccentColor);
+                using var iconBrush = new SolidBrush(iconBg);
+                g.FillPath(iconBrush, iconPath);
+            }
+
+            // Vẽ Icon (emoji)
+            using (var iconFont = new Font("Segoe UI Emoji", 17f, FontStyle.Regular))
+            {
+                Color iconColor = _hover ? Color.White : AccentColor;
+                TextRenderer.DrawText(g, IconText, iconFont, iconRect, iconColor,
+                    TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+            }
+
+            // Văn bản: Tiêu đề và Mô tả
+            int textLeft = iconBoxX + iconBoxSize + 14;
+            int textRight = Width - (_hover ? 30 : 16);
+            int textWidth = Math.Max(20, textRight - textLeft);
+
+            int titleY = iconBoxY + 3;
+            using (var titleFont = new Font("Segoe UI", 10.5f, FontStyle.Bold))
+            {
+                Color titleColor = _hover ? AccentColor : Color.FromArgb(30, 41, 59);
+                var titleRect = new Rectangle(textLeft, titleY, textWidth, 22);
+                TextRenderer.DrawText(g, Title, titleFont, titleRect, titleColor,
+                    TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis);
+            }
+
+            int descY = titleY + 23;
+            using (var descFont = new Font("Segoe UI", 8.5f, FontStyle.Regular))
+            {
+                Color descColor = Color.FromArgb(100, 116, 139);
+                var descRect = new Rectangle(textLeft, descY, textWidth, Height - descY - 4);
+                TextRenderer.DrawText(g, Description, descFont, descRect, descColor,
+                    TextFormatFlags.Left | TextFormatFlags.Top | TextFormatFlags.WordBreak | TextFormatFlags.EndEllipsis);
+            }
+
+            // Mũi tên tương tác khi rê chuột
+            if (_hover)
+            {
+                using var arrowFont = new Font("Segoe UI", 12f, FontStyle.Bold);
+                var arrowRect = new Rectangle(Width - 26, 0, 20, Height);
+                TextRenderer.DrawText(g, "→", arrowFont, arrowRect, AccentColor,
+                    TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+            }
+        }
+
+        protected override void OnMouseEnter(EventArgs e)
+        {
+            _hover = true;
+            Invalidate();
+            base.OnMouseEnter(e);
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            _hover = false;
+            Invalidate();
+            base.OnMouseLeave(e);
+        }
+    }
 }

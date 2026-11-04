@@ -37,8 +37,24 @@ namespace UDSV
         private void FrmTrangChu_Load(object? sender, EventArgs e)
         {
             lblXinChao.Text = taiKhoanHienTai == null
-                ? "Xin chào!"
+                ? "Xin chào, Quý khách!"
                 : $"Xin chào, {taiKhoanHienTai.HoTen}!";
+
+            lblVaiTro.Text = taiKhoanHienTai == null
+                ? "Khách vãng lai"
+                : $"Vai trò: {taiKhoanHienTai.VaiTro}";
+
+            try
+            {
+                var ci = new System.Globalization.CultureInfo("vi-VN");
+                lblNgayThang.Text = "📅 " + char.ToUpper(DateTime.Now.ToString("dddd", ci)[0])
+                    + DateTime.Now.ToString("dddd", ci).Substring(1)
+                    + DateTime.Now.ToString(", 'ngày' dd/MM/yyyy", ci);
+            }
+            catch
+            {
+                lblNgayThang.Text = "📅 " + DateTime.Now.ToString("dd/MM/yyyy");
+            }
         }
 
         private void BtnSinhVien_Click(object? sender, EventArgs e)
