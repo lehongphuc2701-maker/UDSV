@@ -40,8 +40,6 @@ namespace UDSV
             btnXoa = new System.Windows.Forms.Button();
             btnSua = new System.Windows.Forms.Button();
             btnThem = new UDSV.Controls.GradientButton();
-            txtGiangVien = new System.Windows.Forms.TextBox();
-            label5 = new System.Windows.Forms.Label();
             txtSoTinChi = new System.Windows.Forms.TextBox();
             label4 = new System.Windows.Forms.Label();
             txtTenMH = new System.Windows.Forms.TextBox();
@@ -86,7 +84,7 @@ namespace UDSV
             lblSub.Name = "lblSub";
             lblSub.Size = new System.Drawing.Size(384, 20);
             lblSub.TabIndex = 2;
-            lblSub.Text = "Quản lý danh mục học phần, số tín chỉ và giảng viên phụ trách";
+            lblSub.Text = "Quản lý danh mục học phần và số tín chỉ";
             // 
             // label1
             // 
@@ -120,8 +118,6 @@ namespace UDSV
             cardForm.Controls.Add(btnXoa);
             cardForm.Controls.Add(btnSua);
             cardForm.Controls.Add(btnThem);
-            cardForm.Controls.Add(txtGiangVien);
-            cardForm.Controls.Add(label5);
             cardForm.Controls.Add(txtSoTinChi);
             cardForm.Controls.Add(label4);
             cardForm.Controls.Add(txtTenMH);
@@ -199,28 +195,6 @@ namespace UDSV
             btnThem.TabIndex = 9;
             btnThem.Text = "＋ Thêm mới";
             btnThem.UseVisualStyleBackColor = false;
-            // 
-            // txtGiangVien
-            // 
-            txtGiangVien.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            txtGiangVien.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            txtGiangVien.Font = new System.Drawing.Font("Segoe UI", 10F);
-            txtGiangVien.Location = new System.Drawing.Point(770, 60);
-            txtGiangVien.Name = "txtGiangVien";
-            txtGiangVien.PlaceholderText = "Tên giảng viên (nếu có)";
-            txtGiangVien.Size = new System.Drawing.Size(312, 30);
-            txtGiangVien.TabIndex = 8;
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            label5.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            label5.Location = new System.Drawing.Point(770, 37);
-            label5.Name = "label5";
-            label5.Size = new System.Drawing.Size(155, 20);
-            label5.TabIndex = 7;
-            label5.Text = "Giảng viên phụ trách";
             // 
             // txtSoTinChi
             // 
@@ -462,8 +436,6 @@ namespace UDSV
         private System.Windows.Forms.TextBox txtTenMH;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtSoTinChi;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox txtGiangVien;
         private Controls.GradientButton btnThem;
         private System.Windows.Forms.Button btnSua;
         private System.Windows.Forms.Button btnXoa;

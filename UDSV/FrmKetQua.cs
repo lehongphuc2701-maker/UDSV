@@ -29,6 +29,73 @@ namespace UDSV
             cboMonHoc.SelectedIndexChanged += CboMonHoc_Changed;
             btnLuu.Click += BtnLuu_Click;
             btnLamMoi.Click += (s, e) => TaiBangDiem();
+
+            // Chặn lỗi định dạng ngay khi rời ô, và bắt luôn mọi lỗi còn sót của lưới
+            // để không hiện hộp thoại đỏ mặc định của WinForms.
+            dgvBangDiem.CellValidating += DgvBangDiem_CellValidating;
+            dgvBangDiem.DataError += DgvBangDiem_DataError;
+        }
+
+        /// <summary>
+        /// Kiểm tra ô Điểm ngay khi người dùng rời ô: phải là số từ 0 đến 4, hoặc để trống.
+        /// Chặn tại đây thì lưới không bao giờ nhận giá trị sai, nên không sinh lỗi định dạng.
+        /// </summary>
+        private void DgvBangDiem_CellValidating(object? sender, DataGridViewCellValidatingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+            if (dgvBangDiem.Columns[e.ColumnIndex].Name != "Diem") return;
+
+            string nhap = Convert.ToString(e.FormattedValue)?.Trim() ?? "";
+            if (nhap.Length == 0) return;              // để trống = chưa có điểm
+
+            if (!ThuDocSo(nhap, out decimal diem))
+            {
+                BaoNhapSai(e, $"Bạn đã nhập sai định dạng cho điểm: \"{nhap}\".\n\n" +
+                             "Điểm phải là số từ 0 đến 4 (ví dụ 3.2). Để trống nếu chưa có điểm.");
+                return;
+            }
+
+            if (diem < 0m || diem > 4m)
+            {
+                BaoNhapSai(e, $"Điểm {diem:0.0#} nằm ngoài khoảng cho phép.\n\n" +
+                             "Điểm chỉ nhận giá trị từ 0 đến 4.");
+            }
+        }
+
+        /// <summary>Báo lỗi tại chỗ: giữ nguyên ô để sửa, hiện thông báo, không làm hỏng dữ liệu.</summary>
+        private void BaoNhapSai(DataGridViewCellValidatingEventArgs e, string thongBao)
+        {
+            e.Cancel = true;
+            dgvBangDiem.Rows[e.RowIndex].ErrorText = "Điểm không hợp lệ";
+            MessageBox.Show(this, thongBao, "Điểm không hợp lệ",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        /// <summary>Đọc số theo cả kiểu Việt Nam (dấu phẩy) và kiểu Anh (dấu chấm).</summary>
+        private static bool ThuDocSo(string chuoi, out decimal so)
+        {
+            if (decimal.TryParse(chuoi, System.Globalization.NumberStyles.Number,
+                                 System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), out so))
+                return true;
+
+            return decimal.TryParse(chuoi, System.Globalization.NumberStyles.Number,
+                                    System.Globalization.CultureInfo.InvariantCulture, out so);
+        }
+
+        /// <summary>
+        /// Lưới báo lỗi: nuốt lỗi mặc định của WinForms và hiện thông báo tiếng Việt thay thế.
+        /// </summary>
+        private void DgvBangDiem_DataError(object? sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.ThrowException = false;
+            e.Cancel = true;
+
+            if (e.RowIndex >= 0) dgvBangDiem.Rows[e.RowIndex].ErrorText = "";
+
+            MessageBox.Show(this,
+                "Bạn đã nhập sai định dạng cho điểm.\n\n" +
+                "Điểm phải là số từ 0 đến 4 (ví dụ 3.2). Để trống nếu chưa có điểm.",
+                "Điểm không hợp lệ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private string MaKhoaChon => LayGiaTri(cboKhoa, "MaKhoa");

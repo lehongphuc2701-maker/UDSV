@@ -13,6 +13,12 @@ namespace UDSV
         private DataTable? dtMonHoc;
         private string maDangChon = "";
 
+        /// <summary>
+        /// Giảng viên của môn — màn này không còn ô nhập (giảng viên thuộc lớp của khóa),
+        /// nhưng phải giữ nguyên giá trị cũ khi sửa, nếu không cột GiangVien sẽ bị ghi đè thành rỗng.
+        /// </summary>
+        private string _giangVienCu = "";
+
         public FrmMonHoc()
         {
             InitializeComponent();
@@ -122,7 +128,7 @@ namespace UDSV
                 MaMH = txtMaMH.Text.Trim(),
                 TenMH = txtTenMH.Text.Trim(),
                 SoTinChi = soTinChi,
-                GiangVien = txtGiangVien.Text.Trim()
+                GiangVien = _giangVienCu
             };
         }
 
@@ -270,10 +276,9 @@ namespace UDSV
             txtTenMH.Text = item["TenMH"].ToString() ?? "";
             txtSoTinChi.Text = item["SoTinChi"].ToString() ?? "";
 
-            if (item.Row.Table.Columns.Contains("GiangVien"))
-            {
-                txtGiangVien.Text = item["GiangVien"].ToString() ?? "";
-            }
+            _giangVienCu = item.Row.Table.Columns.Contains("GiangVien") && item["GiangVien"] != DBNull.Value
+                ? item["GiangVien"].ToString() ?? ""
+                : "";
 
             txtMaMH.ReadOnly = true;
         }
@@ -286,7 +291,7 @@ namespace UDSV
             txtMaMH.Clear();
             txtTenMH.Clear();
             txtSoTinChi.Clear();
-            txtGiangVien.Clear();
+
             txtTimKiem.Clear();
             txtMaMH.ReadOnly = false;
             dgvMonHoc.ClearSelection();
