@@ -72,7 +72,6 @@ namespace UDSV
                 Font = new Font("Segoe UI", 10F)
             };
             header.Controls.Add(phu);
-            Controls.Add(header);
 
             // ---- thanh lọc học kỳ ----
             var loc = new Panel { Dock = DockStyle.Top, Height = 58, BackColor = Color.White, Padding = new Padding(28, 14, 28, 8) };
@@ -115,7 +114,6 @@ namespace UDSV
             };
             loc.Controls.Add(ghiChu);
             loc.Resize += (s, e) => ghiChu.Location = new Point(loc.Width - ghiChu.Width - 28, 20);
-            Controls.Add(loc);
 
             // ---- lưới ----
             dgv = new DataGridView
@@ -138,7 +136,15 @@ namespace UDSV
             dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(49, 46, 129);
             dgv.EnableHeadersVisualStyles = false;
             dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
-            Controls.Add(dgv);
+            dgv.ColumnHeadersHeight = 42;
+            dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dgv.RowTemplate.Height = 34;
+
+            // Giống lưới bên màn quản trị: tiêu đề tím, chữ trắng.
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(109, 76, 219);
+            dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(109, 76, 219);
+            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(4, 0, 4, 0);
 
             // ---- dòng tổng kết ----
             var footer = new Panel { Dock = DockStyle.Bottom, Height = 54, BackColor = Color.White };
@@ -151,7 +157,12 @@ namespace UDSV
                 ForeColor = Color.FromArgb(30, 41, 59)
             };
             footer.Controls.Add(lblTong);
+
+            // Thứ tự thêm quyết định thứ tự dock: Fill trước, rồi Bottom, rồi Top (Top sau cùng nằm trên cùng).
+            Controls.Add(dgv);
             Controls.Add(footer);
+            Controls.Add(loc);
+            Controls.Add(header);
 
             Load += (s, e) => { ChonHocKyMacDinh(); NapLuoi(); };
         }
