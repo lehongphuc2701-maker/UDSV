@@ -202,7 +202,7 @@ namespace UDSV
         }
 
         /// <summary>Khối lịch học hiển thị dạng Card phẳng với màu nhấn trang nhã</summary>
-        private static Panel TaoKhoi(DataRow r)
+        private Panel TaoKhoi(DataRow r)
         {
             string tenMon = r["TenMH"]?.ToString() ?? "";
             string gv = r["GiangVien"] == DBNull.Value ? "" : r["GiangVien"]?.ToString() ?? "";
@@ -281,6 +281,13 @@ namespace UDSV
             };
 
             khoi.Controls.Add(lblContent);
+
+            // Bấm vào khối (hoặc vào nhãn nằm trên khối) để xem đầy đủ thông tin.
+            khoi.Tag = r;
+            khoi.Cursor = Cursors.Hand;
+            lblContent.Cursor = Cursors.Hand;
+            khoi.Click += Khoi_Click;
+            lblContent.Click += Khoi_Click;
             return khoi;
         }
 
@@ -288,6 +295,31 @@ namespace UDSV
         {
             AppLog.For<FrmLichHoc>().LogError(ex, "Lỗi ở màn thời khoá biểu");
             MessageBox.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        /// <summary>Bấm vào một buổi học: hiện hộp thoại đầy đủ (khối nhỏ hay bị cắt chữ).</summary>
+        private void Khoi_Click(object? sender, EventArgs e)
+        {
+            if ((sender as Control)?.Tag is not DataRow r) return;
+
+            string tenMon = r["TenMH"]?.ToString() ?? "";
+            string maMH = r["MaMH"]?.ToString() ?? "";
+            int thu = Convert.ToInt32(r["Thu"]);
+            string thuTen = thu == 8 ? "Chủ nhật" : $"Thứ {thu}";
+            string gv = r["GiangVien"] == DBNull.Value ? "(chưa phân công)" : r["GiangVien"]?.ToString() ?? "";
+            string phong = r["PhongHoc"] == DBNull.Value ? "(chưa xếp phòng)" : r["PhongHoc"]?.ToString() ?? "";
+
+            string noiDung =
+                $"Môn học     : {tenMon}\r\n" +
+                $"Mã môn      : {maMH}\r\n" +
+                $"Lớp         : {MaKhoaChon} — Học kỳ {KyChon}\r\n" +
+                $"Thứ         : {thuTen}\r\n" +
+                $"Tiết        : {r["TietBD"]} - {r["TietKT"]}\r\n" +
+                $"Phòng học   : {phong}\r\n" +
+                $"Giảng viên  : {gv}";
+
+            MessageBox.Show(this, noiDung, "Chi tiết buổi học",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
