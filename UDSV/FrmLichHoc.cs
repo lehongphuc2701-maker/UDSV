@@ -206,6 +206,7 @@ namespace UDSV
         {
             string tenMon = r["TenMH"]?.ToString() ?? "";
             string gv = r["GiangVien"] == DBNull.Value ? "" : r["GiangVien"]?.ToString() ?? "";
+            string phong = r["PhongHoc"] == DBNull.Value ? "" : r["PhongHoc"]?.ToString() ?? "";
             int tietBD = Convert.ToInt32(r["TietBD"]);
             int tietKT = Convert.ToInt32(r["TietKT"]);
             string tiet = $"Tiết {tietBD} - {tietKT}";
@@ -265,9 +266,9 @@ namespace UDSV
                 e.Graphics.FillRectangle(barBrush, 0, 0, 4, khoi.Height);
             };
 
-            string thongTinHien = string.IsNullOrWhiteSpace(gv)
-                ? $"{tenMon}\n({tiet})"
-                : $"{tenMon}\n({tiet})\n👤 {gv}";
+            string thongTinHien = $"{tenMon}\n({tiet})";
+            if (!string.IsNullOrWhiteSpace(phong)) thongTinHien += $"\n🏫 {phong}";
+            if (!string.IsNullOrWhiteSpace(gv)) thongTinHien += $"\n👤 {gv}";
 
             var lblContent = new Label
             {

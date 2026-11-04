@@ -27,10 +27,14 @@ namespace UDSV.DTO
         /// <summary>Giảng viên dạy lớp này của khóa (không phải thông tin chung của môn).</summary>
         public string GiangVien { get; set; }
 
+        /// <summary>Phòng học của buổi hằng tuần.</summary>
+        public string PhongHoc { get; set; }
+
         public ChuongTrinhDTO() { }
 
         public ChuongTrinhDTO(string maKhoa, string maMH, bool batBuoc, int hocKy = 1,
-                              int? thu = null, int? tietBD = null, int? tietKT = null, string giangVien = null)
+                              int? thu = null, int? tietBD = null, int? tietKT = null,
+                              string giangVien = null, string phongHoc = null)
         {
             MaKhoa = maKhoa;
             MaMH = maMH;
@@ -40,6 +44,7 @@ namespace UDSV.DTO
             TietBD = tietBD;
             TietKT = tietKT;
             GiangVien = giangVien;
+            PhongHoc = phongHoc;
         }
     }
 }
