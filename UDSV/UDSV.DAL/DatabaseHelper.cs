@@ -19,9 +19,8 @@ namespace UDSV.DAL
         // Chuỗi kết nối mặc định của nhóm (SQL Server Express trên máy từng thành viên).
         // Muốn đổi mà không sửa code: đặt biến môi trường UDSV_CONNECTION trước khi chạy.
         private static readonly string ConnectionString =
-            Environment.GetEnvironmentVariable("UDSV_CONNECTION")
-            ?? @"Server=localhost\SQLEXPRESS05;Database=DETAI;Integrated Security=True;TrustServerCertificate=True;";
-
+    Environment.GetEnvironmentVariable("UDSV_CONNECTION")
+    ?? @"Server=.\SQL2022;Database=DETAI;Integrated Security=True;TrustServerCertificate=True;";
         public static SqlConnection GetConnection()
         {
             return new SqlConnection(ConnectionString);

@@ -13,6 +13,7 @@ namespace UDSV
     public partial class FrmSinhVien : Form
     {
         private readonly SinhVienBLL bll = new SinhVienBLL();
+        private readonly KhoaBLL khoaBLL = new KhoaBLL();
 
         // Mã của dòng đang chọn; rỗng nghĩa là đang ở chế độ thêm mới
         private string maDangChon = "";
@@ -48,10 +49,31 @@ namespace UDSV
             dgvSinhVien.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
-        private void FrmSinhVien_Load(object sender, EventArgs e)
+        private void FrmSinhVien_Load(object? sender, EventArgs e)
         {
+            NapComboKhoa();
             cboGioiTinh.SelectedIndex = 0;
             TaiDuLieu();
+        }
+
+        /// <summary>Nạp danh sách khóa học vào ComboBox để chọn</summary>
+        private void NapComboKhoa()
+        {
+            try
+            {
+                DataTable dtKhoa = khoaBLL.LayDanhSach();
+                if (!dtKhoa.Columns.Contains("HienThi"))
+                {
+                    dtKhoa.Columns.Add("HienThi", typeof(string), "MaKhoa + ' - ' + TenKhoa");
+                }
+                cboMaKhoa.DataSource = dtKhoa;
+                cboMaKhoa.DisplayMember = "HienThi";
+                cboMaKhoa.ValueMember = "MaKhoa";
+            }
+            catch (Exception ex)
+            {
+                BaoLoi(ex);
+            }
         }
 
         // ---------- Nạp dữ liệu ----------
@@ -74,7 +96,7 @@ namespace UDSV
             }
         }
 
-        /// <summary>Đổi tên cột tiếng Anh của bảng thành tiêu đề tiếng Việt cho dễ đọc.</summary>
+        /// <summary>Đổi tên cột của bảng thành tiêu đề tiếng Việt cho dễ đọc.</summary>
         private void DatTieuDeCot()
         {
             if (dgvSinhVien.Columns.Count == 0) return;
@@ -87,7 +109,7 @@ namespace UDSV
                 dgvSinhVien.Columns["NgaySinh"].DefaultCellStyle.Format = "dd/MM/yyyy";
             }
             if (dgvSinhVien.Columns.Contains("GioiTinh")) dgvSinhVien.Columns["GioiTinh"].HeaderText = "Giới tính";
-            if (dgvSinhVien.Columns.Contains("MaKhoa")) dgvSinhVien.Columns["MaKhoa"].HeaderText = "Khóa";
+            if (dgvSinhVien.Columns.Contains("MaKhoa")) dgvSinhVien.Columns["MaKhoa"].HeaderText = "Mã khóa";
             if (dgvSinhVien.Columns.Contains("TenKhoa")) dgvSinhVien.Columns["TenKhoa"].HeaderText = "Tên khóa";
             if (dgvSinhVien.Columns.Contains("SDT")) dgvSinhVien.Columns["SDT"].HeaderText = "SĐT";
         }
@@ -102,15 +124,14 @@ namespace UDSV
                 HoTen = txtHoTen.Text,
                 NgaySinh = dtpNgaySinh.Value,
                 GioiTinh = cboGioiTinh.Text,
-                // Ô nhập cũ tên "Lớp" nay giữ MÃ KHÓA (K24, K25). Nhãn sẽ đổi ở bước hoàn thiện giao diện.
-                MaKhoa = txtLop.Text,
+                MaKhoa = cboMaKhoa.SelectedValue?.ToString() ?? cboMaKhoa.Text.Trim(),
                 SDT = txtSDT.Text
             };
         }
 
         // ---------- Sự kiện nút ----------
 
-        private void BtnThem_Click(object sender, EventArgs e)
+        private void BtnThem_Click(object? sender, EventArgs e)
         {
             try
             {
@@ -131,7 +152,7 @@ namespace UDSV
             }
         }
 
-        private void BtnSua_Click(object sender, EventArgs e)
+        private void BtnSua_Click(object? sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(maDangChon))
             {
@@ -159,7 +180,7 @@ namespace UDSV
             }
         }
 
-        private void BtnXoa_Click(object sender, EventArgs e)
+        private void BtnXoa_Click(object? sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(maDangChon))
             {
@@ -196,17 +217,17 @@ namespace UDSV
             }
         }
 
-        private void BtnLamMoi_Click(object sender, EventArgs e)
+        private void BtnLamMoi_Click(object? sender, EventArgs e)
         {
             LamMoi();
         }
 
-        private void BtnTimKiem_Click(object sender, EventArgs e)
+        private void BtnTimKiem_Click(object? sender, EventArgs e)
         {
             TaiDuLieu(txtTimKiem.Text);
         }
 
-        private void TxtTimKiem_KeyDown(object sender, KeyEventArgs e)
+        private void TxtTimKiem_KeyDown(object? sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -215,7 +236,7 @@ namespace UDSV
             }
         }
 
-        private void DgvSinhVien_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void DgvSinhVien_CellClick(object? sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
 
@@ -225,7 +246,7 @@ namespace UDSV
             maDangChon = item["MaSV"].ToString() ?? "";
             txtMaSV.Text = maDangChon;
             txtHoTen.Text = item["HoTen"].ToString() ?? "";
-            txtLop.Text = item["MaKhoa"].ToString() ?? "";
+            cboMaKhoa.SelectedValue = item["MaKhoa"].ToString() ?? "";
             txtSDT.Text = item["SDT"].ToString() ?? "";
 
             string gioiTinh = item["GioiTinh"].ToString() ?? "";
@@ -249,7 +270,10 @@ namespace UDSV
             maDangChon = "";
             txtMaSV.Clear();
             txtHoTen.Clear();
-            txtLop.Clear();
+            if (cboMaKhoa.Items.Count > 0)
+                cboMaKhoa.SelectedIndex = 0;
+            else
+                cboMaKhoa.SelectedIndex = -1;
             txtSDT.Clear();
             txtTimKiem.Clear();
             txtMaSV.ReadOnly = false;
