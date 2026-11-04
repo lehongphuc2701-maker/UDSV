@@ -14,156 +14,342 @@ namespace UDSV
 
         private void InitializeComponent()
         {
-            label1 = new Label();
-            groupBox1 = new GroupBox();
-            labelKhoa = new Label();
-            cboKhoa = new ComboBox();
-            labelKy = new Label();
-            cboKy = new ComboBox();
-            labelMon = new Label();
-            cboMonHoc = new ComboBox();
-            btnLuu = new Button();
-            lblThongTin = new Label();
-            dgvBangDiem = new DataGridView();
-            groupBox1.SuspendLayout();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            pnlHeader = new UDSV.Controls.GradientPanel();
+            lblSub = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
+            lblIcon = new System.Windows.Forms.Label();
+            cardFilter = new UDSV.Controls.CardPanel();
+            btnLamMoi = new System.Windows.Forms.Button();
+            btnLuu = new UDSV.Controls.GradientButton();
+            cboMonHoc = new System.Windows.Forms.ComboBox();
+            labelMon = new System.Windows.Forms.Label();
+            cboKy = new System.Windows.Forms.ComboBox();
+            labelKy = new System.Windows.Forms.Label();
+            cboKhoa = new System.Windows.Forms.ComboBox();
+            labelKhoa = new System.Windows.Forms.Label();
+            cardData = new UDSV.Controls.CardPanel();
+            lblHuongDan = new System.Windows.Forms.Label();
+            lblThongTin = new System.Windows.Forms.Label();
+            lblTableTitle = new System.Windows.Forms.Label();
+            dgvBangDiem = new System.Windows.Forms.DataGridView();
+            pnlHeader.SuspendLayout();
+            cardFilter.SuspendLayout();
+            cardData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvBangDiem).BeginInit();
             SuspendLayout();
+            // 
+            // pnlHeader
+            // 
+            pnlHeader.Angle = 135F;
+            pnlHeader.ColorEnd = System.Drawing.Color.FromArgb(244, 63, 94);
+            pnlHeader.ColorStart = System.Drawing.Color.FromArgb(225, 29, 72);
+            pnlHeader.Controls.Add(lblSub);
+            pnlHeader.Controls.Add(label1);
+            pnlHeader.Controls.Add(lblIcon);
+            pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            pnlHeader.Location = new System.Drawing.Point(0, 0);
+            pnlHeader.Name = "pnlHeader";
+            pnlHeader.Size = new System.Drawing.Size(1160, 75);
+            pnlHeader.TabIndex = 0;
+            // 
+            // lblSub
+            // 
+            lblSub.AutoSize = true;
+            lblSub.BackColor = System.Drawing.Color.Transparent;
+            lblSub.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblSub.ForeColor = System.Drawing.Color.FromArgb(255, 228, 230);
+            lblSub.Location = new System.Drawing.Point(75, 43);
+            lblSub.Name = "lblSub";
+            lblSub.Size = new System.Drawing.Size(420, 20);
+            lblSub.TabIndex = 2;
+            lblSub.Text = "Nhập và quản lý kết quả học tập theo Khóa, Kỳ và Học phần";
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 163);
-            label1.ForeColor = SystemColors.MenuHighlight;
-            label1.Location = new Point(300, 9);
+            label1.BackColor = System.Drawing.Color.Transparent;
+            label1.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Bold);
+            label1.ForeColor = System.Drawing.Color.White;
+            label1.Location = new System.Drawing.Point(73, 11);
             label1.Name = "label1";
-            label1.Size = new Size(380, 41);
-            label1.TabIndex = 0;
+            label1.Size = new System.Drawing.Size(359, 35);
+            label1.TabIndex = 1;
             label1.Text = "QUẢN LÝ KẾT QUẢ HỌC TẬP";
             // 
-            // groupBox1
+            // lblIcon
             // 
-            groupBox1.Controls.Add(labelKhoa);
-            groupBox1.Controls.Add(cboKhoa);
-            groupBox1.Controls.Add(labelKy);
-            groupBox1.Controls.Add(cboKy);
-            groupBox1.Controls.Add(labelMon);
-            groupBox1.Controls.Add(cboMonHoc);
-            groupBox1.Controls.Add(btnLuu);
-            groupBox1.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            groupBox1.ForeColor = SystemColors.Highlight;
-            groupBox1.Location = new Point(30, 60);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(940, 105);
-            groupBox1.TabIndex = 1;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Chọn lớp để nhập điểm";
+            lblIcon.AutoSize = true;
+            lblIcon.BackColor = System.Drawing.Color.Transparent;
+            lblIcon.Font = new System.Drawing.Font("Segoe UI Emoji", 24F);
+            lblIcon.ForeColor = System.Drawing.Color.White;
+            lblIcon.Location = new System.Drawing.Point(18, 10);
+            lblIcon.Name = "lblIcon";
+            lblIcon.Size = new System.Drawing.Size(61, 54);
+            lblIcon.TabIndex = 0;
+            lblIcon.Text = "📊";
             // 
-            // labelKhoa
+            // cardFilter
             // 
-            labelKhoa.AutoSize = true;
-            labelKhoa.Location = new Point(15, 45);
-            labelKhoa.Name = "labelKhoa";
-            labelKhoa.Size = new Size(44, 20);
-            labelKhoa.Text = "Khóa";
+            cardFilter.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            cardFilter.BackColor = System.Drawing.Color.White;
+            cardFilter.Controls.Add(btnLamMoi);
+            cardFilter.Controls.Add(btnLuu);
+            cardFilter.Controls.Add(cboMonHoc);
+            cardFilter.Controls.Add(labelMon);
+            cardFilter.Controls.Add(cboKy);
+            cardFilter.Controls.Add(labelKy);
+            cardFilter.Controls.Add(cboKhoa);
+            cardFilter.Controls.Add(labelKhoa);
+            cardFilter.Location = new System.Drawing.Point(25, 90);
+            cardFilter.Name = "cardFilter";
+            cardFilter.Radius = 14;
+            cardFilter.Size = new System.Drawing.Size(1110, 78);
+            cardFilter.TabIndex = 1;
             // 
-            // cboKhoa
+            // btnLamMoi
             // 
-            cboKhoa.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboKhoa.Location = new Point(70, 41);
-            cboKhoa.Name = "cboKhoa";
-            cboKhoa.Size = new Size(160, 28);
-            cboKhoa.TabIndex = 1;
+            btnLamMoi.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            btnLamMoi.BackColor = System.Drawing.Color.FromArgb(241, 245, 249);
+            btnLamMoi.Cursor = System.Windows.Forms.Cursors.Hand;
+            btnLamMoi.FlatAppearance.BorderSize = 0;
+            btnLamMoi.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnLamMoi.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            btnLamMoi.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
+            btnLamMoi.Location = new System.Drawing.Point(990, 20);
+            btnLamMoi.Name = "btnLamMoi";
+            btnLamMoi.Size = new System.Drawing.Size(102, 38);
+            btnLamMoi.TabIndex = 7;
+            btnLamMoi.Text = "🔄 Tải lại";
+            btnLamMoi.UseVisualStyleBackColor = false;
             // 
-            // labelKy
+            // btnLuu
             // 
-            labelKy.AutoSize = true;
-            labelKy.Location = new Point(250, 45);
-            labelKy.Name = "labelKy";
-            labelKy.Size = new Size(28, 20);
-            labelKy.Text = "Kỳ";
+            btnLuu.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            btnLuu.BackColor = System.Drawing.Color.Transparent;
+            btnLuu.Cursor = System.Windows.Forms.Cursors.Hand;
+            btnLuu.FlatAppearance.BorderSize = 0;
+            btnLuu.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            btnLuu.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            btnLuu.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnLuu.Font = new System.Drawing.Font("Segoe UI", 9.8F, System.Drawing.FontStyle.Bold);
+            btnLuu.ForeColor = System.Drawing.Color.White;
+            btnLuu.GradientEnd = System.Drawing.Color.FromArgb(16, 185, 129);
+            btnLuu.GradientStart = System.Drawing.Color.FromArgb(5, 150, 105);
+            btnLuu.Location = new System.Drawing.Point(842, 20);
+            btnLuu.Name = "btnLuu";
+            btnLuu.Radius = 12;
+            btnLuu.Size = new System.Drawing.Size(140, 38);
+            btnLuu.TabIndex = 6;
+            btnLuu.Text = "💾 Lưu điểm";
+            btnLuu.UseVisualStyleBackColor = false;
             // 
-            // cboKy
+            // cboMonHoc
             // 
-            cboKy.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboKy.Location = new Point(290, 41);
-            cboKy.Name = "cboKy";
-            cboKy.Size = new Size(110, 28);
-            cboKy.TabIndex = 2;
+            cboMonHoc.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            cboMonHoc.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cboMonHoc.Font = new System.Drawing.Font("Segoe UI", 10F);
+            cboMonHoc.FormattingEnabled = true;
+            cboMonHoc.Location = new System.Drawing.Point(520, 24);
+            cboMonHoc.Name = "cboMonHoc";
+            cboMonHoc.Size = new System.Drawing.Size(305, 31);
+            cboMonHoc.TabIndex = 5;
             // 
             // labelMon
             // 
             labelMon.AutoSize = true;
-            labelMon.Location = new Point(420, 45);
+            labelMon.BackColor = System.Drawing.Color.Transparent;
+            labelMon.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            labelMon.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
+            labelMon.Location = new System.Drawing.Point(432, 28);
             labelMon.Name = "labelMon";
-            labelMon.Size = new Size(70, 20);
-            labelMon.Text = "Môn học";
+            labelMon.Size = new System.Drawing.Size(86, 21);
+            labelMon.TabIndex = 4;
+            labelMon.Text = "📚 Môn học:";
             // 
-            // cboMonHoc
+            // cboKy
             // 
-            cboMonHoc.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboMonHoc.Location = new Point(500, 41);
-            cboMonHoc.Name = "cboMonHoc";
-            cboMonHoc.Size = new Size(300, 28);
-            cboMonHoc.TabIndex = 3;
+            cboKy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cboKy.Font = new System.Drawing.Font("Segoe UI", 10F);
+            cboKy.FormattingEnabled = true;
+            cboKy.Location = new System.Drawing.Point(320, 24);
+            cboKy.Name = "cboKy";
+            cboKy.Size = new System.Drawing.Size(95, 31);
+            cboKy.TabIndex = 3;
             // 
-            // btnLuu
+            // labelKy
             // 
-            btnLuu.BackColor = Color.Lime;
-            btnLuu.ForeColor = Color.Black;
-            btnLuu.Location = new Point(815, 68);
-            btnLuu.Name = "btnLuu";
-            btnLuu.Size = new Size(110, 30);
-            btnLuu.TabIndex = 4;
-            btnLuu.Text = "Lưu điểm";
-            btnLuu.UseVisualStyleBackColor = false;
+            labelKy.AutoSize = true;
+            labelKy.BackColor = System.Drawing.Color.Transparent;
+            labelKy.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            labelKy.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
+            labelKy.Location = new System.Drawing.Point(245, 28);
+            labelKy.Name = "labelKy";
+            labelKy.Size = new System.Drawing.Size(76, 21);
+            labelKy.TabIndex = 2;
+            labelKy.Text = "🎓 Học kỳ:";
+            // 
+            // cboKhoa
+            // 
+            cboKhoa.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cboKhoa.Font = new System.Drawing.Font("Segoe UI", 10F);
+            cboKhoa.FormattingEnabled = true;
+            cboKhoa.Location = new System.Drawing.Point(100, 24);
+            cboKhoa.Name = "cboKhoa";
+            cboKhoa.Size = new System.Drawing.Size(130, 31);
+            cboKhoa.TabIndex = 1;
+            // 
+            // labelKhoa
+            // 
+            labelKhoa.AutoSize = true;
+            labelKhoa.BackColor = System.Drawing.Color.Transparent;
+            labelKhoa.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            labelKhoa.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
+            labelKhoa.Location = new System.Drawing.Point(15, 28);
+            labelKhoa.Name = "labelKhoa";
+            labelKhoa.Size = new System.Drawing.Size(83, 21);
+            labelKhoa.TabIndex = 0;
+            labelKhoa.Text = "🏛️ Khóa:";
+            // 
+            // cardData
+            // 
+            cardData.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            cardData.BackColor = System.Drawing.Color.White;
+            cardData.Controls.Add(lblHuongDan);
+            cardData.Controls.Add(lblThongTin);
+            cardData.Controls.Add(lblTableTitle);
+            cardData.Controls.Add(dgvBangDiem);
+            cardData.Location = new System.Drawing.Point(25, 180);
+            cardData.Name = "cardData";
+            cardData.Radius = 14;
+            cardData.Size = new System.Drawing.Size(1110, 495);
+            cardData.TabIndex = 2;
+            // 
+            // lblHuongDan
+            // 
+            lblHuongDan.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            lblHuongDan.AutoSize = true;
+            lblHuongDan.BackColor = System.Drawing.Color.Transparent;
+            lblHuongDan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic);
+            lblHuongDan.ForeColor = System.Drawing.Color.FromArgb(148, 163, 184);
+            lblHuongDan.Location = new System.Drawing.Point(620, 18);
+            lblHuongDan.Name = "lblHuongDan";
+            lblHuongDan.Size = new System.Drawing.Size(470, 20);
+            lblHuongDan.TabIndex = 3;
+            lblHuongDan.Text = "💡 Nhập trực tiếp điểm vào cột 'Điểm' (0.0 - 10.0), ô trống = chưa có điểm";
             // 
             // lblThongTin
             // 
             lblThongTin.AutoSize = true;
-            lblThongTin.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            lblThongTin.ForeColor = Color.DarkGreen;
-            lblThongTin.Location = new Point(30, 180);
+            lblThongTin.BackColor = System.Drawing.Color.Transparent;
+            lblThongTin.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            lblThongTin.ForeColor = System.Drawing.Color.FromArgb(225, 29, 72);
+            lblThongTin.Location = new System.Drawing.Point(225, 17);
             lblThongTin.Name = "lblThongTin";
-            lblThongTin.Size = new Size(400, 25);
+            lblThongTin.Size = new System.Drawing.Size(325, 21);
             lblThongTin.TabIndex = 2;
             lblThongTin.Text = "Chọn khóa → kỳ → môn học để nhập điểm";
             // 
+            // lblTableTitle
+            // 
+            lblTableTitle.AutoSize = true;
+            lblTableTitle.BackColor = System.Drawing.Color.Transparent;
+            lblTableTitle.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            lblTableTitle.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59);
+            lblTableTitle.Location = new System.Drawing.Point(20, 15);
+            lblTableTitle.Name = "lblTableTitle";
+            lblTableTitle.Size = new System.Drawing.Size(193, 25);
+            lblTableTitle.TabIndex = 1;
+            lblTableTitle.Text = "BẢNG ĐIỂM CHI TIẾT";
+            // 
             // dgvBangDiem
             // 
-            dgvBangDiem.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvBangDiem.Location = new Point(30, 215);
+            dgvBangDiem.AllowUserToAddRows = false;
+            dgvBangDiem.AllowUserToDeleteRows = false;
+            dgvBangDiem.AllowUserToResizeRows = false;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(255, 241, 242);
+            dgvBangDiem.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dgvBangDiem.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            dgvBangDiem.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            dgvBangDiem.BackgroundColor = System.Drawing.Color.White;
+            dgvBangDiem.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dgvBangDiem.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvBangDiem.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(225, 29, 72);
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(225, 29, 72);
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            dgvBangDiem.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dgvBangDiem.ColumnHeadersHeight = 40;
+            dgvBangDiem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(45, 52, 54);
+            dataGridViewCellStyle3.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(254, 205, 211);
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(136, 19, 55);
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            dgvBangDiem.DefaultCellStyle = dataGridViewCellStyle3;
+            dgvBangDiem.EnableHeadersVisualStyles = false;
+            dgvBangDiem.GridColor = System.Drawing.Color.FromArgb(238, 242, 246);
+            dgvBangDiem.Location = new System.Drawing.Point(18, 52);
             dgvBangDiem.Name = "dgvBangDiem";
+            dgvBangDiem.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            dgvBangDiem.RowHeadersVisible = false;
             dgvBangDiem.RowHeadersWidth = 51;
-            dgvBangDiem.Size = new Size(940, 360);
-            dgvBangDiem.TabIndex = 3;
+            dgvBangDiem.RowTemplate.Height = 36;
+            dgvBangDiem.Size = new System.Drawing.Size(1072, 425);
+            dgvBangDiem.TabIndex = 0;
             // 
             // FrmKetQua
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1000, 600);
-            Controls.Add(dgvBangDiem);
-            Controls.Add(lblThongTin);
-            Controls.Add(groupBox1);
-            Controls.Add(label1);
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.FromArgb(245, 247, 250);
+            ClientSize = new System.Drawing.Size(1160, 695);
+            Controls.Add(cardData);
+            Controls.Add(cardFilter);
+            Controls.Add(pnlHeader);
+            MinimumSize = new System.Drawing.Size(1050, 620);
             Name = "FrmKetQua";
-            StartPosition = FormStartPosition.CenterScreen;
-            Text = "Quản lý kết quả học tập";
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            Text = "Quản lý kết quả học tập & Nhập điểm";
+            pnlHeader.ResumeLayout(false);
+            pnlHeader.PerformLayout();
+            cardFilter.ResumeLayout(false);
+            cardFilter.PerformLayout();
+            cardData.ResumeLayout(false);
+            cardData.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvBangDiem).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
-        private Label label1;
-        private GroupBox groupBox1;
-        private Label labelKhoa, labelKy, labelMon;
-        private ComboBox cboKhoa, cboKy, cboMonHoc;
-        private Button btnLuu;
-        private Label lblThongTin;
-        private DataGridView dgvBangDiem;
+        private Controls.GradientPanel pnlHeader;
+        private System.Windows.Forms.Label lblIcon;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblSub;
+        private Controls.CardPanel cardFilter;
+        private System.Windows.Forms.Label labelKhoa;
+        private System.Windows.Forms.ComboBox cboKhoa;
+        private System.Windows.Forms.Label labelKy;
+        private System.Windows.Forms.ComboBox cboKy;
+        private System.Windows.Forms.Label labelMon;
+        private System.Windows.Forms.ComboBox cboMonHoc;
+        private Controls.GradientButton btnLuu;
+        private System.Windows.Forms.Button btnLamMoi;
+        private Controls.CardPanel cardData;
+        private System.Windows.Forms.Label lblTableTitle;
+        private System.Windows.Forms.Label lblThongTin;
+        private System.Windows.Forms.Label lblHuongDan;
+        private System.Windows.Forms.DataGridView dgvBangDiem;
     }
 }

@@ -74,18 +74,22 @@ namespace UDSV
 
             Text = "Quản lý chương trình khóa";
 
-            // Nút chốt chương trình — đặt cùng hàng với các nút khác, phía bên phải
+            // Nút chốt chương trình — đặt trong cardChuongTrinh ở góc dưới bên phải
             btnKhoaTC = new Button
             {
-                Text = "KHOÁ SỐ TÍN CHỈ",
-                Location = new Point(760, 596),
-                Size = new Size(330, 30),
-                BackColor = Color.OrangeRed,
+                Text = "🔒 KHOÁ SỐ TÍN CHỈ",
+                Location = new Point(380, 378),
+                Size = new Size(230, 36),
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
+                BackColor = Color.FromArgb(225, 29, 72),
                 ForeColor = Color.White,
-                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand,
                 UseVisualStyleBackColor = false
             };
-            Controls.Add(btnKhoaTC);
+            btnKhoaTC.FlatAppearance.BorderSize = 0;
+            cardChuongTrinh.Controls.Add(btnKhoaTC);
             btnKhoaTC.BringToFront();
             btnKhoaTC.Click += BtnKhoaTC_Click;
         }
@@ -282,7 +286,7 @@ namespace UDSV
                 if (btnKhoaTC != null)
                 {
                     btnKhoaTC.Enabled = true;
-                    btnKhoaTC.BackColor = Color.OrangeRed;
+                    btnKhoaTC.BackColor = Color.FromArgb(225, 29, 72);
                     btnKhoaTC.ForeColor = Color.White;
                 }
             }

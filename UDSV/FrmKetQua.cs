@@ -28,6 +28,7 @@ namespace UDSV
             cboKy.SelectedIndexChanged += CboKy_Changed;
             cboMonHoc.SelectedIndexChanged += CboMonHoc_Changed;
             btnLuu.Click += BtnLuu_Click;
+            btnLamMoi.Click += (s, e) => TaiBangDiem();
         }
 
         private string MaKhoaChon => LayGiaTri(cboKhoa, "MaKhoa");
