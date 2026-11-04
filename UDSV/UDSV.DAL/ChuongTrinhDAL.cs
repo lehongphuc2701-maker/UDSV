@@ -169,6 +169,31 @@ namespace UDSV.DAL
         /// Thời khoá biểu mẫu của một khóa + học kỳ: mỗi môn một buổi/tuần (Thứ, Tiết BĐ, Tiết KT, GV).
         /// Đây là nguồn cho lưới 7 ngày × 12 tiết.
         /// </summary>
+        /// <summary>
+        /// Chương trình của khóa trong một học kỳ, kèm điểm của sinh viên (null nếu chưa có điểm).
+        /// Dùng cho màn CT Đào tạo ở phía sinh viên.
+        /// </summary>
+        public DataTable LayChuongTrinhCoDiem(string maKhoa, int hocKy, string maSV)
+        {
+            const string query = @"
+                SELECT ct.MaMH, m.TenMH, m.SoTinChi, ct.BatBuoc,
+                       ct.Thu, ct.TietBD, ct.TietKT, ct.GiangVien, ct.PhongHoc,
+                       kq.Diem
+                FROM ChuongTrinhChiTiet ct
+                INNER JOIN MonHoc m ON m.MaMH = ct.MaMH
+                LEFT JOIN KetQua kq ON kq.MaMH = ct.MaMH AND kq.MaSV = @MaSV
+                WHERE ct.MaKhoa = @MaKhoa AND ct.HocKy = @HocKy
+                ORDER BY ct.MaMH";
+
+            SqlParameter[] ps =
+            {
+                new SqlParameter("@MaKhoa", SqlDbType.VarChar, 10) { Value = maKhoa ?? "" },
+                new SqlParameter("@HocKy", SqlDbType.TinyInt) { Value = hocKy },
+                new SqlParameter("@MaSV", SqlDbType.VarChar, 20) { Value = maSV ?? "" }
+            };
+            return DatabaseHelper.GetData(query, ps);
+        }
+
         public DataTable LayTuanMau(string maKhoa, int hocKy)
         {
             const string query = @"

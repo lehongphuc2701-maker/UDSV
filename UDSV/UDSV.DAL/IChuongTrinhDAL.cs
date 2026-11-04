@@ -26,6 +26,9 @@ namespace UDSV.DAL
         /// <summary>Số sinh viên của khóa đã có điểm ở môn này — dùng cho luật "không bỏ môn đã có điểm".</summary>
         int DemSinhVienDaCoDiem(string maKhoa, string maMH);
 
+        /// <summary>Chương trình của khóa trong một học kỳ, kèm điểm của sinh viên.</summary>
+        DataTable LayChuongTrinhCoDiem(string maKhoa, int hocKy, string maSV);
+
         /// <summary>Mỗi môn một buổi/tuần: Thứ, Tiết BĐ, Tiết KT, Giảng viên — nguồn của lưới tuần.</summary>
         DataTable LayTuanMau(string maKhoa, int hocKy);
 

@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using UDSV.BLL;
 using UDSV.DTO;
 
 namespace UDSV
@@ -19,6 +20,55 @@ namespace UDSV
         public FrmTrangChu(TaiKhoanDTO? taiKhoan) : this()
         {
             taiKhoanHienTai = taiKhoan;
+            if (taiKhoan?.LaSinhVien == true) ApCheDoSinhVien();
+        }
+
+        /// <summary>Thông tin của sinh viên đang đăng nhập (nạp một lần).</summary>
+        private System.Data.DataRow? _sv;
+
+        private void ApCheDoSinhVien()
+        {
+            // 4 khối dành cho sinh viên; bỏ Môn học và Kết quả.
+            btnMonHoc.Visible = false;
+            btnKetQua.Visible = false;
+
+            btnSinhVien.Title = "1. Thông tin sinh viên";
+            btnSinhVien.Description = "Hồ sơ cá nhân: mã SV, họ tên, ngày sinh, giới tính, khóa, SĐT.";
+            btnSinhVien.IconText = "👨‍🎓";
+
+            btnLichHoc.Title = "2. Lịch học";
+            btnLichHoc.Description = "Thời khóa biểu tuần của lớp bạn theo từng học kỳ.";
+            btnLichHoc.IconText = "🗓️";
+
+            btnKhoa.Title = "3. CT Đào tạo Khóa";
+            btnKhoa.Description = "Chương trình khung của khóa bạn, kèm điểm từng môn.";
+            btnKhoa.IconText = "🏛️";
+
+            btnTaiKhoan.Title = "4. Tài khoản / Đổi MK";
+            btnTaiKhoan.Description = "Xem thông tin đăng nhập và đổi mật khẩu.";
+            btnTaiKhoan.IconText = "🛡️";
+
+            // xếp lại 2 × 2 cho khít chỗ
+            btnSinhVien.Location = new Point(0, 64);
+            btnLichHoc.Location = new Point(376, 64);
+            btnKhoa.Location = new Point(0, 174);
+            btnTaiKhoan.Location = new Point(376, 174);
+
+            lblSectionTitle.Text = "📌 DANH MỤC PHÂN HỆ SINH VIÊN";
+            lblSectionDesc.Text = "Xem hồ sơ, lịch học, chương trình đào tạo và đổi mật khẩu";
+            lblRightSub.Text = "Năm học 2025 - 2026 • Phân hệ Sinh viên";
+            lblVaiTro.Text = "Vai trò: Sinh viên";
+        }
+
+        /// <summary>Nạp hồ sơ sinh viên đang đăng nhập (mã khóa + tên khóa) để mở các màn khác.</summary>
+        private void NapHoSoSinhVien()
+        {
+            if (_sv != null) return;
+            string? maSV = taiKhoanHienTai?.MaSV;
+            if (string.IsNullOrWhiteSpace(maSV)) return;
+
+            var ds = new SinhVienBLL().LayTheoMa(maSV);
+            if (ds.Rows.Count > 0) _sv = ds.Rows[0];
         }
 
         private void GanSuKien()
@@ -59,6 +109,13 @@ namespace UDSV
 
         private void BtnSinhVien_Click(object? sender, EventArgs e)
         {
+            if (taiKhoanHienTai?.LaSinhVien == true)
+            {
+                using (var frm = new FrmThongTinSV(taiKhoanHienTai.MaSV ?? ""))
+                    frm.ShowDialog(this);
+                return;
+            }
+
             using (FrmSinhVien frm = new FrmSinhVien())
             {
                 frm.ShowDialog(this);
@@ -75,7 +132,14 @@ namespace UDSV
 
         private void BtnLichHoc_Click(object? sender, EventArgs e)
         {
-            using (FrmLichHoc frm = new FrmLichHoc())
+            string? khoa = null;
+            if (taiKhoanHienTai?.LaSinhVien == true)
+            {
+                NapHoSoSinhVien();
+                khoa = _sv?["MaKhoa"]?.ToString();
+            }
+
+            using (FrmLichHoc frm = new FrmLichHoc(khoa))
             {
                 frm.ShowDialog(this);
             }
@@ -83,6 +147,17 @@ namespace UDSV
 
         private void BtnKhoa_Click(object? sender, EventArgs e)
         {
+            if (taiKhoanHienTai?.LaSinhVien == true)
+            {
+                NapHoSoSinhVien();
+                using (var frm = new FrmChuongTrinhSV(
+                           taiKhoanHienTai.MaSV ?? "",
+                           _sv?["MaKhoa"]?.ToString() ?? "",
+                           _sv != null && _sv.Table.Columns.Contains("TenKhoa") ? _sv["TenKhoa"]?.ToString() ?? "" : ""))
+                    frm.ShowDialog(this);
+                return;
+            }
+
             using (FrmKhoa frm = new FrmKhoa(taiKhoanHienTai?.Username))
             {
                 frm.ShowDialog(this);

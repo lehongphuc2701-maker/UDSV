@@ -200,6 +200,8 @@ namespace UDSV.Tests
 
         public DataTable LayTuanMau(string maKhoa, int hocKy) => new DataTable();
 
+        public DataTable LayChuongTrinhCoDiem(string maKhoa, int hocKy, string maSV) => new DataTable();
+
         public DataTable LayHocKy(string maKhoa)
         {
             DataTable dt = new DataTable();

@@ -27,8 +27,14 @@ namespace UDSV
         private static readonly string[] Thu =
             { "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật" };
 
-        public FrmLichHoc()
+        /// <summary>Khóa cố định khi mở ở chế độ sinh viên (bỏ hẳn dropdown chọn khóa).</summary>
+        private readonly string? _maKhoaCoDinh;
+
+        public FrmLichHoc() : this(null) { }
+
+        public FrmLichHoc(string? maKhoaCoDinh)
         {
+            _maKhoaCoDinh = maKhoaCoDinh;
             InitializeComponent();
 
             // Bộ lọc chuột: thấy MỌI cú click trước khi bất kỳ control nào nuốt mất.
@@ -50,6 +56,14 @@ namespace UDSV
                 cboKhoa.DisplayMember = "MaKhoa";
                 cboKhoa.ValueMember = "MaKhoa";
 
+                if (!string.IsNullOrWhiteSpace(_maKhoaCoDinh))
+                {
+                    // Chế độ sinh viên: khóa cố định, không cho chọn.
+                    cboKhoa.SelectedValue = _maKhoaCoDinh;
+                    cboKhoa.Visible = false;
+                    AnNhanKhoa();
+                }
+
                 NapKy();
                 VeTuan();
             }
@@ -65,6 +79,25 @@ namespace UDSV
                 object? v = cboKy.SelectedValue;
                 if (v is DataRowView dong) v = dong["HocKy"];
                 return v != null && int.TryParse(v.ToString(), out int ky) ? ky : 0;
+            }
+        }
+
+        /// <summary>Ẩn nhãn "Khóa học" đi kèm khi dropdown khóa bị bỏ.</summary>
+        private void AnNhanKhoa()
+        {
+            foreach (Control c in TimTat(this))
+            {
+                if (c is Label l && (l.Text ?? "").Contains("Khóa học", StringComparison.OrdinalIgnoreCase))
+                    l.Visible = false;
+            }
+        }
+
+        private static System.Collections.Generic.IEnumerable<Control> TimTat(Control goc)
+        {
+            foreach (Control c in goc.Controls)
+            {
+                yield return c;
+                foreach (var x in TimTat(c)) yield return x;
             }
         }
 

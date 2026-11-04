@@ -87,6 +87,7 @@ namespace UDSV
                 this.Hide();
 
                 // Mở form Trang chủ, truyền tài khoản để trang chủ chào đúng tên người dùng
+                PhienDangNhap.Mo(tkDangNhap);      // ghi nhớ ai đang đăng nhập
                 FrmTrangChu frmTrangChu = new FrmTrangChu(tkDangNhap);
                 frmTrangChu.ShowDialog();
 

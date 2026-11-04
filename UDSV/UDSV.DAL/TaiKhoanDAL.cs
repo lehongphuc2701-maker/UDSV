@@ -13,7 +13,7 @@ namespace UDSV.DAL
         // 1. Kiểm tra đăng nhập: trả về tài khoản nếu đúng, null nếu sai
         public TaiKhoanDTO DangNhap(string username, string password)
         {
-            const string query = @"SELECT Username, Password, HoTen
+            const string query = @"SELECT Username, Password, HoTen, VaiTro, MaSV
                                    FROM TaiKhoan
                                    WHERE Username = @Username AND Password = @Password";
 
@@ -35,7 +35,8 @@ namespace UDSV.DAL
                 r["Username"].ToString(),
                 r["Password"].ToString(),
                 r["HoTen"].ToString(),
-                vaiTro);
+                vaiTro,
+                dt.Columns.Contains("MaSV") && r["MaSV"] != DBNull.Value ? r["MaSV"].ToString() : null);
         }
 
         // 2. Tài khoản đã tồn tại chưa

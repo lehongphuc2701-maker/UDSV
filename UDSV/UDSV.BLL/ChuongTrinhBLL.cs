@@ -34,6 +34,10 @@ namespace UDSV.BLL
 
         public DataTable LayTheoKhoa(string maKhoa) => ctDAL.LayTheoKhoa(maKhoa);
 
+        /// <summary>Chương trình của khóa trong một học kỳ, kèm điểm của sinh viên đó.</summary>
+        public DataTable LayChuongTrinhCoDiem(string maKhoa, int hocKy, string maSV)
+            => ctDAL.LayChuongTrinhCoDiem(maKhoa, hocKy, maSV);
+
         /// <summary>Thời khoá biểu mẫu (1 buổi/tuần) của khóa + học kỳ.</summary>
         public DataTable LayTuanMau(string maKhoa, int hocKy) => ctDAL.LayTuanMau(maKhoa, hocKy);
 
