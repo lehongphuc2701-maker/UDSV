@@ -13,10 +13,36 @@ namespace UDSV.DAL
     {
         // Kèm TenKhoa để lưới hiện tên khóa thay vì chỉ mã
         private const string SelectColumns =
-            "sv.MaSV, sv.HoTen, sv.NgaySinh, sv.GioiTinh, sv.MaKhoa, kh.TenKhoa, sv.SDT";
+            "sv.MaSV, sv.HoTen, sv.NgaySinh, sv.GioiTinh, sv.MaKhoa, kh.TenKhoa, sv.SDT, sv.TrangThai";
 
         private const string FromJoin =
             "FROM SinhVien sv INNER JOIN Khoa kh ON kh.MaKhoa = sv.MaKhoa";
+
+        /// <summary>Danh sách sinh viên, lọc theo trạng thái; null hoặc rỗng = tất cả.</summary>
+        public DataTable LayDanhSachTheoTrangThai(string? trangThai)
+        {
+            string query = $"SELECT {SelectColumns} {FromJoin}";
+            if (!string.IsNullOrWhiteSpace(trangThai))
+                query += " WHERE sv.TrangThai = @TrangThai";
+            query += " ORDER BY sv.MaSV";
+
+            SqlParameter[] ps = string.IsNullOrWhiteSpace(trangThai)
+                ? Array.Empty<SqlParameter>()
+                : new[] { new SqlParameter("@TrangThai", SqlDbType.NVarChar, 30) { Value = trangThai } };
+            return DatabaseHelper.GetData(query, ps);
+        }
+
+        /// <summary>Đổi trạng thái sinh viên ('Đã xóa' khi xoá mềm, 'Chưa tốt nghiệp' khi phục hồi).</summary>
+        public bool DoiTrangThai(string maSV, string trangThai)
+        {
+            const string query = "UPDATE SinhVien SET TrangThai = @TrangThai WHERE MaSV = @MaSV";
+            SqlParameter[] ps =
+            {
+                new SqlParameter("@TrangThai", SqlDbType.NVarChar, 30) { Value = trangThai ?? "" },
+                new SqlParameter("@MaSV", SqlDbType.VarChar, 20) { Value = maSV ?? "" }
+            };
+            return DatabaseHelper.ExecuteNonQuery(query, ps) > 0;
+        }
 
         public DataTable LayDanhSachSinhVien()
         {

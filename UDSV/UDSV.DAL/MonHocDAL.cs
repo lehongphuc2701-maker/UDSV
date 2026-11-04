@@ -8,12 +8,39 @@ namespace UDSV.DAL
     /// <summary>Truy cập bảng MonHoc.</summary>
     public class MonHocDAL : IMonHocDAL
     {
-        private const string SelectColumns = "MaMH, TenMH, SoTinChi";   // Giảng viên giờ thuộc lớp của khóa
+        private const string SelectColumns = "MaMH, TenMH, SoTinChi, DaXoa";   // Giảng viên giờ thuộc lớp của khóa
 
         // 1. Danh sách môn học
+        /// <summary>Bật/tắt cờ xoá mềm.</summary>
+        public bool DatCoXoa(string maMH, bool daXoa)
+        {
+            const string query = "UPDATE MonHoc SET DaXoa = @DaXoa WHERE MaMH = @MaMH";
+            SqlParameter[] ps =
+            {
+                new SqlParameter("@DaXoa", SqlDbType.Bit) { Value = daXoa },
+                new SqlParameter("@MaMH", SqlDbType.VarChar, 20) { Value = maMH ?? "" }
+            };
+            return DatabaseHelper.ExecuteNonQuery(query, ps) > 0;
+        }
+
+        /// <summary>Các khóa đang có môn này trong chương trình (rỗng = được phép xoá).</summary>
+        public DataTable CacKhoaDangDung(string maMH)
+        {
+            const string query = @"SELECT DISTINCT c.MaKhoa FROM ChuongTrinhChiTiet c WHERE c.MaMH = @MaMH ORDER BY c.MaKhoa";
+            SqlParameter p = new SqlParameter("@MaMH", SqlDbType.VarChar, 20) { Value = maMH ?? "" };
+            return DatabaseHelper.GetData(query, p);
+        }
+
+        /// <summary>Danh sách môn: daXoa = false là đang dùng, true là thùng rác.</summary>
+        public DataTable LayDanhSachMonHoc(bool daXoa)
+        {
+            string query = $"SELECT {SelectColumns} FROM MonHoc WHERE DaXoa = @DaXoa ORDER BY MaMH";
+            SqlParameter p = new SqlParameter("@DaXoa", SqlDbType.Bit) { Value = daXoa };
+            return DatabaseHelper.GetData(query, p);
+        }
         public DataTable LayDanhSachMonHoc()
         {
-            string query = $"SELECT {SelectColumns} FROM MonHoc ORDER BY MaMH";
+            string query = $"SELECT {SelectColumns} FROM MonHoc WHERE DaXoa = 0 ORDER BY MaMH";
             return DatabaseHelper.GetData(query);
         }
 
