@@ -54,6 +54,54 @@ namespace UDSV.Controls
     }
 
     // ══════════════════════════════════════════════
+    //  CARD PANEL - Panel trắng bo tròn kiểu thẻ
+    // ══════════════════════════════════════════════
+    public class CardPanel : Panel
+    {
+        public int Radius { get; set; } = 14;
+
+        public CardPanel()
+        {
+            DoubleBuffered = true;
+            BackColor = Color.White;
+            SetStyle(
+                ControlStyles.AllPaintingInWmPaint |
+                ControlStyles.UserPaint |
+                ControlStyles.OptimizedDoubleBuffer |
+                ControlStyles.ResizeRedraw, true);
+        }
+
+        private static GraphicsPath RoundRect(Rectangle r, int rad)
+        {
+            rad = Math.Min(rad, Math.Min(r.Width, r.Height) / 2);
+            var path = new GraphicsPath();
+            int d = rad * 2;
+            path.AddArc(r.X, r.Y, d, d, 180, 90);
+            path.AddArc(r.Right - d, r.Y, d, d, 270, 90);
+            path.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
+            path.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            var g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.Clear(Parent?.BackColor ?? Color.FromArgb(245, 247, 250));
+
+            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
+            using var path = RoundRect(rect, Radius);
+            using var fill = new SolidBrush(BackColor);
+            g.FillPath(fill, path);
+
+            // Viền nhẹ tinh tế
+            using var pen = new Pen(Color.FromArgb(226, 232, 240), 1f);
+            g.DrawPath(pen, path);
+        }
+    }
+
+    // ══════════════════════════════════════════════
     //  GRADIENT BUTTON - Nút bấm gradient bo tròn
     // ══════════════════════════════════════════════
     public class GradientButton : Button
@@ -71,9 +119,9 @@ namespace UDSV.Controls
             FlatAppearance.MouseDownBackColor = Color.Transparent;
             BackColor = Color.Transparent;
             ForeColor = Color.White;
-            Font = new Font("Segoe UI", 11f, FontStyle.Bold);
+            Font = new Font("Segoe UI", 10.5f, FontStyle.Bold);
             Cursor = Cursors.Hand;
-            Size = new Size(300, 48);
+            Size = new Size(140, 42);
             SetStyle(
                 ControlStyles.AllPaintingInWmPaint |
                 ControlStyles.UserPaint |
@@ -82,6 +130,7 @@ namespace UDSV.Controls
 
         private static GraphicsPath RoundRect(Rectangle r, int rad)
         {
+            rad = Math.Min(rad, Math.Min(r.Width, r.Height) / 2);
             var path = new GraphicsPath();
             int d = rad * 2;
             path.AddArc(r.X, r.Y, d, d, 180, 90);
@@ -167,6 +216,7 @@ namespace UDSV.Controls
 
         private static GraphicsPath RoundRect(Rectangle r, int rad)
         {
+            rad = Math.Min(rad, Math.Min(r.Width, r.Height) / 2);
             var path = new GraphicsPath();
             int d = rad * 2;
             path.AddArc(r.X, r.Y, d, d, 180, 90);
@@ -211,4 +261,3 @@ namespace UDSV.Controls
         }
     }
 }
-
