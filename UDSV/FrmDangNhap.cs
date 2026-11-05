@@ -75,7 +75,7 @@ namespace UDSV
             // 1. Kiểm tra rỗng
             if (string.IsNullOrEmpty(taiKhoan) || string.IsNullOrEmpty(matKhau))
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ tài khoản và mật khẩu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                ThongBao.Show(this, "Vui lòng nhập đầy đủ tài khoản và mật khẩu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtTaiKhoan.Focus();
                 return;
             }
@@ -103,7 +103,7 @@ namespace UDSV
                 string thongBao = string.IsNullOrWhiteSpace(loiDangNhap)
                     ? "Tài khoản hoặc mật khẩu không đúng!"
                     : loiDangNhap;
-                MessageBox.Show(thongBao, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ThongBao.Show(this, thongBao, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

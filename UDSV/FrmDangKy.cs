@@ -78,7 +78,7 @@ namespace UDSV
             // 2. Bắt lỗi người dùng để trống
             if (string.IsNullOrEmpty(taiKhoan) || string.IsNullOrEmpty(matKhau) || string.IsNullOrEmpty(hoTen))
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ Tài khoản, Mật khẩu và Họ tên!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                ThongBao.Show(this, "Vui lòng nhập đầy đủ Tài khoản, Mật khẩu và Họ tên!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtDK_TaiKhoan.Focus();
                 return;
             }
@@ -86,7 +86,7 @@ namespace UDSV
             // 3. Bắt lỗi nhập sai mật khẩu xác nhận
             if (matKhau != xacNhan)
             {
-                MessageBox.Show("Mật khẩu nhập lại không khớp!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                ThongBao.Show(this, "Mật khẩu nhập lại không khớp!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtDK_NhapLaiMK.Focus();
                 return;
             }
@@ -94,14 +94,14 @@ namespace UDSV
             // 4. Đẩy xuống BLL — BLL tự kiểm tra trùng tên đăng nhập, độ dài mật khẩu, nhập lại khớp
             if (tkBLL.DangKy(taiKhoan, matKhau, xacNhan, hoTen, out string error))
             {
-                MessageBox.Show("Đăng ký tài khoản thành công! Vui lòng đăng nhập.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ThongBao.Show(this, "Đăng ký tài khoản thành công! Vui lòng đăng nhập.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // Thành công thì tự động đóng form đăng ký để quay lại form đăng nhập
                 this.Close();
             }
             else
             {
-                MessageBox.Show(error, "Lỗi đăng ký", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ThongBao.Show(this, error, "Lỗi đăng ký", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

@@ -145,7 +145,7 @@ namespace UDSV
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message, "Lỗi kết nối CSDL",
+                ThongBao.Show(this, ex.Message, "Lỗi kết nối CSDL",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -265,18 +265,18 @@ namespace UDSV
             {
                 if (!bll.ThemMonHoc(LayDuLieuTuForm(), out string error))
                 {
-                    MessageBox.Show(this, error, "Không thêm được",
+                    ThongBao.Show(this, error, "Không thêm được",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                MessageBox.Show(this, "Thêm môn học thành công!", "Thành công",
+                ThongBao.Show(this, "Thêm môn học thành công!", "Thành công",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LamMoi();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ThongBao.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -284,7 +284,7 @@ namespace UDSV
         {
             if (string.IsNullOrEmpty(maDangChon))
             {
-                MessageBox.Show(this, "Hãy chọn một môn học trong bảng để sửa.",
+                ThongBao.Show(this, "Hãy chọn một môn học trong bảng để sửa.",
                     "Chưa chọn dòng", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -293,18 +293,18 @@ namespace UDSV
             {
                 if (!bll.SuaMonHoc(LayDuLieuTuForm(), out string error))
                 {
-                    MessageBox.Show(this, error, "Không sửa được",
+                    ThongBao.Show(this, error, "Không sửa được",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                MessageBox.Show(this, "Cập nhật môn học thành công!", "Thành công",
+                ThongBao.Show(this, "Cập nhật môn học thành công!", "Thành công",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LamMoi();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ThongBao.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -317,12 +317,12 @@ namespace UDSV
         {
             if (string.IsNullOrEmpty(maDangChon))
             {
-                MessageBox.Show(this, "Hãy chọn một môn học trong bảng để xoá.",
+                ThongBao.Show(this, "Hãy chọn một môn học trong bảng để xoá.",
                     "Chưa chọn dòng", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            DialogResult confirm = MessageBox.Show(
+            DialogResult confirm = ThongBao.Show(
                 this, $"Bạn có chắc muốn xoá môn '{maDangChon} - {txtTenMH.Text}'?\n\n" +
                       "Môn sẽ được chuyển vào 'Đã xóa' (không mất dữ liệu) và có thể phục hồi sau.",
                 "Xác nhận xoá", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -333,18 +333,18 @@ namespace UDSV
             {
                 if (!bll.XoaMem(maDangChon, out string error))
                 {
-                    MessageBox.Show(this, error, "Không xoá được",
+                    ThongBao.Show(this, error, "Không xoá được",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                MessageBox.Show(this, "Đã chuyển môn học vào 'Đã xóa'.", "Thành công",
+                ThongBao.Show(this, "Đã chuyển môn học vào 'Đã xóa'.", "Thành công",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LamMoi();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ThongBao.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -353,12 +353,12 @@ namespace UDSV
         {
             if (string.IsNullOrEmpty(maDangChon))
             {
-                MessageBox.Show(this, "Hãy chọn một môn học trong danh sách 'Đã xóa' để phục hồi.",
+                ThongBao.Show(this, "Hãy chọn một môn học trong danh sách 'Đã xóa' để phục hồi.",
                     "Chưa chọn dòng", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            DialogResult confirm = MessageBox.Show(
+            DialogResult confirm = ThongBao.Show(
                 this, $"Phục hồi môn '{maDangChon} - {txtTenMH.Text}'?",
                 "Xác nhận phục hồi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -368,18 +368,18 @@ namespace UDSV
             {
                 if (!bll.PhucHoi(maDangChon, out string error))
                 {
-                    MessageBox.Show(this, error, "Không phục hồi được",
+                    ThongBao.Show(this, error, "Không phục hồi được",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                MessageBox.Show(this, "Đã phục hồi môn học.", "Thành công",
+                ThongBao.Show(this, "Đã phục hồi môn học.", "Thành công",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LamMoi();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ThongBao.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

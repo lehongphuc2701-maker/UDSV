@@ -44,7 +44,7 @@ namespace UDSV
         {
             if (taiKhoanHienTai == null || string.IsNullOrWhiteSpace(taiKhoanHienTai.Username))
             {
-                MessageBox.Show(this, "Không tìm thấy thông tin tài khoản đang đăng nhập!",
+                ThongBao.Show(this, "Không tìm thấy thông tin tài khoản đang đăng nhập!",
                     "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -58,7 +58,7 @@ namespace UDSV
                 // Cập nhật lại mật khẩu trong đối tượng bộ nhớ hiện tại
                 taiKhoanHienTai.Password = matKhauMoi;
 
-                MessageBox.Show(this,
+                ThongBao.Show(this,
                     "Đổi mật khẩu thành công! Vui lòng ghi nhớ mật khẩu mới cho lần đăng nhập sau.",
                     "Thành công",
                     MessageBoxButtons.OK,
@@ -72,7 +72,7 @@ namespace UDSV
             }
             else
             {
-                MessageBox.Show(this, error, "Không thể đổi mật khẩu",
+                ThongBao.Show(this, error, "Không thể đổi mật khẩu",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }

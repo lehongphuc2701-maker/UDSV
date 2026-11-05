@@ -67,7 +67,7 @@ namespace UDSV
         {
             e.Cancel = true;
             dgvBangDiem.Rows[e.RowIndex].ErrorText = "Điểm không hợp lệ";
-            MessageBox.Show(this, thongBao, "Điểm không hợp lệ",
+            ThongBao.Show(this, thongBao, "Điểm không hợp lệ",
                             MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
@@ -92,7 +92,7 @@ namespace UDSV
 
             if (e.RowIndex >= 0) dgvBangDiem.Rows[e.RowIndex].ErrorText = "";
 
-            MessageBox.Show(this,
+            ThongBao.Show(this,
                 "Bạn đã nhập sai định dạng cho điểm.\n\n" +
                 "Điểm phải là số từ 0 đến 4 (ví dụ 3.2). Để trống nếu chưa có điểm.",
                 "Điểm không hợp lệ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -274,7 +274,7 @@ namespace UDSV
         {
             if (MaMonChon.Length == 0)
             {
-                MessageBox.Show(this, "Chọn khóa, kỳ và môn học trước khi lưu.", "Chưa chọn",
+                ThongBao.Show(this, "Chọn khóa, kỳ và môn học trước khi lưu.", "Chưa chọn",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -302,11 +302,11 @@ namespace UDSV
 
                 if (!kqBLL.LuuBangDiem(MaMonChon, ds, out string error))
                 {
-                    MessageBox.Show(this, error, "Không lưu được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    ThongBao.Show(this, error, "Không lưu được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                MessageBox.Show(this, $"Đã lưu điểm cho {ds.Count} sinh viên.", "Thành công",
+                ThongBao.Show(this, $"Đã lưu điểm cho {ds.Count} sinh viên.", "Thành công",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 TaiBangDiem();
             }
@@ -327,7 +327,7 @@ namespace UDSV
         private void BaoLoi(Exception ex)
         {
             AppLog.For<FrmKetQua>().LogError(ex, "Lỗi ở màn kết quả");
-            MessageBox.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            ThongBao.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }
