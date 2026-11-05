@@ -142,9 +142,18 @@ namespace UDSV.BLL
                 return false;
             }
 
-            bool xoaOk = khoaDAL.Xoa(maKhoa);
-            if (xoaOk) log.LogInformation("Xoá khóa {MaKhoa}", maKhoa);
-            return xoaOk;
+            try
+            {
+                bool xoaOk = khoaDAL.Xoa(maKhoa);
+                if (xoaOk) log.LogInformation("Xoá khóa {MaKhoa}", maKhoa);
+                return xoaOk;
+            }
+            catch (Exception ex)
+            {
+                error = "Không thể xoá khóa: " + ex.Message;
+                log.LogError(ex, "Lỗi khi xoá khóa {MaKhoa}", maKhoa);
+                return false;
+            }
         }
 
         /// <summary>Quy tắc thuần, không chạm CSDL — dùng cho Unit Test.</summary>
