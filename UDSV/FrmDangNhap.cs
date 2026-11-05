@@ -88,14 +88,29 @@ namespace UDSV
 
                 // Mở form Trang chủ, truyền tài khoản để trang chủ chào đúng tên người dùng
                 PhienDangNhap.Mo(tkDangNhap);      // ghi nhớ ai đang đăng nhập
-                FrmTrangChu frmTrangChu = new FrmTrangChu(tkDangNhap);
-                frmTrangChu.ShowDialog();
+                DialogResult ketQua;
+                using (var frmTrangChu = new FrmTrangChu(tkDangNhap))
+                {
+                    ketQua = frmTrangChu.ShowDialog();
+                }
+                PhienDangNhap.Dong();
 
-                // Khi form Trang chủ bị đóng, xóa trắng ô nhập và hiện lại Đăng nhập
-                txtTaiKhoan.Clear();
-                txtMatKhau.Clear();
-                this.Show();
-                txtTaiKhoan.Focus();
+                if (ketQua == DialogResult.OK)
+                {
+                    // Người dùng bấm "Đăng xuất" -> Xóa trắng ô nhập, đưa form Đăng nhập lên trên cùng
+                    txtTaiKhoan.Clear();
+                    txtMatKhau.Clear();
+                    this.Show();
+                    this.WindowState = FormWindowState.Normal;
+                    this.BringToFront();
+                    this.Activate();
+                    txtTaiKhoan.Focus();
+                }
+                else
+                {
+                    // Người dùng bấm dấu X ở góc trên Trang chủ -> Thoát hoàn toàn ứng dụng
+                    Application.Exit();
+                }
             }
             else
             {
@@ -114,11 +129,17 @@ namespace UDSV
             this.Hide();
 
             // Mở form Đăng ký
-            FrmDangKy frmDangKy = new FrmDangKy();
-            frmDangKy.ShowDialog();
+            using (FrmDangKy frmDangKy = new FrmDangKy())
+            {
+                frmDangKy.ShowDialog();
+            }
 
             // Khi tắt form Đăng ký, hiện lại form Đăng nhập
             this.Show();
+            this.WindowState = FormWindowState.Normal;
+            this.BringToFront();
+            this.Activate();
+            txtTaiKhoan.Focus();
         }
     }
 }

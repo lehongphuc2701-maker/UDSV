@@ -152,9 +152,9 @@ namespace UDSV
             cboMonHoc.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             cboMonHoc.Font = new System.Drawing.Font("Segoe UI", 10F);
             cboMonHoc.FormattingEnabled = true;
-            cboMonHoc.Location = new System.Drawing.Point(520, 24);
+            cboMonHoc.Location = new System.Drawing.Point(530, 24);
             cboMonHoc.Name = "cboMonHoc";
-            cboMonHoc.Size = new System.Drawing.Size(305, 31);
+            cboMonHoc.Size = new System.Drawing.Size(295, 31);
             cboMonHoc.TabIndex = 5;
             // 
             // labelMon
@@ -163,9 +163,9 @@ namespace UDSV
             labelMon.BackColor = System.Drawing.Color.Transparent;
             labelMon.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             labelMon.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            labelMon.Location = new System.Drawing.Point(432, 28);
+            labelMon.Location = new System.Drawing.Point(425, 28);
             labelMon.Name = "labelMon";
-            labelMon.Size = new System.Drawing.Size(86, 21);
+            labelMon.Size = new System.Drawing.Size(95, 21);
             labelMon.TabIndex = 4;
             labelMon.Text = "📚 Môn học:";
             // 
@@ -174,7 +174,7 @@ namespace UDSV
             cboKy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             cboKy.Font = new System.Drawing.Font("Segoe UI", 10F);
             cboKy.FormattingEnabled = true;
-            cboKy.Location = new System.Drawing.Point(320, 24);
+            cboKy.Location = new System.Drawing.Point(315, 24);
             cboKy.Name = "cboKy";
             cboKy.Size = new System.Drawing.Size(95, 31);
             cboKy.TabIndex = 3;
@@ -185,9 +185,9 @@ namespace UDSV
             labelKy.BackColor = System.Drawing.Color.Transparent;
             labelKy.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             labelKy.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            labelKy.Location = new System.Drawing.Point(245, 28);
+            labelKy.Location = new System.Drawing.Point(225, 28);
             labelKy.Name = "labelKy";
-            labelKy.Size = new System.Drawing.Size(76, 21);
+            labelKy.Size = new System.Drawing.Size(82, 21);
             labelKy.TabIndex = 2;
             labelKy.Text = "🎓 Học kỳ:";
             // 
@@ -196,9 +196,9 @@ namespace UDSV
             cboKhoa.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             cboKhoa.Font = new System.Drawing.Font("Segoe UI", 10F);
             cboKhoa.FormattingEnabled = true;
-            cboKhoa.Location = new System.Drawing.Point(100, 24);
+            cboKhoa.Location = new System.Drawing.Point(95, 24);
             cboKhoa.Name = "cboKhoa";
-            cboKhoa.Size = new System.Drawing.Size(130, 31);
+            cboKhoa.Size = new System.Drawing.Size(115, 31);
             cboKhoa.TabIndex = 1;
             // 
             // labelKhoa
@@ -207,9 +207,9 @@ namespace UDSV
             labelKhoa.BackColor = System.Drawing.Color.Transparent;
             labelKhoa.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             labelKhoa.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            labelKhoa.Location = new System.Drawing.Point(15, 28);
+            labelKhoa.Location = new System.Drawing.Point(18, 28);
             labelKhoa.Name = "labelKhoa";
-            labelKhoa.Size = new System.Drawing.Size(83, 21);
+            labelKhoa.Size = new System.Drawing.Size(72, 21);
             labelKhoa.TabIndex = 0;
             labelKhoa.Text = "🏛️ Khóa:";
             // 
@@ -234,11 +234,11 @@ namespace UDSV
             lblHuongDan.BackColor = System.Drawing.Color.Transparent;
             lblHuongDan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic);
             lblHuongDan.ForeColor = System.Drawing.Color.FromArgb(148, 163, 184);
-            lblHuongDan.Location = new System.Drawing.Point(620, 18);
+            lblHuongDan.Location = new System.Drawing.Point(680, 16);
             lblHuongDan.Name = "lblHuongDan";
-            lblHuongDan.Size = new System.Drawing.Size(470, 20);
+            lblHuongDan.Size = new System.Drawing.Size(410, 20);
             lblHuongDan.TabIndex = 3;
-            lblHuongDan.Text = "💡 Nhập trực tiếp điểm vào cột 'Điểm' (0.0 - 10.0), ô trống = chưa có điểm";
+            lblHuongDan.Text = "💡 Điểm thang 4.0 (0.0 - 4.0), ô trống = chưa có điểm";
             // 
             // lblThongTin
             // 
@@ -246,7 +246,7 @@ namespace UDSV
             lblThongTin.BackColor = System.Drawing.Color.Transparent;
             lblThongTin.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             lblThongTin.ForeColor = System.Drawing.Color.FromArgb(225, 29, 72);
-            lblThongTin.Location = new System.Drawing.Point(225, 17);
+            lblThongTin.Location = new System.Drawing.Point(20, 44);
             lblThongTin.Name = "lblThongTin";
             lblThongTin.Size = new System.Drawing.Size(325, 21);
             lblThongTin.TabIndex = 2;
@@ -299,13 +299,13 @@ namespace UDSV
             dgvBangDiem.DefaultCellStyle = dataGridViewCellStyle3;
             dgvBangDiem.EnableHeadersVisualStyles = false;
             dgvBangDiem.GridColor = System.Drawing.Color.FromArgb(238, 242, 246);
-            dgvBangDiem.Location = new System.Drawing.Point(18, 52);
+            dgvBangDiem.Location = new System.Drawing.Point(18, 74);
             dgvBangDiem.Name = "dgvBangDiem";
             dgvBangDiem.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             dgvBangDiem.RowHeadersVisible = false;
             dgvBangDiem.RowHeadersWidth = 51;
             dgvBangDiem.RowTemplate.Height = 36;
-            dgvBangDiem.Size = new System.Drawing.Size(1072, 425);
+            dgvBangDiem.Size = new System.Drawing.Size(1072, 403);
             dgvBangDiem.TabIndex = 0;
             // 
             // FrmKetQua

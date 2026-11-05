@@ -34,6 +34,11 @@ namespace UDSV
             // để không hiện hộp thoại đỏ mặc định của WinForms.
             dgvBangDiem.CellValidating += DgvBangDiem_CellValidating;
             dgvBangDiem.DataError += DgvBangDiem_DataError;
+
+            // Bật DoubleBuffered cuộn mượt mà
+            typeof(Control)
+                .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                ?.SetValue(dgvBangDiem, true);
         }
 
         /// <summary>
@@ -240,9 +245,8 @@ namespace UDSV
                 dgvBangDiem.DataSource = kqBLL.LayBangDiem(MaKhoaChon, MaMonChon);
                 DatTieuDeCot();
 
-                lblThongTin.Text = $"Khóa {MaKhoaChon} — Kỳ {KyChon} — {cboMonHoc.Text}: " +
-                                   $"{dgvBangDiem.Rows.Count} sinh viên";
-                lblThongTin.ForeColor = Color.DarkGreen;
+                lblThongTin.Text = $"📘 Khóa {MaKhoaChon}  •  Kỳ {KyChon}  •  {cboMonHoc.Text}: {dgvBangDiem.Rows.Count} sinh viên";
+                lblThongTin.ForeColor = Color.FromArgb(5, 150, 105);
             }
             catch (Exception ex) { BaoLoi(ex); }
         }
@@ -254,17 +258,27 @@ namespace UDSV
             if (dgvBangDiem.Columns.Contains("MaSV"))
             {
                 dgvBangDiem.Columns["MaSV"].HeaderText = "Mã sinh viên";
+                dgvBangDiem.Columns["MaSV"].Width = 150;
                 dgvBangDiem.Columns["MaSV"].ReadOnly = true;
+                dgvBangDiem.Columns["MaSV"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvBangDiem.Columns["MaSV"].DefaultCellStyle.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+                dgvBangDiem.Columns["MaSV"].DefaultCellStyle.ForeColor = Color.FromArgb(79, 70, 229);
             }
             if (dgvBangDiem.Columns.Contains("HoTen"))
             {
                 dgvBangDiem.Columns["HoTen"].HeaderText = "Tên sinh viên";
+                dgvBangDiem.Columns["HoTen"].MinimumWidth = 220;
                 dgvBangDiem.Columns["HoTen"].ReadOnly = true;
+                dgvBangDiem.Columns["HoTen"].DefaultCellStyle.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             }
             if (dgvBangDiem.Columns.Contains("Diem"))
             {
                 dgvBangDiem.Columns["Diem"].HeaderText = "Điểm";
+                dgvBangDiem.Columns["Diem"].Width = 130;
+                dgvBangDiem.Columns["Diem"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dgvBangDiem.Columns["Diem"].DefaultCellStyle.Format = "0.00";
+                dgvBangDiem.Columns["Diem"].DefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+                dgvBangDiem.Columns["Diem"].DefaultCellStyle.ForeColor = Color.FromArgb(225, 29, 72);
             }
         }
 
