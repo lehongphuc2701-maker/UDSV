@@ -69,9 +69,12 @@ namespace UDSV.DAL
 
         public bool Xoa(string maKhoa)
         {
-            const string query = "DELETE FROM Khoa WHERE MaKhoa = @MaKhoa";
+            // Xoá các môn trong chương trình khung trước để không vi phạm khoá ngoại FK_CTCT_Khoa
+            const string query = @"
+                DELETE FROM ChuongTrinhChiTiet WHERE MaKhoa = @MaKhoa;
+                DELETE FROM Khoa WHERE MaKhoa = @MaKhoa;";
             SqlParameter p = new SqlParameter("@MaKhoa", SqlDbType.VarChar, 10) { Value = maKhoa ?? "" };
-            return DatabaseHelper.ExecuteNonQuery(query, p) == 1;
+            return DatabaseHelper.ExecuteNonQuery(query, p) >= 1;
         }
 
         public bool KhoaChuongTrinh(string maKhoa, string nguoiKhoa, int tongTCBatBuoc, int tongTCTuChon)

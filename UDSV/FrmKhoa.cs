@@ -193,12 +193,17 @@ namespace UDSV
 
             dgvKhoa.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
             dgvKhoa.ScrollBars = ScrollBars.Both;
+            dgvKhoa.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dgvKhoa.ColumnHeadersHeight = 44;
+            dgvKhoa.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
+            dgvKhoa.ColumnHeadersDefaultCellStyle.Padding = new Padding(0);
 
             if (dgvKhoa.Columns.Contains("MaKhoa"))
             {
                 var col = dgvKhoa.Columns["MaKhoa"];
                 col.HeaderText = "Mã khóa";
-                col.Width = 75;
+                col.Width = 80;
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvKhoa.Columns.Contains("TenKhoa"))
@@ -206,19 +211,23 @@ namespace UDSV
                 var col = dgvKhoa.Columns["TenKhoa"];
                 col.HeaderText = "Tên khóa";
                 col.Width = 175;
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             }
             if (dgvKhoa.Columns.Contains("NamBatDau"))
             {
                 var col = dgvKhoa.Columns["NamBatDau"];
                 col.HeaderText = "Từ năm";
-                col.Width = 65;
+                col.Width = 70;
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvKhoa.Columns.Contains("NamKetThuc"))
             {
                 var col = dgvKhoa.Columns["NamKetThuc"];
                 col.HeaderText = "Đến năm";
-                col.Width = 65;
+                col.Width = 70;
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvKhoa.Columns.Contains("TongTCBatBuoc"))
@@ -226,7 +235,8 @@ namespace UDSV
                 var col = dgvKhoa.Columns["TongTCBatBuoc"];
                 col.HeaderText = "TC BB";
                 col.ToolTipText = "Tổng tín chỉ bắt buộc";
-                col.Width = 60;
+                col.Width = 65;
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvKhoa.Columns.Contains("TongTCTuChon"))
@@ -234,14 +244,16 @@ namespace UDSV
                 var col = dgvKhoa.Columns["TongTCTuChon"];
                 col.HeaderText = "TC TC";
                 col.ToolTipText = "Tổng tín chỉ tự chọn";
-                col.Width = 60;
+                col.Width = 65;
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvKhoa.Columns.Contains("NgayKhoa"))
             {
                 var col = dgvKhoa.Columns["NgayKhoa"];
                 col.HeaderText = "Ngày khoá";
-                col.Width = 90;
+                col.Width = 95;
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.DefaultCellStyle.Format = "dd/MM/yyyy";
             }
@@ -249,7 +261,8 @@ namespace UDSV
             {
                 var col = dgvKhoa.Columns["NguoiKhoa"];
                 col.HeaderText = "Người khoá";
-                col.Width = 85;
+                col.Width = 90;
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
         }
@@ -280,6 +293,10 @@ namespace UDSV
                 {
                     dgvChuongTrinh.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                     dgvChuongTrinh.ScrollBars = ScrollBars.Both;
+                    dgvChuongTrinh.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+                    dgvChuongTrinh.ColumnHeadersHeight = 44;
+                    dgvChuongTrinh.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
+                    dgvChuongTrinh.ColumnHeadersDefaultCellStyle.Padding = new Padding(0);
 
                     if (dgvChuongTrinh.Columns.Contains("MaKhoa")) dgvChuongTrinh.Columns["MaKhoa"].Visible = false;
                     if (dgvChuongTrinh.Columns.Contains("HocKy")) dgvChuongTrinh.Columns["HocKy"].Visible = false;
@@ -290,6 +307,7 @@ namespace UDSV
                         col.HeaderText = "Mã MH";
                         col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
                         col.Width = 105;
+                        col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                         col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
                     if (dgvChuongTrinh.Columns.Contains("TenMH"))
@@ -299,13 +317,17 @@ namespace UDSV
                         col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                         col.FillWeight = 260;
                         col.MinimumWidth = 180;
+                        col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                        col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
                     }
                     if (dgvChuongTrinh.Columns.Contains("SoTinChi"))
                     {
                         var col = dgvChuongTrinh.Columns["SoTinChi"];
                         col.HeaderText = "TC";
+                        col.ToolTipText = "Số tín chỉ";
                         col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
                         col.Width = 55;
+                        col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                         col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
                     if (dgvChuongTrinh.Columns.Contains("BatBuoc"))
@@ -313,30 +335,38 @@ namespace UDSV
                         var col = dgvChuongTrinh.Columns["BatBuoc"];
                         col.HeaderText = "Bắt buộc";
                         col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                        col.Width = 85;
+                        col.Width = 90;
+                        col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                        col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
                     if (dgvChuongTrinh.Columns.Contains("Thu"))
                     {
                         var col = dgvChuongTrinh.Columns["Thu"];
                         col.HeaderText = "Thứ (2..8)";
+                        col.ToolTipText = "Thứ trong tuần (2: Thứ 2 ... 8: Chủ nhật)";
                         col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                        col.Width = 85;
+                        col.Width = 90;
+                        col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                         col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
                     if (dgvChuongTrinh.Columns.Contains("TietBD"))
                     {
                         var col = dgvChuongTrinh.Columns["TietBD"];
                         col.HeaderText = "Tiết BĐ";
+                        col.ToolTipText = "Tiết bắt đầu (1..12)";
                         col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                        col.Width = 70;
+                        col.Width = 75;
+                        col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                         col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
                     if (dgvChuongTrinh.Columns.Contains("TietKT"))
                     {
                         var col = dgvChuongTrinh.Columns["TietKT"];
                         col.HeaderText = "Tiết KT";
+                        col.ToolTipText = "Tiết kết thúc (1..12)";
                         col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                        col.Width = 70;
+                        col.Width = 75;
+                        col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                         col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
                     if (dgvChuongTrinh.Columns.Contains("GiangVien"))
@@ -346,6 +376,8 @@ namespace UDSV
                         col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                         col.FillWeight = 160;
                         col.MinimumWidth = 140;
+                        col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                        col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
                     }
                     if (dgvChuongTrinh.Columns.Contains("PhongHoc"))
                     {
@@ -353,6 +385,7 @@ namespace UDSV
                         col.HeaderText = "Phòng học";
                         col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
                         col.Width = 100;
+                        col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                         col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
                 }
