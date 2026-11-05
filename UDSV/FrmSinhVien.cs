@@ -182,7 +182,7 @@ namespace UDSV
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message, "Lỗi kết nối CSDL",
+                ThongBao.Show(this, ex.Message, "Lỗi kết nối CSDL",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -234,12 +234,12 @@ namespace UDSV
             {
                 if (!bll.ThemSinhVien(LayDuLieuTuForm(), out string error))
                 {
-                    MessageBox.Show(this, error, "Không thêm được",
+                    ThongBao.Show(this, error, "Không thêm được",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                MessageBox.Show(this, "Thêm sinh viên thành công!", "Thành công",
+                ThongBao.Show(this, "Thêm sinh viên thành công!", "Thành công",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LamMoi();
             }
@@ -253,7 +253,7 @@ namespace UDSV
         {
             if (string.IsNullOrEmpty(maDangChon))
             {
-                MessageBox.Show(this, "Hãy chọn một sinh viên trong bảng để sửa.",
+                ThongBao.Show(this, "Hãy chọn một sinh viên trong bảng để sửa.",
                     "Chưa chọn dòng", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -262,12 +262,12 @@ namespace UDSV
             {
                 if (!bll.SuaSinhVien(LayDuLieuTuForm(), out string error))
                 {
-                    MessageBox.Show(this, error, "Không sửa được",
+                    ThongBao.Show(this, error, "Không sửa được",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                MessageBox.Show(this, "Cập nhật sinh viên thành công!", "Thành công",
+                ThongBao.Show(this, "Cập nhật sinh viên thành công!", "Thành công",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LamMoi();
             }
@@ -285,12 +285,12 @@ namespace UDSV
         {
             if (string.IsNullOrEmpty(maDangChon))
             {
-                MessageBox.Show(this, "Hãy chọn một sinh viên trong bảng để xoá.",
+                ThongBao.Show(this, "Hãy chọn một sinh viên trong bảng để xoá.",
                     "Chưa chọn dòng", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            DialogResult confirm = MessageBox.Show(
+            DialogResult confirm = ThongBao.Show(
                 this,
                 $"Bạn có chắc muốn xoá sinh viên {maDangChon} - {txtHoTen.Text}?\n\n" +
                 "Sinh viên sẽ chuyển sang trạng thái 'Đã xóa' (không mất dữ liệu) " +
@@ -305,12 +305,12 @@ namespace UDSV
             {
                 if (!bll.XoaMem(maDangChon, out string error))
                 {
-                    MessageBox.Show(this, error, "Không xoá được",
+                    ThongBao.Show(this, error, "Không xoá được",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                MessageBox.Show(this, "Đã chuyển sinh viên sang trạng thái 'Đã xóa'.",
+                ThongBao.Show(this, "Đã chuyển sinh viên sang trạng thái 'Đã xóa'.",
                     "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LamMoi();
             }
@@ -325,12 +325,12 @@ namespace UDSV
         {
             if (string.IsNullOrEmpty(maDangChon))
             {
-                MessageBox.Show(this, "Hãy chọn một sinh viên trong danh sách 'Đã xóa' để phục hồi.",
+                ThongBao.Show(this, "Hãy chọn một sinh viên trong danh sách 'Đã xóa' để phục hồi.",
                     "Chưa chọn dòng", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            DialogResult confirm = MessageBox.Show(
+            DialogResult confirm = ThongBao.Show(
                 this,
                 $"Phục hồi sinh viên {maDangChon} - {txtHoTen.Text}?\n\n" +
                 "Sinh viên sẽ trở lại trạng thái 'Chưa tốt nghiệp'.",
@@ -344,12 +344,12 @@ namespace UDSV
             {
                 if (!bll.PhucHoi(maDangChon, out string error))
                 {
-                    MessageBox.Show(this, error, "Không phục hồi được",
+                    ThongBao.Show(this, error, "Không phục hồi được",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                MessageBox.Show(this, "Đã phục hồi sinh viên.", "Thành công",
+                ThongBao.Show(this, "Đã phục hồi sinh viên.", "Thành công",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LamMoi();
             }
@@ -452,7 +452,7 @@ namespace UDSV
 
         private void BaoLoi(Exception ex)
         {
-            MessageBox.Show(this, ex.Message, "Lỗi",
+            ThongBao.Show(this, ex.Message, "Lỗi",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }

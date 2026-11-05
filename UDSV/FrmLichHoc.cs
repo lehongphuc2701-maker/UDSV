@@ -361,7 +361,7 @@ namespace UDSV
         private void BaoLoi(Exception ex)
         {
             AppLog.For<FrmLichHoc>().LogError(ex, "Lỗi ở màn thời khoá biểu");
-            MessageBox.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            ThongBao.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         /// <summary>Bấm vào một buổi học: hiện hộp thoại đầy đủ (khối nhỏ hay bị cắt chữ).</summary>

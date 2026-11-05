@@ -405,14 +405,14 @@ namespace UDSV
                 // Mã khóa tự sinh (K26, K27…) — người dùng không gõ tay vì đây là khoá chính.
                 if (!khoaBLL.TaoKhoaKeTiep(out string maMoi, out string error))
                 {
-                    MessageBox.Show(this, error, "Không thêm được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    ThongBao.Show(this, error, "Không thêm được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 TaiDuLieu();
                 ChonKhoa(maMoi);
 
-                MessageBox.Show(this,
+                ThongBao.Show(this,
                     $"Đã thêm khóa {maMoi} (chương trình đang trống).\n" +
                     "Chọn khóa vừa tạo rồi thêm môn vào lưới bên phải.",
                     "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -438,7 +438,7 @@ namespace UDSV
         {
             if (maDangChon.Length == 0)
             {
-                MessageBox.Show(this, "Hãy chọn một khóa trong bảng.", "Chưa chọn",
+                ThongBao.Show(this, "Hãy chọn một khóa trong bảng.", "Chưa chọn",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -455,7 +455,7 @@ namespace UDSV
 
                     if (bbLuoi != hienTai.TongTCBatBuoc || tcLuoi != hienTai.TongTCTuChon)
                     {
-                        MessageBox.Show(this,
+                        ThongBao.Show(this,
                             $"Không thể sửa vì số tín chỉ sau khi chỉnh sửa khác với số tín chỉ đã khoá.\n\n" +
                             $"Trên lưới hiện tại : {bbLuoi} bắt buộc + {tcLuoi} tự chọn\n" +
                             $"Đã khoá            : {hienTai.TongTCBatBuoc} bắt buộc + {hienTai.TongTCTuChon} tự chọn\n\n" +
@@ -467,17 +467,17 @@ namespace UDSV
 
                 if (!khoaBLL.Sua(LayDuLieuTuForm(), out string error))
                 {
-                    MessageBox.Show(this, error, "Không sửa được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    ThongBao.Show(this, error, "Không sửa được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
                 // Lưu luôn chương trình: các ô sửa trực tiếp trên lưới chỉ có hiệu lực từ đây.
                 bool luuCT = ctBLL.LuuChuongTrinh(maDangChon, DocLuoi(), out string loiCT);
 
                 if (luuCT)
-                    MessageBox.Show(this, "Đã cập nhật khóa và chương trình.", "Thành công",
+                    ThongBao.Show(this, "Đã cập nhật khóa và chương trình.", "Thành công",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
-                    MessageBox.Show(this, "Đã lưu khóa, nhưng chương trình chưa lưu được:\n\n" + loiCT,
+                    ThongBao.Show(this, "Đã lưu khóa, nhưng chương trình chưa lưu được:\n\n" + loiCT,
                         "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                 TaiDuLieu();
@@ -517,22 +517,22 @@ namespace UDSV
         {
             if (maDangChon.Length == 0)
             {
-                MessageBox.Show(this, "Hãy chọn một khóa trong bảng.", "Chưa chọn",
+                ThongBao.Show(this, "Hãy chọn một khóa trong bảng.", "Chưa chọn",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            if (MessageBox.Show(this, $"Xoá khóa '{maDangChon}'?", "Xác nhận",
+            if (ThongBao.Show(this, $"Xoá khóa '{maDangChon}'?", "Xác nhận",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
 
             try
             {
                 if (!khoaBLL.Xoa(maDangChon, out string error))
                 {
-                    MessageBox.Show(this, error, "Không xoá được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    ThongBao.Show(this, error, "Không xoá được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                MessageBox.Show(this, "Đã xoá khóa.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ThongBao.Show(this, "Đã xoá khóa.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LamMoi();
             }
             catch (Exception ex) { BaoLoi(ex); }
@@ -543,7 +543,7 @@ namespace UDSV
         {
             if (maDangChon.Length == 0)
             {
-                MessageBox.Show(this, "Hãy chọn một khóa.", "Chưa chọn",
+                ThongBao.Show(this, "Hãy chọn một khóa.", "Chưa chọn",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -555,7 +555,7 @@ namespace UDSV
 
                 if (khoa.DaKhoa)
                 {
-                    MessageBox.Show(this,
+                    ThongBao.Show(this,
                         $"Chương trình khóa {maDangChon} đã được khoá ngày {khoa.NgayKhoa:dd/MM/yyyy} " +
                         $"bởi {khoa.NguoiKhoa}. Không mở khoá lại.",
                         "Đã khoá", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -565,7 +565,7 @@ namespace UDSV
                 int batBuoc = ctBLL.TongTinChi(maDangChon, true);
                 int tuChon = ctBLL.TongTinChi(maDangChon, false);
 
-                if (MessageBox.Show(this,
+                if (ThongBao.Show(this,
                         $"Khoá số tín chỉ của khóa {maDangChon}?\n\n" +
                         $"Tổng sẽ chốt: {batBuoc} bắt buộc + {tuChon} tự chọn\n\n" +
                         "Sau khi khoá KHÔNG sửa được nữa (phải tạo khóa mới).",
@@ -576,12 +576,12 @@ namespace UDSV
 
                 if (!ctBLL.KhoaChuongTrinh(maDangChon, nguoiDung, out string error))
                 {
-                    MessageBox.Show(this, error, "Không khoá được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    ThongBao.Show(this, error, "Không khoá được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 KhoaDTO? sauKhiKhoa = khoaBLL.LayTheoMa(maDangChon);
-                MessageBox.Show(this,
+                ThongBao.Show(this,
                     $"ĐÃ KHOÁ chương trình khóa {maDangChon}: " +
                     $"{sauKhiKhoa?.TongTCBatBuoc} bắt buộc + {sauKhiKhoa?.TongTCTuChon} tự chọn.",
                     "Đã khoá", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -636,7 +636,7 @@ namespace UDSV
         {
             if (maDangChon.Length == 0 || _ctFull == null)
             {
-                MessageBox.Show(this, "Hãy chọn một khóa.", "Chưa chọn",
+                ThongBao.Show(this, "Hãy chọn một khóa.", "Chưa chọn",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -645,7 +645,7 @@ namespace UDSV
             DataRow? mon = DongMonTrongCombo(maMH);
             if (mon == null)
             {
-                MessageBox.Show(this, "Hãy chọn một môn học để thêm.", "Chưa chọn",
+                ThongBao.Show(this, "Hãy chọn một môn học để thêm.", "Chưa chọn",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -656,7 +656,7 @@ namespace UDSV
             {
                 if (!string.Equals(r["MaMH"]?.ToString(), maMH, StringComparison.OrdinalIgnoreCase)) continue;
 
-                MessageBox.Show(this, $"Môn '{tenMH}' đã có trong chương trình.", "Không thêm được",
+                ThongBao.Show(this, $"Môn '{tenMH}' đã có trong chương trình.", "Không thêm được",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -693,14 +693,14 @@ namespace UDSV
         {
             if (maDangChon.Length == 0 || _ctFull == null)
             {
-                MessageBox.Show(this, "Hãy chọn một khóa.", "Chưa chọn",
+                ThongBao.Show(this, "Hãy chọn một khóa.", "Chưa chọn",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
             if (dgvChuongTrinh.CurrentRow?.DataBoundItem is not DataRowView item)
             {
-                MessageBox.Show(this, "Hãy chọn một môn trong chương trình.", "Chưa chọn",
+                ThongBao.Show(this, "Hãy chọn một môn trong chương trình.", "Chưa chọn",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -710,7 +710,7 @@ namespace UDSV
                 ? dong["TenMH"].ToString() ?? ""
                 : dong["MaMH"].ToString() ?? "";
 
-            if (MessageBox.Show(this,
+            if (ThongBao.Show(this,
                     $"Xoá môn '{tenMH}' khỏi chương trình?\n" +
                     "(Chỉ xoá trên lưới — bấm \"Lưu thay đổi\" mới ghi vào CSDL.)",
                     "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
@@ -762,7 +762,7 @@ namespace UDSV
         private void BaoLoi(Exception ex)
         {
             AppLog.For<FrmKhoa>().LogError(ex, "Lỗi ở màn khóa");
-            MessageBox.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            ThongBao.Show(this, ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

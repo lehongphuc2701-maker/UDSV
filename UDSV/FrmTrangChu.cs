@@ -182,7 +182,7 @@ namespace UDSV
 
         private void BtnDangXuat_Click(object? sender, EventArgs e)
         {
-            DialogResult confirm = MessageBox.Show(
+            DialogResult confirm = ThongBao.Show(
                 this, "Đăng xuất và quay về màn hình đăng nhập?",
                 "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
