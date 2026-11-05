@@ -55,6 +55,9 @@ namespace UDSV.BLL
             return true;
         }
 
+        /// <summary>Cập nhật trạng thái học tập của sinh viên ('Chưa tốt nghiệp', 'Đã tốt nghiệp', 'Đã thôi học', 'Đã xóa').</summary>
+        public bool DoiTrangThai(string maSV, string trangThai) => svDAL.DoiTrangThai(maSV, trangThai);
+
         /// <summary>Một sinh viên theo mã (kèm tên khóa) — dùng cho màn hồ sơ của sinh viên.</summary>
         public DataTable LayTheoMa(string maSV) => svDAL.LaySinhVienTheoMa(maSV);
 

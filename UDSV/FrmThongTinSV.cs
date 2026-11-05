@@ -447,6 +447,7 @@ namespace UDSV
                 // Tính toán tổng hợp từ bảng điểm
                 DataTable diem = kqBLL.LayTheoSinhVien(maSV);
                 int tcTichLuy = 0, tcTinhDiem = 0;
+                int soMonRot = 0, tcRot = 0;
                 decimal tongDiem = 0m;
 
                 foreach (DataRow d in diem.Rows)
@@ -457,7 +458,15 @@ namespace UDSV
 
                     tcTinhDiem += tc;
                     tongDiem += diemMon * tc;
-                    if (diemMon >= 2.0m) tcTichLuy += tc;
+                    if (diemMon >= 2.0m)
+                    {
+                        tcTichLuy += tc;
+                    }
+                    else
+                    {
+                        soMonRot++;
+                        tcRot += tc;
+                    }
                 }
 
                 // Gán thẻ tín chỉ
@@ -488,23 +497,34 @@ namespace UDSV
                     lblGPAXepLoai.ForeColor = mauXepLoai;
                 }
 
-                // TỰ ĐỘNG XÉT TỐT NGHIỆP HAI CHIỀU: Đủ 120 TC & GPA >= 2.0 thì Tốt nghiệp, thiếu thì Chưa tốt nghiệp
-                if (trangThai != "Đã thôi học" && trangThai != "Đã xóa")
+                // TỰ ĐỘNG XÉT DUYỆT TRẠNG THÁI HỌC TẬP (Buộc thôi học / Tốt nghiệp / Đang học)
+                if (trangThai != "Đã xóa")
                 {
-                    if (tcTichLuy >= TongTinChiChuongTrinh && gpa >= 2.0m)
+                    // 1. BUỘC THÔI HỌC: Nếu nợ đọng từ 8 môn trở lên (hoặc >= 24 TC nợ)
+                    if (soMonRot >= 8 || tcRot >= 24)
+                    {
+                        if (trangThai != "Đã thôi học")
+                        {
+                            trangThai = "Đã thôi học";
+                            try { svBLL.DoiTrangThai(maSV, "Đã thôi học"); } catch { }
+                        }
+                    }
+                    // 2. TỐT NGHIỆP: Đủ 120 TC và GPA >= 2.00
+                    else if (tcTichLuy >= TongTinChiChuongTrinh && gpa >= 2.0m)
                     {
                         if (trangThai != "Đã tốt nghiệp")
                         {
                             trangThai = "Đã tốt nghiệp";
-                            try { new SinhVienDAL().DoiTrangThai(maSV, "Đã tốt nghiệp"); } catch { }
+                            try { svBLL.DoiTrangThai(maSV, "Đã tốt nghiệp"); } catch { }
                         }
                     }
+                    // 3. ĐANG HỌC (Chưa tốt nghiệp): Các trường hợp bình thường còn lại
                     else
                     {
-                        if (trangThai == "Đã tốt nghiệp")
+                        if (trangThai == "Đã tốt nghiệp" || trangThai == "Đã thôi học")
                         {
                             trangThai = "Chưa tốt nghiệp";
-                            try { new SinhVienDAL().DoiTrangThai(maSV, "Chưa tốt nghiệp"); } catch { }
+                            try { svBLL.DoiTrangThai(maSV, "Chưa tốt nghiệp"); } catch { }
                         }
                     }
                 }
@@ -517,18 +537,25 @@ namespace UDSV
                     valTrangThai.Text = "Đã tốt nghiệp";
                     valTrangThai.ForeColor = Color.FromArgb(16, 185, 129);
                 }
-                else if (trangThai == "Đã thôi học" || trangThai == "Đã xóa")
+                else if (trangThai == "Đã thôi học")
                 {
-                    lblStatusVal.Text = "🔴 Đã thôi học";
+                    lblStatusVal.Text = "🔴 Buộc thôi học";
                     lblStatusVal.ForeColor = Color.FromArgb(220, 38, 38);
-                    valTrangThai.Text = "Đã thôi học";
+                    valTrangThai.Text = soMonRot >= 8 ? $"Buộc thôi học (Rớt {soMonRot} môn)" : "Đã thôi học";
+                    valTrangThai.ForeColor = Color.FromArgb(220, 38, 38);
+                }
+                else if (trangThai == "Đã xóa")
+                {
+                    lblStatusVal.Text = "🔴 Đã xóa";
+                    lblStatusVal.ForeColor = Color.FromArgb(220, 38, 38);
+                    valTrangThai.Text = "Đã xóa";
                     valTrangThai.ForeColor = Color.FromArgb(220, 38, 38);
                 }
                 else
                 {
                     lblStatusVal.Text = "🟢 Đang học";
                     lblStatusVal.ForeColor = Color.FromArgb(5, 150, 105);
-                    valTrangThai.Text = "Chưa tốt nghiệp";
+                    valTrangThai.Text = soMonRot > 0 ? $"Chưa tốt nghiệp (Nợ {soMonRot} môn)" : "Chưa tốt nghiệp";
                     valTrangThai.ForeColor = Color.FromArgb(70, 80, 95);
                 }
             }

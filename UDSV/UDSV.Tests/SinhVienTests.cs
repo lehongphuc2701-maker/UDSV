@@ -129,5 +129,13 @@ namespace UDSV.Tests
 
             Assert.AreEqual(0, MonHocBLL.TongTinChi(dt));
         }
+
+        [TestMethod]
+        public void DoiTrangThai_ThoiHoc_TraVeTrue()
+        {
+            SinhVienBLL bll = TaoBll(out _);
+            bool kq = bll.DoiTrangThai("SV001", "Đã thôi học");
+            Assert.IsTrue(kq);
+        }
     }
 }
