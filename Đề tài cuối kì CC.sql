@@ -1,4 +1,4 @@
--- =====================================================================
+﻿-- =====================================================================
 --  ĐỀ TÀI CUỐI KỲ — ỨNG DỤNG QUẢN LÝ SINH VIÊN (UDSV)
 --  Mô hình: quyền theo khóa (catalog year) — mỗi khóa một chương trình riêng
 --
@@ -38,6 +38,7 @@ CREATE TABLE TaiKhoan (
     Password VARCHAR(100) NOT NULL,
     HoTen    NVARCHAR(100) NOT NULL,
     VaiTro   VARCHAR(20)  NOT NULL DEFAULT 'Admin',
+    MaSV     VARCHAR(20)  NULL,
     CONSTRAINT CK_TaiKhoan_VaiTro CHECK (VaiTro IN ('Admin', 'SinhVien'))
 );
 GO
@@ -72,6 +73,10 @@ CREATE TABLE SinhVien (
     CONSTRAINT CK_SinhVien_TrangThai
         CHECK (TrangThai IN (N'Chưa tốt nghiệp', N'Đã thôi học', N'Đã tốt nghiệp', N'Đã xóa'))
 );
+GO
+
+-- Khóa ngoại từ Tài khoản sang Sinh viên
+ALTER TABLE TaiKhoan ADD CONSTRAINT FK_TaiKhoan_SinhVien FOREIGN KEY (MaSV) REFERENCES SinhVien(MaSV);
 GO
 
 -- 4. Môn học (danh mục)
@@ -137,10 +142,20 @@ GO
 --  DỮ LIỆU MẪU
 -- =====================================================================
 
-INSERT INTO TaiKhoan (Username, Password, HoTen, VaiTro) VALUES
-    ('admin', '123456', N'Quản trị viên',    'Admin'),
-    ('phuc',  '123456', N'Lê Hồng Phúc',     'Admin'),
-    ('huan',  '123456', N'Nguyễn Cảnh Huân', 'Admin');
+INSERT INTO TaiKhoan (Username, Password, HoTen, VaiTro, MaSV) VALUES
+    ('admin', '123456', N'Quản trị viên',    'Admin',    NULL),
+    ('phuc',  '123456', N'Lê Hồng Phúc',     'Admin',    NULL),
+    ('huan',  '123456', N'Nguyễn Cảnh Huân', 'Admin',    NULL),
+    ('SV001', '123456', N'Nguyễn Văn An',    'SinhVien', 'SV001'),
+    ('SV002', '123456', N'Trần Thị Bình',    'SinhVien', 'SV002'),
+    ('SV003', '123456', N'Lê Hoàng Nam',     'SinhVien', 'SV003'),
+    ('SV004', '123456', N'Phạm Minh Châu',   'SinhVien', 'SV004'),
+    ('SV005', '123456', N'Vũ Thị Hà',        'SinhVien', 'SV005'),
+    ('SV006', '123456', N'Đỗ Công Huỳnh Hà', 'SinhVien', 'SV006'),
+    ('SV007', '123456', N'Bùi Thị Lan',      'SinhVien', 'SV007'),
+    ('SV008', '123456', N'Nguyễn Đức Minh',  'SinhVien', 'SV008'),
+    ('SV101', '123456', N'Lê Gia Bảo',       'SinhVien', 'SV101'),
+    ('SV102', '123456', N'Trần Lê Gia Hân',  'SinhVien', 'SV102');
 GO
 
 -- K24: đã chốt chương trình (NgayKhoa có giá trị). K25: còn sửa được.

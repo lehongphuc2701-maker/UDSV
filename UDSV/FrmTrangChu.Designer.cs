@@ -121,28 +121,30 @@ namespace UDSV
             // lblVaiTro
             // 
             lblVaiTro.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            lblVaiTro.AutoSize = true;
+            lblVaiTro.AutoEllipsis = true;
             lblVaiTro.BackColor = System.Drawing.Color.Transparent;
             lblVaiTro.Font = new System.Drawing.Font("Segoe UI", 8.8F);
             lblVaiTro.ForeColor = System.Drawing.Color.FromArgb(224, 231, 255);
-            lblVaiTro.Location = new System.Drawing.Point(740, 44);
+            lblVaiTro.Location = new System.Drawing.Point(490, 44);
             lblVaiTro.Name = "lblVaiTro";
-            lblVaiTro.Size = new System.Drawing.Size(143, 20);
+            lblVaiTro.Size = new System.Drawing.Size(450, 22);
             lblVaiTro.TabIndex = 4;
             lblVaiTro.Text = "Vai trò: Quản trị viên";
+            lblVaiTro.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // lblXinChao
             // 
             lblXinChao.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            lblXinChao.AutoSize = true;
+            lblXinChao.AutoEllipsis = true;
             lblXinChao.BackColor = System.Drawing.Color.Transparent;
             lblXinChao.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
             lblXinChao.ForeColor = System.Drawing.Color.White;
-            lblXinChao.Location = new System.Drawing.Point(740, 18);
+            lblXinChao.Location = new System.Drawing.Point(490, 16);
             lblXinChao.Name = "lblXinChao";
-            lblXinChao.Size = new System.Drawing.Size(97, 25);
+            lblXinChao.Size = new System.Drawing.Size(450, 26);
             lblXinChao.TabIndex = 3;
             lblXinChao.Text = "Xin chào,..";
+            lblXinChao.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblSubtitle
             // 

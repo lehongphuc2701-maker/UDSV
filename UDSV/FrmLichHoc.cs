@@ -318,19 +318,19 @@ namespace UDSV
             Panel khoi = new Panel
             {
                 Dock = DockStyle.Fill,
-                Margin = new Padding(2),
+                Margin = new Padding(3),
                 BackColor = bg,
-                Padding = new Padding(6, 4, 4, 4)
+                Padding = new Padding(8, 6, 6, 6)
             };
 
             // Vẽ dải màu nhấn bên trái
             khoi.Paint += (s, e) =>
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                using var pen = new Pen(border, 1.2f);
+                using var pen = new Pen(border, 1.5f);
                 e.Graphics.DrawRectangle(pen, 0, 0, khoi.Width - 1, khoi.Height - 1);
                 using var barBrush = new SolidBrush(border);
-                e.Graphics.FillRectangle(barBrush, 0, 0, 4, khoi.Height);
+                e.Graphics.FillRectangle(barBrush, 0, 0, 5, khoi.Height);
             };
 
             string thongTinHien = $"{tenMon}\n({tiet})";
@@ -371,28 +371,135 @@ namespace UDSV
             HienChiTiet(r);
         }
 
-        /// <summary>Hiện hộp thoại đầy đủ cho một buổi học.</summary>
+        /// <summary>Hiện hộp thoại chi tiết buổi học thiết kế dạng Card sang trọng, hiện đại.</summary>
         internal void HienChiTiet(DataRow r)
         {
-
             string tenMon = r["TenMH"]?.ToString() ?? "";
             string maMH = r["MaMH"]?.ToString() ?? "";
             int thu = Convert.ToInt32(r["Thu"]);
             string thuTen = thu == 8 ? "Chủ nhật" : $"Thứ {thu}";
-            string gv = r["GiangVien"] == DBNull.Value ? "(chưa phân công)" : r["GiangVien"]?.ToString() ?? "";
-            string phong = r["PhongHoc"] == DBNull.Value ? "(chưa xếp phòng)" : r["PhongHoc"]?.ToString() ?? "";
+            int tietBD = Convert.ToInt32(r["TietBD"]);
+            int tietKT = Convert.ToInt32(r["TietKT"]);
+            string gv = r["GiangVien"] == DBNull.Value || string.IsNullOrWhiteSpace(r["GiangVien"]?.ToString())
+                ? "(Chưa phân công)" : r["GiangVien"]!.ToString()!;
+            string phong = r["PhongHoc"] == DBNull.Value || string.IsNullOrWhiteSpace(r["PhongHoc"]?.ToString())
+                ? "(Chưa xếp phòng)" : r["PhongHoc"]!.ToString()!;
 
-            string noiDung =
-                $"Môn học     : {tenMon}\r\n" +
-                $"Mã môn      : {maMH}\r\n" +
-                $"Lớp         : {MaKhoaChon} — Học kỳ {KyChon}\r\n" +
-                $"Thứ         : {thuTen}\r\n" +
-                $"Tiết        : {r["TietBD"]} - {r["TietKT"]}\r\n" +
-                $"Phòng học   : {phong}\r\n" +
-                $"Giảng viên  : {gv}";
+            using var dlg = new Form
+            {
+                Text = "Chi tiết lịch học",
+                StartPosition = FormStartPosition.CenterParent,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false,
+                ShowInTaskbar = false,
+                ClientSize = new Size(520, 390),
+                BackColor = Color.FromArgb(248, 250, 252)
+            };
 
-            MessageBox.Show(this, noiDung, "Chi tiết buổi học",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // Header gradient banner
+            var pnlTop = new Controls.GradientPanel
+            {
+                Dock = DockStyle.Top,
+                Height = 65,
+                ColorStart = Color.FromArgb(79, 70, 229),
+                ColorEnd = Color.FromArgb(124, 58, 237),
+                Angle = 135f
+            };
+            var lblTieuDe = new Label
+            {
+                Text = "📅  THÔNG TIN CHI TIẾT BUỔI HỌC",
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Padding = new Padding(20, 0, 0, 0),
+                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
+                ForeColor = Color.White,
+                BackColor = Color.Transparent
+            };
+            pnlTop.Controls.Add(lblTieuDe);
+
+            // Body card
+            var card = new Controls.CardPanel
+            {
+                Location = new Point(16, 78),
+                Size = new Size(488, 240),
+                BackColor = Color.White,
+                Radius = 14
+            };
+
+            var lblTenMon = new Label
+            {
+                Text = tenMon,
+                Location = new Point(18, 14),
+                Size = new Size(450, 32),
+                Font = new Font("Segoe UI", 12.5F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(30, 41, 59),
+                AutoEllipsis = true,
+                BackColor = Color.Transparent
+            };
+            card.Controls.Add(lblTenMon);
+
+            var pnlLine = new Panel
+            {
+                Location = new Point(18, 50),
+                Size = new Size(452, 1),
+                BackColor = Color.FromArgb(241, 245, 249)
+            };
+            card.Controls.Add(pnlLine);
+
+            void ThemDongThongTin(int y, string icon, string nhan, string giaTri, Color mauGiaTri)
+            {
+                var lblIconNhan = new Label
+                {
+                    Text = $"{icon}  {nhan}:",
+                    Location = new Point(18, y),
+                    Size = new Size(130, 24),
+                    Font = new Font("Segoe UI", 9.5F, FontStyle.Regular),
+                    ForeColor = Color.FromArgb(100, 116, 139),
+                    BackColor = Color.Transparent,
+                    TextAlign = ContentAlignment.MiddleLeft
+                };
+                var lblVal = new Label
+                {
+                    Text = giaTri,
+                    Location = new Point(155, y),
+                    Size = new Size(315, 24),
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    ForeColor = mauGiaTri,
+                    BackColor = Color.Transparent,
+                    TextAlign = ContentAlignment.MiddleLeft,
+                    AutoEllipsis = true
+                };
+                card.Controls.Add(lblIconNhan);
+                card.Controls.Add(lblVal);
+            }
+
+            ThemDongThongTin(60, "🏷️", "Mã học phần", maMH, Color.FromArgb(79, 70, 229));
+            ThemDongThongTin(92, "🎓", "Khóa / Học kỳ", $"{MaKhoaChon} — Học kỳ {KyChon}", Color.FromArgb(30, 41, 59));
+            ThemDongThongTin(124, "⏰", "Thời gian", $"{thuTen} (Tiết {tietBD} - {tietKT})", Color.FromArgb(16, 185, 129));
+            ThemDongThongTin(156, "🏫", "Phòng học", phong, Color.FromArgb(225, 29, 72));
+            ThemDongThongTin(188, "👨‍🏫", "Giảng viên", gv, Color.FromArgb(51, 65, 85));
+
+            // Nút đóng
+            var btnDong = new Controls.GradientButton
+            {
+                Text = "Đóng",
+                Location = new Point(190, 332),
+                Size = new Size(140, 40),
+                Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+                ForeColor = Color.White,
+                GradientStart = Color.FromArgb(79, 70, 229),
+                GradientEnd = Color.FromArgb(124, 58, 237),
+                Radius = 10,
+                Cursor = Cursors.Hand
+            };
+            btnDong.Click += (s, e) => dlg.Close();
+
+            dlg.Controls.Add(btnDong);
+            dlg.Controls.Add(card);
+            dlg.Controls.Add(pnlTop);
+
+            dlg.ShowDialog(this);
         }
 
         /// <summary>Bắt WM_LBUTTONUP ở tầng ứng dụng rồi tự tìm khối dưới con trỏ.</summary>

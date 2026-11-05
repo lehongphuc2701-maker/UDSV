@@ -4,6 +4,9 @@
     <Compile Update="Controls\CustomControls.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="FrmChuongTrinhSV.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="FrmDangKy.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -23,6 +26,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="FrmDangNhap.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="FrmThongTinSV.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="FrmThongTinTaiKhoan.cs">
