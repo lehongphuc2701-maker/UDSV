@@ -431,7 +431,6 @@ namespace UDSV
                 // Gán dữ liệu thẻ bên trái
                 lblProfileHoTen.Text = hoTen;
                 lblProfileMaSV.Text = $"🏷️  Mã SV: {maSV}";
-                lblStatusVal.Text = (trangThai == "Đã tốt nghiệp") ? "🎓 Đã tốt nghiệp" : (trangThai == "Đã xóa" ? "🔴 Đã thôi học" : "🟢 Đang học");
                 lblKhoaVal.Text = maKhoa;
                 lblNganhVal.Text = string.IsNullOrWhiteSpace(tenKhoa) ? maKhoa : tenKhoa;
                 lblGioiTinhVal.Text = gioiTinh;
@@ -444,7 +443,6 @@ namespace UDSV
                 valSDT.Text = string.IsNullOrWhiteSpace(sdt) ? "(Chưa cập nhật)" : sdt;
                 valMaKhoa.Text = maKhoa;
                 valTenKhoa.Text = string.IsNullOrWhiteSpace(tenKhoa) ? maKhoa : tenKhoa;
-                valTrangThai.Text = trangThai;
 
                 // Tính toán tổng hợp từ bảng điểm
                 DataTable diem = kqBLL.LayTheoSinhVien(maSV);
@@ -468,6 +466,7 @@ namespace UDSV
                 lblTCProgress.Text = $"Tiến độ: {ptHoanThanh}% chương trình";
 
                 // Gán thẻ GPA
+                decimal gpa = 0m;
                 if (tcTinhDiem == 0)
                 {
                     lblGPAVal.Text = "— / 4.00";
@@ -475,7 +474,7 @@ namespace UDSV
                 }
                 else
                 {
-                    decimal gpa = Math.Round(tongDiem / tcTinhDiem, 2);
+                    gpa = Math.Round(tongDiem / tcTinhDiem, 2);
                     lblGPAVal.Text = $"{gpa:0.00} / 4.00";
 
                     string xepLoai = "Yếu";
@@ -487,6 +486,36 @@ namespace UDSV
 
                     lblGPAXepLoai.Text = $"Xếp loại học lực: {xepLoai}";
                     lblGPAXepLoai.ForeColor = mauXepLoai;
+                }
+
+                // TỰ ĐỘNG XÉT TỐT NGHIỆP: Tích lũy đủ 120 TC và GPA >= 2.00
+                if (tcTichLuy >= TongTinChiChuongTrinh && gpa >= 2.0m && trangThai != "Đã thôi học" && trangThai != "Đã xóa")
+                {
+                    trangThai = "Đã tốt nghiệp";
+                    try { new SinhVienDAL().DoiTrangThai(maSV, "Đã tốt nghiệp"); } catch { }
+                }
+
+                // Cập nhật nhãn trạng thái chính xác
+                if (trangThai == "Đã tốt nghiệp")
+                {
+                    lblStatusVal.Text = "🎓 Đã tốt nghiệp";
+                    lblStatusVal.ForeColor = Color.FromArgb(16, 185, 129);
+                    valTrangThai.Text = "Đã tốt nghiệp (Đạt chuẩn 120 TC)";
+                    valTrangThai.ForeColor = Color.FromArgb(16, 185, 129);
+                }
+                else if (trangThai == "Đã thôi học" || trangThai == "Đã xóa")
+                {
+                    lblStatusVal.Text = "🔴 Đã thôi học";
+                    lblStatusVal.ForeColor = Color.FromArgb(220, 38, 38);
+                    valTrangThai.Text = "Đã thôi học";
+                    valTrangThai.ForeColor = Color.FromArgb(220, 38, 38);
+                }
+                else
+                {
+                    lblStatusVal.Text = "🟢 Đang học";
+                    lblStatusVal.ForeColor = Color.FromArgb(5, 150, 105);
+                    valTrangThai.Text = "Chưa tốt nghiệp";
+                    valTrangThai.ForeColor = Color.FromArgb(70, 80, 95);
                 }
             }
             catch (Exception ex)
