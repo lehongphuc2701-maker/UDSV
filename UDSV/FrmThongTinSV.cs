@@ -488,11 +488,25 @@ namespace UDSV
                     lblGPAXepLoai.ForeColor = mauXepLoai;
                 }
 
-                // TỰ ĐỘNG XÉT TỐT NGHIỆP: Tích lũy đủ 120 TC và GPA >= 2.00
-                if (tcTichLuy >= TongTinChiChuongTrinh && gpa >= 2.0m && trangThai != "Đã thôi học" && trangThai != "Đã xóa")
+                // TỰ ĐỘNG XÉT TỐT NGHIỆP HAI CHIỀU: Đủ 120 TC & GPA >= 2.0 thì Tốt nghiệp, thiếu thì Chưa tốt nghiệp
+                if (trangThai != "Đã thôi học" && trangThai != "Đã xóa")
                 {
-                    trangThai = "Đã tốt nghiệp";
-                    try { new SinhVienDAL().DoiTrangThai(maSV, "Đã tốt nghiệp"); } catch { }
+                    if (tcTichLuy >= TongTinChiChuongTrinh && gpa >= 2.0m)
+                    {
+                        if (trangThai != "Đã tốt nghiệp")
+                        {
+                            trangThai = "Đã tốt nghiệp";
+                            try { new SinhVienDAL().DoiTrangThai(maSV, "Đã tốt nghiệp"); } catch { }
+                        }
+                    }
+                    else
+                    {
+                        if (trangThai == "Đã tốt nghiệp")
+                        {
+                            trangThai = "Chưa tốt nghiệp";
+                            try { new SinhVienDAL().DoiTrangThai(maSV, "Chưa tốt nghiệp"); } catch { }
+                        }
+                    }
                 }
 
                 // Cập nhật nhãn trạng thái chính xác
@@ -500,7 +514,7 @@ namespace UDSV
                 {
                     lblStatusVal.Text = "🎓 Đã tốt nghiệp";
                     lblStatusVal.ForeColor = Color.FromArgb(16, 185, 129);
-                    valTrangThai.Text = "Đã tốt nghiệp (Đạt chuẩn 120 TC)";
+                    valTrangThai.Text = "Đã tốt nghiệp";
                     valTrangThai.ForeColor = Color.FromArgb(16, 185, 129);
                 }
                 else if (trangThai == "Đã thôi học" || trangThai == "Đã xóa")
