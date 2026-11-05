@@ -79,7 +79,7 @@ namespace UDSV
             pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
             pnlHeader.Location = new System.Drawing.Point(0, 0);
             pnlHeader.Name = "pnlHeader";
-            pnlHeader.Size = new System.Drawing.Size(1160, 75);
+            pnlHeader.Size = new System.Drawing.Size(1320, 75);
             pnlHeader.TabIndex = 0;
             // 
             // lblSub
@@ -142,7 +142,7 @@ namespace UDSV
             cardKhoa.Location = new System.Drawing.Point(20, 85);
             cardKhoa.Name = "cardKhoa";
             cardKhoa.Radius = 14;
-            cardKhoa.Size = new System.Drawing.Size(1120, 155);
+            cardKhoa.Size = new System.Drawing.Size(1280, 152);
             cardKhoa.TabIndex = 1;
             // 
             // btnLamMoi
@@ -153,7 +153,7 @@ namespace UDSV
             btnLamMoi.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             btnLamMoi.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             btnLamMoi.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            btnLamMoi.Location = new System.Drawing.Point(455, 100);
+            btnLamMoi.Location = new System.Drawing.Point(461, 98);
             btnLamMoi.Name = "btnLamMoi";
             btnLamMoi.Size = new System.Drawing.Size(125, 38);
             btnLamMoi.TabIndex = 16;
@@ -168,7 +168,7 @@ namespace UDSV
             btnXoa.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             btnXoa.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             btnXoa.ForeColor = System.Drawing.Color.White;
-            btnXoa.Location = new System.Drawing.Point(318, 100);
+            btnXoa.Location = new System.Drawing.Point(323, 98);
             btnXoa.Name = "btnXoa";
             btnXoa.Size = new System.Drawing.Size(125, 38);
             btnXoa.TabIndex = 15;
@@ -183,9 +183,9 @@ namespace UDSV
             btnSua.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             btnSua.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             btnSua.ForeColor = System.Drawing.Color.White;
-            btnSua.Location = new System.Drawing.Point(175, 100);
+            btnSua.Location = new System.Drawing.Point(175, 98);
             btnSua.Name = "btnSua";
-            btnSua.Size = new System.Drawing.Size(130, 38);
+            btnSua.Size = new System.Drawing.Size(135, 38);
             btnSua.TabIndex = 14;
             btnSua.Text = "💾 Lưu thay đổi";
             btnSua.UseVisualStyleBackColor = false;
@@ -202,7 +202,7 @@ namespace UDSV
             btnThem.ForeColor = System.Drawing.Color.White;
             btnThem.GradientEnd = System.Drawing.Color.FromArgb(16, 185, 129);
             btnThem.GradientStart = System.Drawing.Color.FromArgb(5, 150, 105);
-            btnThem.Location = new System.Drawing.Point(20, 100);
+            btnThem.Location = new System.Drawing.Point(20, 98);
             btnThem.Name = "btnThem";
             btnThem.Radius = 12;
             btnThem.Size = new System.Drawing.Size(142, 38);
@@ -213,10 +213,10 @@ namespace UDSV
             // numTCTuChon
             // 
             numTCTuChon.Font = new System.Drawing.Font("Segoe UI", 10F);
-            numTCTuChon.Location = new System.Drawing.Point(995, 54);
+            numTCTuChon.Location = new System.Drawing.Point(1015, 54);
             numTCTuChon.Maximum = new decimal(new int[] { 300, 0, 0, 0 });
             numTCTuChon.Name = "numTCTuChon";
-            numTCTuChon.Size = new System.Drawing.Size(85, 30);
+            numTCTuChon.Size = new System.Drawing.Size(90, 30);
             numTCTuChon.TabIndex = 12;
             numTCTuChon.Value = new decimal(new int[] { 6, 0, 0, 0 });
             // 
@@ -225,7 +225,7 @@ namespace UDSV
             label7.AutoSize = true;
             label7.Font = new System.Drawing.Font("Segoe UI", 8.8F, System.Drawing.FontStyle.Bold);
             label7.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            label7.Location = new System.Drawing.Point(995, 31);
+            label7.Location = new System.Drawing.Point(1015, 31);
             label7.Name = "label7";
             label7.Size = new System.Drawing.Size(85, 20);
             label7.TabIndex = 11;
@@ -234,10 +234,10 @@ namespace UDSV
             // numTCBatBuoc
             // 
             numTCBatBuoc.Font = new System.Drawing.Font("Segoe UI", 10F);
-            numTCBatBuoc.Location = new System.Drawing.Point(885, 54);
+            numTCBatBuoc.Location = new System.Drawing.Point(905, 54);
             numTCBatBuoc.Maximum = new decimal(new int[] { 300, 0, 0, 0 });
             numTCBatBuoc.Name = "numTCBatBuoc";
-            numTCBatBuoc.Size = new System.Drawing.Size(85, 30);
+            numTCBatBuoc.Size = new System.Drawing.Size(90, 30);
             numTCBatBuoc.TabIndex = 10;
             numTCBatBuoc.Value = new decimal(new int[] { 27, 0, 0, 0 });
             // 
@@ -246,7 +246,7 @@ namespace UDSV
             label6.AutoSize = true;
             label6.Font = new System.Drawing.Font("Segoe UI", 8.8F, System.Drawing.FontStyle.Bold);
             label6.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            label6.Location = new System.Drawing.Point(885, 31);
+            label6.Location = new System.Drawing.Point(905, 31);
             label6.Name = "label6";
             label6.Size = new System.Drawing.Size(94, 20);
             label6.TabIndex = 9;
@@ -255,7 +255,7 @@ namespace UDSV
             // numNamKetThuc
             // 
             numNamKetThuc.Font = new System.Drawing.Font("Segoe UI", 10F);
-            numNamKetThuc.Location = new System.Drawing.Point(775, 54);
+            numNamKetThuc.Location = new System.Drawing.Point(800, 54);
             numNamKetThuc.Maximum = new decimal(new int[] { 2100, 0, 0, 0 });
             numNamKetThuc.Minimum = new decimal(new int[] { 2001, 0, 0, 0 });
             numNamKetThuc.Name = "numNamKetThuc";
@@ -268,7 +268,7 @@ namespace UDSV
             label5.AutoSize = true;
             label5.Font = new System.Drawing.Font("Segoe UI", 8.8F, System.Drawing.FontStyle.Bold);
             label5.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            label5.Location = new System.Drawing.Point(775, 31);
+            label5.Location = new System.Drawing.Point(800, 31);
             label5.Name = "label5";
             label5.Size = new System.Drawing.Size(71, 20);
             label5.TabIndex = 7;
@@ -277,7 +277,7 @@ namespace UDSV
             // numNamBatDau
             // 
             numNamBatDau.Font = new System.Drawing.Font("Segoe UI", 10F);
-            numNamBatDau.Location = new System.Drawing.Point(665, 54);
+            numNamBatDau.Location = new System.Drawing.Point(695, 54);
             numNamBatDau.Maximum = new decimal(new int[] { 2100, 0, 0, 0 });
             numNamBatDau.Minimum = new decimal(new int[] { 2000, 0, 0, 0 });
             numNamBatDau.Name = "numNamBatDau";
@@ -290,7 +290,7 @@ namespace UDSV
             label4.AutoSize = true;
             label4.Font = new System.Drawing.Font("Segoe UI", 8.8F, System.Drawing.FontStyle.Bold);
             label4.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            label4.Location = new System.Drawing.Point(665, 31);
+            label4.Location = new System.Drawing.Point(695, 31);
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(61, 20);
             label4.TabIndex = 5;
@@ -300,10 +300,10 @@ namespace UDSV
             // 
             txtTenKhoa.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             txtTenKhoa.Font = new System.Drawing.Font("Segoe UI", 10F);
-            txtTenKhoa.Location = new System.Drawing.Point(190, 54);
+            txtTenKhoa.Location = new System.Drawing.Point(165, 54);
             txtTenKhoa.Name = "txtTenKhoa";
             txtTenKhoa.PlaceholderText = "Ví dụ: Khóa 2024 - 2028";
-            txtTenKhoa.Size = new System.Drawing.Size(450, 30);
+            txtTenKhoa.Size = new System.Drawing.Size(510, 30);
             txtTenKhoa.TabIndex = 4;
             // 
             // label3
@@ -311,7 +311,7 @@ namespace UDSV
             label3.AutoSize = true;
             label3.Font = new System.Drawing.Font("Segoe UI", 8.8F, System.Drawing.FontStyle.Bold);
             label3.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            label3.Location = new System.Drawing.Point(190, 31);
+            label3.Location = new System.Drawing.Point(165, 31);
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(82, 20);
             label3.TabIndex = 3;
@@ -323,7 +323,7 @@ namespace UDSV
             txtMaKhoa.Font = new System.Drawing.Font("Segoe UI", 10F);
             txtMaKhoa.Location = new System.Drawing.Point(20, 54);
             txtMaKhoa.Name = "txtMaKhoa";
-            txtMaKhoa.Size = new System.Drawing.Size(145, 30);
+            txtMaKhoa.Size = new System.Drawing.Size(125, 30);
             txtMaKhoa.TabIndex = 2;
             // 
             // label2
@@ -358,7 +358,7 @@ namespace UDSV
             cardDsKhoa.Location = new System.Drawing.Point(20, 250);
             cardDsKhoa.Name = "cardDsKhoa";
             cardDsKhoa.Radius = 14;
-            cardDsKhoa.Size = new System.Drawing.Size(480, 425);
+            cardDsKhoa.Size = new System.Drawing.Size(485, 480);
             cardDsKhoa.TabIndex = 2;
             // 
             // lblDsKhoaSub
@@ -427,7 +427,7 @@ namespace UDSV
             dgvKhoa.RowHeadersWidth = 51;
             dgvKhoa.RowTemplate.Height = 34;
             dgvKhoa.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            dgvKhoa.Size = new System.Drawing.Size(448, 348);
+            dgvKhoa.Size = new System.Drawing.Size(453, 402);
             dgvKhoa.TabIndex = 0;
             // 
             // cardChuongTrinh
@@ -443,10 +443,10 @@ namespace UDSV
             cardChuongTrinh.Controls.Add(labelHocKy);
             cardChuongTrinh.Controls.Add(lblTrangThai);
             cardChuongTrinh.Controls.Add(lblCtTitle);
-            cardChuongTrinh.Location = new System.Drawing.Point(515, 250);
+            cardChuongTrinh.Location = new System.Drawing.Point(520, 250);
             cardChuongTrinh.Name = "cardChuongTrinh";
             cardChuongTrinh.Radius = 14;
-            cardChuongTrinh.Size = new System.Drawing.Size(625, 425);
+            cardChuongTrinh.Size = new System.Drawing.Size(780, 480);
             cardChuongTrinh.TabIndex = 3;
             // 
             // lblTongTC
@@ -455,7 +455,7 @@ namespace UDSV
             lblTongTC.AutoSize = true;
             lblTongTC.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             lblTongTC.ForeColor = System.Drawing.Color.FromArgb(124, 58, 237);
-            lblTongTC.Location = new System.Drawing.Point(16, 385);
+            lblTongTC.Location = new System.Drawing.Point(16, 451);
             lblTongTC.Name = "lblTongTC";
             lblTongTC.Size = new System.Drawing.Size(99, 21);
             lblTongTC.TabIndex = 8;
@@ -470,7 +470,7 @@ namespace UDSV
             btnXoaMon.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             btnXoaMon.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             btnXoaMon.ForeColor = System.Drawing.Color.FromArgb(185, 28, 28);
-            btnXoaMon.Location = new System.Drawing.Point(505, 340);
+            btnXoaMon.Location = new System.Drawing.Point(655, 410);
             btnXoaMon.Name = "btnXoaMon";
             btnXoaMon.Size = new System.Drawing.Size(105, 34);
             btnXoaMon.TabIndex = 7;
@@ -486,9 +486,9 @@ namespace UDSV
             btnThemMon.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             btnThemMon.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             btnThemMon.ForeColor = System.Drawing.Color.FromArgb(21, 128, 61);
-            btnThemMon.Location = new System.Drawing.Point(385, 340);
+            btnThemMon.Location = new System.Drawing.Point(520, 410);
             btnThemMon.Name = "btnThemMon";
-            btnThemMon.Size = new System.Drawing.Size(112, 34);
+            btnThemMon.Size = new System.Drawing.Size(125, 34);
             btnThemMon.TabIndex = 6;
             btnThemMon.Text = "＋ Thêm môn";
             btnThemMon.UseVisualStyleBackColor = false;
@@ -499,9 +499,9 @@ namespace UDSV
             cboMonHoc.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             cboMonHoc.Font = new System.Drawing.Font("Segoe UI", 10F);
             cboMonHoc.FormattingEnabled = true;
-            cboMonHoc.Location = new System.Drawing.Point(16, 342);
+            cboMonHoc.Location = new System.Drawing.Point(16, 412);
             cboMonHoc.Name = "cboMonHoc";
-            cboMonHoc.Size = new System.Drawing.Size(355, 31);
+            cboMonHoc.Size = new System.Drawing.Size(490, 31);
             cboMonHoc.TabIndex = 5;
             // 
             // dgvChuongTrinh
@@ -539,7 +539,7 @@ namespace UDSV
             dgvChuongTrinh.DefaultCellStyle = dataGridViewCellStyle6;
             dgvChuongTrinh.EnableHeadersVisualStyles = false;
             dgvChuongTrinh.GridColor = System.Drawing.Color.FromArgb(238, 242, 246);
-            dgvChuongTrinh.Location = new System.Drawing.Point(16, 56);
+            dgvChuongTrinh.Location = new System.Drawing.Point(16, 70);
             dgvChuongTrinh.MultiSelect = false;
             dgvChuongTrinh.Name = "dgvChuongTrinh";
             dgvChuongTrinh.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
@@ -547,7 +547,7 @@ namespace UDSV
             dgvChuongTrinh.RowHeadersWidth = 51;
             dgvChuongTrinh.RowTemplate.Height = 34;
             dgvChuongTrinh.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            dgvChuongTrinh.Size = new System.Drawing.Size(594, 272);
+            dgvChuongTrinh.Size = new System.Drawing.Size(748, 332);
             dgvChuongTrinh.TabIndex = 4;
             // 
             // cboHocKy
@@ -556,7 +556,7 @@ namespace UDSV
             cboHocKy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             cboHocKy.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             cboHocKy.FormattingEnabled = true;
-            cboHocKy.Location = new System.Drawing.Point(505, 14);
+            cboHocKy.Location = new System.Drawing.Point(660, 10);
             cboHocKy.Name = "cboHocKy";
             cboHocKy.Size = new System.Drawing.Size(105, 29);
             cboHocKy.TabIndex = 3;
@@ -567,7 +567,7 @@ namespace UDSV
             labelHocKy.AutoSize = true;
             labelHocKy.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             labelHocKy.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            labelHocKy.Location = new System.Drawing.Point(440, 18);
+            labelHocKy.Location = new System.Drawing.Point(595, 14);
             labelHocKy.Name = "labelHocKy";
             labelHocKy.Size = new System.Drawing.Size(60, 20);
             labelHocKy.TabIndex = 2;
@@ -575,12 +575,13 @@ namespace UDSV
             // 
             // lblTrangThai
             // 
-            lblTrangThai.AutoSize = true;
+            lblTrangThai.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            lblTrangThai.AutoEllipsis = true;
             lblTrangThai.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             lblTrangThai.ForeColor = System.Drawing.Color.FromArgb(16, 185, 129);
-            lblTrangThai.Location = new System.Drawing.Point(225, 15);
+            lblTrangThai.Location = new System.Drawing.Point(16, 42);
             lblTrangThai.Name = "lblTrangThai";
-            lblTrangThai.Size = new System.Drawing.Size(25, 21);
+            lblTrangThai.Size = new System.Drawing.Size(748, 22);
             lblTrangThai.TabIndex = 1;
             lblTrangThai.Text = "—";
             // 
@@ -600,12 +601,12 @@ namespace UDSV
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(245, 247, 250);
-            ClientSize = new System.Drawing.Size(1160, 695);
+            ClientSize = new System.Drawing.Size(1320, 750);
             Controls.Add(cardChuongTrinh);
             Controls.Add(cardDsKhoa);
             Controls.Add(cardKhoa);
             Controls.Add(pnlHeader);
-            MinimumSize = new System.Drawing.Size(1080, 640);
+            MinimumSize = new System.Drawing.Size(1180, 680);
             Name = "FrmKhoa";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "Quản lý chương trình khóa";

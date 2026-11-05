@@ -71,6 +71,16 @@ namespace UDSV
             dgvChuongTrinh.AllowUserToAddRows = false;
             dgvChuongTrinh.AllowUserToDeleteRows = false;
 
+            // Bật DoubleBuffered để cuộn và co giãn mượt mà không nhấp nháy
+            typeof(Control)
+                .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                ?.SetValue(dgvKhoa, true);
+            typeof(Control)
+                .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                ?.SetValue(dgvChuongTrinh, true);
+
+            Resize += (s, e) => CanLaiNutKhoaTC();
+
             mauThemMon = btnThemMon.BackColor;
             mauXoaMon = btnXoaMon.BackColor;
             mauXoa = btnXoa.BackColor;
@@ -115,7 +125,7 @@ namespace UDSV
             if (btnKhoaTC == null) return;
 
             btnKhoaTC.Size = new Size(210, btnLamMoi.Height);
-            btnKhoaTC.Location = new Point(btnLamMoi.Right + 20, btnLamMoi.Top);
+            btnKhoaTC.Location = new Point(btnLamMoi.Right + 15, btnLamMoi.Top);
         }
 
         /// <summary>Bật/tắt cả khối ô nhập "Thông tin khóa" (mã, tên, năm, tín chỉ).</summary>
@@ -170,12 +180,67 @@ namespace UDSV
         {
             if (dgvKhoa.Columns.Count == 0) return;
 
-            if (dgvKhoa.Columns.Contains("MaKhoa")) dgvKhoa.Columns["MaKhoa"].HeaderText = "Mã khóa";
-            if (dgvKhoa.Columns.Contains("TenKhoa")) dgvKhoa.Columns["TenKhoa"].HeaderText = "Tên khóa";
-            if (dgvKhoa.Columns.Contains("NamBatDau")) dgvKhoa.Columns["NamBatDau"].HeaderText = "Từ năm";
-            if (dgvKhoa.Columns.Contains("NamKetThuc")) dgvKhoa.Columns["NamKetThuc"].HeaderText = "Đến năm";
-            if (dgvKhoa.Columns.Contains("TongTCBatBuoc")) dgvKhoa.Columns["TongTCBatBuoc"].HeaderText = "TC bắt buộc";
-            if (dgvKhoa.Columns.Contains("TongTCTuChon")) dgvKhoa.Columns["TongTCTuChon"].HeaderText = "TC tự chọn";
+            dgvKhoa.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            dgvKhoa.ScrollBars = ScrollBars.Both;
+
+            if (dgvKhoa.Columns.Contains("MaKhoa"))
+            {
+                var col = dgvKhoa.Columns["MaKhoa"];
+                col.HeaderText = "Mã khóa";
+                col.Width = 75;
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+            if (dgvKhoa.Columns.Contains("TenKhoa"))
+            {
+                var col = dgvKhoa.Columns["TenKhoa"];
+                col.HeaderText = "Tên khóa";
+                col.Width = 175;
+            }
+            if (dgvKhoa.Columns.Contains("NamBatDau"))
+            {
+                var col = dgvKhoa.Columns["NamBatDau"];
+                col.HeaderText = "Từ năm";
+                col.Width = 65;
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+            if (dgvKhoa.Columns.Contains("NamKetThuc"))
+            {
+                var col = dgvKhoa.Columns["NamKetThuc"];
+                col.HeaderText = "Đến năm";
+                col.Width = 65;
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+            if (dgvKhoa.Columns.Contains("TongTCBatBuoc"))
+            {
+                var col = dgvKhoa.Columns["TongTCBatBuoc"];
+                col.HeaderText = "TC BB";
+                col.ToolTipText = "Tổng tín chỉ bắt buộc";
+                col.Width = 60;
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+            if (dgvKhoa.Columns.Contains("TongTCTuChon"))
+            {
+                var col = dgvKhoa.Columns["TongTCTuChon"];
+                col.HeaderText = "TC TC";
+                col.ToolTipText = "Tổng tín chỉ tự chọn";
+                col.Width = 60;
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+            if (dgvKhoa.Columns.Contains("NgayKhoa"))
+            {
+                var col = dgvKhoa.Columns["NgayKhoa"];
+                col.HeaderText = "Ngày khoá";
+                col.Width = 90;
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                col.DefaultCellStyle.Format = "dd/MM/yyyy";
+            }
+            if (dgvKhoa.Columns.Contains("NguoiKhoa"))
+            {
+                var col = dgvKhoa.Columns["NguoiKhoa"];
+                col.HeaderText = "Người khoá";
+                col.Width = 85;
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
         }
 
         private void TaiChuongTrinh()
@@ -202,17 +267,83 @@ namespace UDSV
                 dgvChuongTrinh.DataSource = _ctFull.DefaultView;
                 if (dgvChuongTrinh.Columns.Count > 0)
                 {
+                    dgvChuongTrinh.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                    dgvChuongTrinh.ScrollBars = ScrollBars.Both;
+
                     if (dgvChuongTrinh.Columns.Contains("MaKhoa")) dgvChuongTrinh.Columns["MaKhoa"].Visible = false;
-                    if (dgvChuongTrinh.Columns.Contains("MaMH")) dgvChuongTrinh.Columns["MaMH"].HeaderText = "Mã MH";
-                    if (dgvChuongTrinh.Columns.Contains("TenMH")) dgvChuongTrinh.Columns["TenMH"].HeaderText = "Tên môn học";
-                    if (dgvChuongTrinh.Columns.Contains("SoTinChi")) dgvChuongTrinh.Columns["SoTinChi"].HeaderText = "TC";
-                    if (dgvChuongTrinh.Columns.Contains("BatBuoc")) dgvChuongTrinh.Columns["BatBuoc"].HeaderText = "Bắt buộc";
                     if (dgvChuongTrinh.Columns.Contains("HocKy")) dgvChuongTrinh.Columns["HocKy"].Visible = false;
-                    if (dgvChuongTrinh.Columns.Contains("Thu")) dgvChuongTrinh.Columns["Thu"].HeaderText = "Thứ (2..8)";
-                    if (dgvChuongTrinh.Columns.Contains("TietBD")) dgvChuongTrinh.Columns["TietBD"].HeaderText = "Tiết BĐ";
-                    if (dgvChuongTrinh.Columns.Contains("TietKT")) dgvChuongTrinh.Columns["TietKT"].HeaderText = "Tiết KT";
-                    if (dgvChuongTrinh.Columns.Contains("GiangVien")) dgvChuongTrinh.Columns["GiangVien"].HeaderText = "Giảng viên";
-                    if (dgvChuongTrinh.Columns.Contains("PhongHoc")) dgvChuongTrinh.Columns["PhongHoc"].HeaderText = "Phòng học";
+
+                    if (dgvChuongTrinh.Columns.Contains("MaMH"))
+                    {
+                        var col = dgvChuongTrinh.Columns["MaMH"];
+                        col.HeaderText = "Mã MH";
+                        col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                        col.Width = 105;
+                        col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    }
+                    if (dgvChuongTrinh.Columns.Contains("TenMH"))
+                    {
+                        var col = dgvChuongTrinh.Columns["TenMH"];
+                        col.HeaderText = "Tên môn học";
+                        col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                        col.FillWeight = 260;
+                        col.MinimumWidth = 180;
+                    }
+                    if (dgvChuongTrinh.Columns.Contains("SoTinChi"))
+                    {
+                        var col = dgvChuongTrinh.Columns["SoTinChi"];
+                        col.HeaderText = "TC";
+                        col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                        col.Width = 55;
+                        col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    }
+                    if (dgvChuongTrinh.Columns.Contains("BatBuoc"))
+                    {
+                        var col = dgvChuongTrinh.Columns["BatBuoc"];
+                        col.HeaderText = "Bắt buộc";
+                        col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                        col.Width = 85;
+                    }
+                    if (dgvChuongTrinh.Columns.Contains("Thu"))
+                    {
+                        var col = dgvChuongTrinh.Columns["Thu"];
+                        col.HeaderText = "Thứ (2..8)";
+                        col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                        col.Width = 85;
+                        col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    }
+                    if (dgvChuongTrinh.Columns.Contains("TietBD"))
+                    {
+                        var col = dgvChuongTrinh.Columns["TietBD"];
+                        col.HeaderText = "Tiết BĐ";
+                        col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                        col.Width = 70;
+                        col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    }
+                    if (dgvChuongTrinh.Columns.Contains("TietKT"))
+                    {
+                        var col = dgvChuongTrinh.Columns["TietKT"];
+                        col.HeaderText = "Tiết KT";
+                        col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                        col.Width = 70;
+                        col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    }
+                    if (dgvChuongTrinh.Columns.Contains("GiangVien"))
+                    {
+                        var col = dgvChuongTrinh.Columns["GiangVien"];
+                        col.HeaderText = "Giảng viên";
+                        col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                        col.FillWeight = 160;
+                        col.MinimumWidth = 140;
+                    }
+                    if (dgvChuongTrinh.Columns.Contains("PhongHoc"))
+                    {
+                        var col = dgvChuongTrinh.Columns["PhongHoc"];
+                        col.HeaderText = "Phòng học";
+                        col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                        col.Width = 100;
+                        col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    }
                 }
 
                 NapHocKy();
@@ -295,8 +426,8 @@ namespace UDSV
 
             if (daKhoa)
             {
-                lblTrangThai.Text = $"ĐÃ KHOÁ — chốt ngày {khoa!.NgayKhoa:dd/MM/yyyy} bởi {khoa.NguoiKhoa}";
-                lblTrangThai.ForeColor = Color.Red;
+                lblTrangThai.Text = $"🔒 ĐÃ KHOÁ — chốt ngày {khoa!.NgayKhoa:dd/MM/yyyy} bởi {khoa.NguoiKhoa}";
+                lblTrangThai.ForeColor = Color.FromArgb(220, 38, 38);
 
                 // Đã chốt: khoá cứng sáu ô nhập (kể cả Mã khóa). Lưới vẫn gõ được;
                 // nếu tổng trên lưới lệch số đã chốt thì nút Sửa sẽ từ chối bằng hộp thoại.
@@ -312,8 +443,8 @@ namespace UDSV
             {
                 lblTrangThai.Text = maDangChon.Length == 0
                     ? "—"
-                    : "Còn sửa được — chương trình chưa bị khoá";
-                lblTrangThai.ForeColor = Color.Green;
+                    : "✏️ Còn sửa được — chương trình chưa bị khoá";
+                lblTrangThai.ForeColor = Color.FromArgb(22, 163, 74);
                 BatTatNhap(true);
                 if (btnKhoaTC != null)
                 {

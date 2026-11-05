@@ -286,15 +286,19 @@ namespace UDSV
             pnlBody.Controls.Add(cardTable);
 
             // Gắn vào Form theo đúng thứ tự WinForms docking layout:
-            // Controls được xử lý theo thứ tự ngược lại (index cao nhất chiếm viền trước):
+            // Controls[0] được xử lý viền trước:
             // 1. pnlHeader: Dock = Top (sát mép trên cùng Y=0)
             // 2. pnlTopFilter: Dock = Top (ngay dưới Header Y=84)
             // 3. pnlFooter: Dock = Bottom (sát mép dưới cùng)
             // 4. pnlBody: Dock = Fill (lấp đầy toàn bộ vùng giữa không bị đè)
+            Controls.Clear();
             Controls.Add(pnlBody);
             Controls.Add(pnlFooter);
             Controls.Add(pnlTopFilter);
             Controls.Add(pnlHeader);
+            pnlHeader.SendToBack();
+            pnlFooter.SendToBack();
+            pnlBody.BringToFront();
 
             Load += (s, e) => { ChonHocKyMacDinh(); NapLuoi(); };
         }
