@@ -70,6 +70,17 @@ namespace UDSV
             dgvChuongTrinh.ReadOnly = false;
             dgvChuongTrinh.AllowUserToAddRows = false;
             dgvChuongTrinh.AllowUserToDeleteRows = false;
+            dgvChuongTrinh.CellEndEdit += (s, e) => CapNhatCanhBaoTrungLich();
+
+            // Bật DoubleBuffered để cuộn và co giãn mượt mà không nhấp nháy
+            typeof(Control)
+                .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                ?.SetValue(dgvKhoa, true);
+            typeof(Control)
+                .GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                ?.SetValue(dgvChuongTrinh, true);
+
+            Resize += (s, e) => CanLaiNutKhoaTC();
 
             // Bật DoubleBuffered để cuộn và co giãn mượt mà không nhấp nháy
             typeof(Control)
@@ -416,6 +427,7 @@ namespace UDSV
 
             int ky = HocKyChon;
             _ctFull.DefaultView.RowFilter = ky > 0 ? $"HocKy = {ky}" : "";
+            CapNhatCanhBaoTrungLich();
         }
 
         /// <summary>Hiện luật khoá ngay trên màn hình — đây là bằng chứng cho báo cáo.</summary>
@@ -527,6 +539,7 @@ namespace UDSV
         {
             if (dangNap || e.RowIndex < 0) return;
             CapNhatTongTinChi();
+            CapNhatCanhBaoTrungLich();
         }
 
         private void BtnThem_Click(object sender, EventArgs e)
@@ -596,13 +609,21 @@ namespace UDSV
                     }
                 }
 
+                // Kiểm tra trước tính hợp lệ của toàn bộ chương trình (trùng môn, sai tiết, trùng thời khóa biểu...)
+                var dsCT = DocLuoi();
+                if (!ChuongTrinhBLL.KiemTraDong(dsCT, out string loiDong))
+                {
+                    ThongBao.Show(this, loiDong, "Phát hiện lỗi thời khóa biểu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 if (!khoaBLL.Sua(LayDuLieuTuForm(), out string error))
                 {
                     ThongBao.Show(this, error, "Không sửa được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
                 // Lưu luôn chương trình: các ô sửa trực tiếp trên lưới chỉ có hiệu lực từ đây.
-                bool luuCT = ctBLL.LuuChuongTrinh(maDangChon, DocLuoi(), out string loiCT);
+                bool luuCT = ctBLL.LuuChuongTrinh(maDangChon, dsCT, out string loiCT);
 
                 if (luuCT)
                     ThongBao.Show(this, "Đã cập nhật khóa và chương trình.", "Thành công",
@@ -732,6 +753,92 @@ namespace UDSV
             return int.TryParse(v.ToString(), out int so) ? so : (int?)null;
         }
 
+        /// <summary>
+        /// Quét và tô màu cảnh báo đỏ nhạt các ô thời khóa biểu bị trùng lịch trên lưới hiện tại.
+        /// </summary>
+        private void CapNhatCanhBaoTrungLich()
+        {
+            if (dangNap || dgvChuongTrinh.Rows.Count == 0) return;
+
+            // Xóa màu cảnh báo cũ
+            foreach (DataGridViewRow row in dgvChuongTrinh.Rows)
+            {
+                if (row.Cells["Thu"].Style.BackColor != Color.Empty)
+                {
+                    row.Cells["Thu"].Style.BackColor = Color.Empty;
+                    row.Cells["Thu"].Style.ForeColor = Color.Empty;
+                    row.Cells["Thu"].ToolTipText = null;
+                }
+                if (row.Cells["TietBD"].Style.BackColor != Color.Empty)
+                {
+                    row.Cells["TietBD"].Style.BackColor = Color.Empty;
+                    row.Cells["TietBD"].Style.ForeColor = Color.Empty;
+                    row.Cells["TietBD"].ToolTipText = null;
+                }
+                if (row.Cells["TietKT"].Style.BackColor != Color.Empty)
+                {
+                    row.Cells["TietKT"].Style.BackColor = Color.Empty;
+                    row.Cells["TietKT"].Style.ForeColor = Color.Empty;
+                    row.Cells["TietKT"].ToolTipText = null;
+                }
+            }
+
+            // Quét tìm các cặp trùng trên lưới đang hiển thị
+            int n = dgvChuongTrinh.Rows.Count;
+            Color mauLoi = Color.FromArgb(254, 226, 226); // đỏ pastel
+            Color chuLoi = Color.FromArgb(185, 28, 28);
+            string tip = "⚠️ Trùng thời khóa biểu với môn khác trong học kỳ!";
+
+            for (int i = 0; i < n; i++)
+            {
+                var rowA = dgvChuongTrinh.Rows[i];
+                if (rowA.DataBoundItem is not DataRowView drvA) continue;
+
+                int? thuA = LaySo(drvA.Row, "Thu");
+                int? bdA = LaySo(drvA.Row, "TietBD");
+                int? ktA = LaySo(drvA.Row, "TietKT");
+                if (!thuA.HasValue || !bdA.HasValue || !ktA.HasValue) continue;
+
+                for (int j = i + 1; j < n; j++)
+                {
+                    var rowB = dgvChuongTrinh.Rows[j];
+                    if (rowB.DataBoundItem is not DataRowView drvB) continue;
+
+                    int? thuB = LaySo(drvB.Row, "Thu");
+                    int? bdB = LaySo(drvB.Row, "TietBD");
+                    int? ktB = LaySo(drvB.Row, "TietKT");
+                    if (!thuB.HasValue || !bdB.HasValue || !ktB.HasValue) continue;
+
+                    if (thuA == thuB && bdA <= ktB && bdB <= ktA)
+                    {
+                        rowA.Cells["Thu"].Style.BackColor = mauLoi;
+                        rowA.Cells["Thu"].Style.ForeColor = chuLoi;
+                        rowA.Cells["Thu"].ToolTipText = tip;
+
+                        rowA.Cells["TietBD"].Style.BackColor = mauLoi;
+                        rowA.Cells["TietBD"].Style.ForeColor = chuLoi;
+                        rowA.Cells["TietBD"].ToolTipText = tip;
+
+                        rowA.Cells["TietKT"].Style.BackColor = mauLoi;
+                        rowA.Cells["TietKT"].Style.ForeColor = chuLoi;
+                        rowA.Cells["TietKT"].ToolTipText = tip;
+
+                        rowB.Cells["Thu"].Style.BackColor = mauLoi;
+                        rowB.Cells["Thu"].Style.ForeColor = chuLoi;
+                        rowB.Cells["Thu"].ToolTipText = tip;
+
+                        rowB.Cells["TietBD"].Style.BackColor = mauLoi;
+                        rowB.Cells["TietBD"].Style.ForeColor = chuLoi;
+                        rowB.Cells["TietBD"].ToolTipText = tip;
+
+                        rowB.Cells["TietKT"].Style.BackColor = mauLoi;
+                        rowB.Cells["TietKT"].Style.ForeColor = chuLoi;
+                        rowB.Cells["TietKT"].ToolTipText = tip;
+                    }
+                }
+            }
+        }
+
         /// <summary>Đọc TOÀN BỘ chương trình (mọi học kỳ) thành danh sách dòng để lưu một lần.</summary>
         private List<ChuongTrinhDTO> DocLuoi()
         {
@@ -753,6 +860,9 @@ namespace UDSV
                         : null,
                     _ctFull.Columns.Contains("PhongHoc") && r["PhongHoc"] != DBNull.Value
                         ? r["PhongHoc"].ToString()
+                        : null,
+                    _ctFull.Columns.Contains("TenMH") && r["TenMH"] != DBNull.Value
+                        ? r["TenMH"].ToString()
                         : null));
             }
             return ds;

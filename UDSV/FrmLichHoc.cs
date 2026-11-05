@@ -62,6 +62,9 @@ namespace UDSV
                     cboKhoa.SelectedValue = _maKhoaCoDinh;
                     cboKhoa.Visible = false;
                     AnNhanKhoa();
+                    labelKy.Location = new Point(20, 24);
+                    cboKy.Location = new Point(115, 20);
+                    lblThongTin.Location = new Point(235, 25);
                 }
 
                 NapKy();

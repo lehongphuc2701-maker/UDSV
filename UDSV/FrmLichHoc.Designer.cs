@@ -128,7 +128,7 @@ namespace UDSV
             lblThongTin.BackColor = System.Drawing.Color.Transparent;
             lblThongTin.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             lblThongTin.ForeColor = System.Drawing.Color.FromArgb(217, 119, 6);
-            lblThongTin.Location = new System.Drawing.Point(520, 25);
+            lblThongTin.Location = new System.Drawing.Point(545, 25);
             lblThongTin.Name = "lblThongTin";
             lblThongTin.Size = new System.Drawing.Size(235, 21);
             lblThongTin.TabIndex = 4;
@@ -139,9 +139,9 @@ namespace UDSV
             cboKy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             cboKy.Font = new System.Drawing.Font("Segoe UI", 10F);
             cboKy.FormattingEnabled = true;
-            cboKy.Location = new System.Drawing.Point(375, 21);
+            cboKy.Location = new System.Drawing.Point(415, 20);
             cboKy.Name = "cboKy";
-            cboKy.Size = new System.Drawing.Size(120, 31);
+            cboKy.Size = new System.Drawing.Size(100, 31);
             cboKy.TabIndex = 3;
             // 
             // labelKy
@@ -150,7 +150,7 @@ namespace UDSV
             labelKy.BackColor = System.Drawing.Color.Transparent;
             labelKy.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             labelKy.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            labelKy.Location = new System.Drawing.Point(295, 25);
+            labelKy.Location = new System.Drawing.Point(310, 24);
             labelKy.Name = "labelKy";
             labelKy.Size = new System.Drawing.Size(76, 21);
             labelKy.TabIndex = 2;
@@ -161,9 +161,9 @@ namespace UDSV
             cboKhoa.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             cboKhoa.Font = new System.Drawing.Font("Segoe UI", 10F);
             cboKhoa.FormattingEnabled = true;
-            cboKhoa.Location = new System.Drawing.Point(115, 21);
+            cboKhoa.Location = new System.Drawing.Point(145, 20);
             cboKhoa.Name = "cboKhoa";
-            cboKhoa.Size = new System.Drawing.Size(160, 31);
+            cboKhoa.Size = new System.Drawing.Size(135, 31);
             cboKhoa.TabIndex = 1;
             // 
             // labelKhoa
@@ -172,7 +172,7 @@ namespace UDSV
             labelKhoa.BackColor = System.Drawing.Color.Transparent;
             labelKhoa.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             labelKhoa.ForeColor = System.Drawing.Color.FromArgb(71, 85, 105);
-            labelKhoa.Location = new System.Drawing.Point(20, 25);
+            labelKhoa.Location = new System.Drawing.Point(20, 24);
             labelKhoa.Name = "labelKhoa";
             labelKhoa.Size = new System.Drawing.Size(91, 21);
             labelKhoa.TabIndex = 0;

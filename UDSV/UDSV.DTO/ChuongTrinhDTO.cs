@@ -8,6 +8,7 @@ namespace UDSV.DTO
     {
         public string MaKhoa { get; set; }
         public string MaMH { get; set; }
+        public string? TenMH { get; set; }
 
         /// <summary>true = bắt buộc, false = tự chọn.</summary>
         public bool BatBuoc { get; set; }
@@ -34,7 +35,7 @@ namespace UDSV.DTO
 
         public ChuongTrinhDTO(string maKhoa, string maMH, bool batBuoc, int hocKy = 1,
                               int? thu = null, int? tietBD = null, int? tietKT = null,
-                              string giangVien = null, string phongHoc = null)
+                              string giangVien = null, string phongHoc = null, string tenMH = null)
         {
             MaKhoa = maKhoa;
             MaMH = maMH;
@@ -45,6 +46,7 @@ namespace UDSV.DTO
             TietKT = tietKT;
             GiangVien = giangVien;
             PhongHoc = phongHoc;
+            TenMH = tenMH;
         }
     }
 }

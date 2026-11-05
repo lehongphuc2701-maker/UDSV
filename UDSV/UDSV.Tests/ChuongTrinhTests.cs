@@ -193,5 +193,76 @@ namespace UDSV.Tests
             Assert.IsFalse(ChuongTrinhBLL.KiemTraDong(new List<ChuongTrinhDTO>(), out string error));
             StringAssert.Contains(error, "ít nhất");
         }
+
+        [TestMethod]
+        public void KiemTraDong_TrungThoiKhoaBieu_CungHocKy_BiTuChoi()
+        {
+            var ds = new List<ChuongTrinhDTO>
+            {
+                new ChuongTrinhDTO("K24", "MH01", true, hocKy: 1, thu: 6, tietBD: 1, tietKT: 3, tenMH: "Môn A"),
+                new ChuongTrinhDTO("K24", "MH02", true, hocKy: 1, thu: 6, tietBD: 1, tietKT: 3, tenMH: "Môn B")
+            };
+
+            bool ok = ChuongTrinhBLL.KiemTraDong(ds, out string error);
+            Assert.IsFalse(ok, "Cùng thứ cùng tiết trong 1 học kỳ phải bị từ chối");
+            StringAssert.Contains(error, "Trùng thời khóa biểu");
+            StringAssert.Contains(error, "Môn A");
+        }
+
+        [TestMethod]
+        public void KiemTraDong_CungThuCungTiet_KhacHocKy_HopLe()
+        {
+            var ds = new List<ChuongTrinhDTO>
+            {
+                new ChuongTrinhDTO("K24", "MH01", true, hocKy: 1, thu: 6, tietBD: 1, tietKT: 3),
+                new ChuongTrinhDTO("K24", "MH02", true, hocKy: 2, thu: 6, tietBD: 1, tietKT: 3)
+            };
+
+            bool ok = ChuongTrinhBLL.KiemTraDong(ds, out string error);
+            Assert.IsTrue(ok, "Khác học kỳ thì cùng thứ tiết vẫn hợp lệ: " + error);
+        }
+
+        [TestMethod]
+        public void KiemTraDong_CungHocKy_CungThu_KhacTiet_HopLe()
+        {
+            var ds = new List<ChuongTrinhDTO>
+            {
+                new ChuongTrinhDTO("K24", "MH01", true, hocKy: 1, thu: 6, tietBD: 1, tietKT: 3),
+                new ChuongTrinhDTO("K24", "MH02", true, hocKy: 1, thu: 6, tietBD: 4, tietKT: 6)
+            };
+
+            bool ok = ChuongTrinhBLL.KiemTraDong(ds, out string error);
+            Assert.IsTrue(ok, "Cùng thứ nhưng khác tiết thì hợp lệ: " + error);
+        }
+
+        [TestMethod]
+        public void KiemTraDong_TrungPhongHoc_BiTuChoi()
+        {
+            var ds = new List<ChuongTrinhDTO>
+            {
+                new ChuongTrinhDTO("K24", "MH01", true, hocKy: 1, thu: 6, tietBD: 1, tietKT: 3, phongHoc: "P.301"),
+                new ChuongTrinhDTO("K24", "MH02", true, hocKy: 2, thu: 6, tietBD: 2, tietKT: 4, phongHoc: "P.301")
+            };
+
+            bool ok = ChuongTrinhBLL.KiemTraDong(ds, out string error);
+            Assert.IsFalse(ok, "Cùng phòng học cùng thời gian phải bị từ chối");
+            StringAssert.Contains(error, "Trùng phòng học");
+            StringAssert.Contains(error, "P.301");
+        }
+
+        [TestMethod]
+        public void KiemTraDong_TrungGiangVien_BiTuChoi()
+        {
+            var ds = new List<ChuongTrinhDTO>
+            {
+                new ChuongTrinhDTO("K24", "MH01", true, hocKy: 1, thu: 2, tietBD: 1, tietKT: 3, giangVien: "ThS. Đặng Thế Hân"),
+                new ChuongTrinhDTO("K24", "MH02", true, hocKy: 3, thu: 2, tietBD: 1, tietKT: 3, giangVien: "ThS. Đặng Thế Hân")
+            };
+
+            bool ok = ChuongTrinhBLL.KiemTraDong(ds, out string error);
+            Assert.IsFalse(ok, "Cùng giảng viên cùng thời gian phải bị từ chối");
+            StringAssert.Contains(error, "Trùng lịch giảng dạy");
+            StringAssert.Contains(error, "ThS. Đặng Thế Hân");
+        }
     }
 }

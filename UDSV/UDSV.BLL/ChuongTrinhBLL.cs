@@ -293,6 +293,76 @@ namespace UDSV.BLL
                 }
             }
 
+            // Kiểm tra trùng lịch học giữa các môn trong cùng một học kỳ của khóa
+            for (int i = 0; i < danhSach.Count; i++)
+            {
+                var d1 = danhSach[i];
+                if (!d1.Thu.HasValue || !d1.TietBD.HasValue || !d1.TietKT.HasValue) continue;
+
+                for (int j = i + 1; j < danhSach.Count; j++)
+                {
+                    var d2 = danhSach[j];
+                    if (!d2.Thu.HasValue || !d2.TietBD.HasValue || !d2.TietKT.HasValue) continue;
+
+                    // 1. Kiểm tra trùng thời khóa biểu sinh viên (cùng học kỳ, cùng thứ, giao khoảng tiết)
+                    if (d1.HocKy == d2.HocKy && d1.Thu == d2.Thu)
+                    {
+                        if (d1.TietBD <= d2.TietKT && d2.TietBD <= d1.TietKT)
+                        {
+                            string ten1 = !string.IsNullOrWhiteSpace(d1.TenMH) ? $"'{d1.TenMH}' ({d1.MaMH})" : $"'{d1.MaMH}'";
+                            string ten2 = !string.IsNullOrWhiteSpace(d2.TenMH) ? $"'{d2.TenMH}' ({d2.MaMH})" : $"'{d2.MaMH}'";
+                            string tenThu = d1.Thu == 8 ? "Chủ nhật" : $"Thứ {d1.Thu}";
+
+                            error = $"Trùng thời khóa biểu ở Học kỳ {d1.HocKy}:\n" +
+                                    $"• {ten1}: {tenThu}, Tiết {d1.TietBD} - {d1.TietKT}\n" +
+                                    $"• {ten2}: {tenThu}, Tiết {d2.TietBD} - {d2.TietKT}\n\n" +
+                                    "Sinh viên trong cùng học kỳ không thể học 2 môn cùng một thời điểm.";
+                            return false;
+                        }
+                    }
+
+                    // 2. Kiểm tra trùng phòng học
+                    if (d1.Thu == d2.Thu &&
+                        !string.IsNullOrWhiteSpace(d1.PhongHoc) && !string.IsNullOrWhiteSpace(d2.PhongHoc) &&
+                        d1.PhongHoc != "—" && d2.PhongHoc != "—" &&
+                        string.Equals(d1.PhongHoc.Trim(), d2.PhongHoc.Trim(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (d1.TietBD <= d2.TietKT && d2.TietBD <= d1.TietKT)
+                        {
+                            string ten1 = !string.IsNullOrWhiteSpace(d1.TenMH) ? $"'{d1.TenMH}' ({d1.MaMH})" : $"'{d1.MaMH}'";
+                            string ten2 = !string.IsNullOrWhiteSpace(d2.TenMH) ? $"'{d2.TenMH}' ({d2.MaMH})" : $"'{d2.MaMH}'";
+                            string tenThu = d1.Thu == 8 ? "Chủ nhật" : $"Thứ {d1.Thu}";
+
+                            error = $"Trùng phòng học '{d1.PhongHoc.Trim()}':\n" +
+                                    $"• {ten1} (HK{d1.HocKy}): {tenThu}, Tiết {d1.TietBD} - {d1.TietKT}\n" +
+                                    $"• {ten2} (HK{d2.HocKy}): {tenThu}, Tiết {d2.TietBD} - {d2.TietKT}\n\n" +
+                                    "Một phòng học không thể xếp cho 2 lớp cùng một thời điểm.";
+                            return false;
+                        }
+                    }
+
+                    // 3. Kiểm tra trùng giảng viên
+                    if (d1.Thu == d2.Thu &&
+                        !string.IsNullOrWhiteSpace(d1.GiangVien) && !string.IsNullOrWhiteSpace(d2.GiangVien) &&
+                        d1.GiangVien != "—" && d2.GiangVien != "—" &&
+                        string.Equals(d1.GiangVien.Trim(), d2.GiangVien.Trim(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (d1.TietBD <= d2.TietKT && d2.TietBD <= d1.TietKT)
+                        {
+                            string ten1 = !string.IsNullOrWhiteSpace(d1.TenMH) ? $"'{d1.TenMH}' ({d1.MaMH})" : $"'{d1.MaMH}'";
+                            string ten2 = !string.IsNullOrWhiteSpace(d2.TenMH) ? $"'{d2.TenMH}' ({d2.MaMH})" : $"'{d2.MaMH}'";
+                            string tenThu = d1.Thu == 8 ? "Chủ nhật" : $"Thứ {d1.Thu}";
+
+                            error = $"Trùng lịch giảng dạy của giảng viên '{d1.GiangVien.Trim()}':\n" +
+                                    $"• {ten1} (HK{d1.HocKy}): {tenThu}, Tiết {d1.TietBD} - {d1.TietKT}\n" +
+                                    $"• {ten2} (HK{d2.HocKy}): {tenThu}, Tiết {d2.TietBD} - {d2.TietKT}\n\n" +
+                                    "Giảng viên không thể dạy 2 lớp cùng một thời điểm.";
+                            return false;
+                        }
+                    }
+                }
+            }
+
             return true;
         }
     }
