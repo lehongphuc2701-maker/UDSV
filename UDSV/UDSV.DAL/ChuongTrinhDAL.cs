@@ -225,8 +225,9 @@ namespace UDSV.DAL
 
         public DataTable LayMonTheoKy(string maKhoa, int hocKy)
         {
-            // Môn của học kỳ + MỌI môn mà sinh viên của khóa này đã có điểm.
-            // Nhánh sau cố tình KHÔNG lọc cờ xoá / trạng thái: điểm đã nhập phải luôn xem được.
+            // Môn của học kỳ thuộc chương trình chi tiết của khóa.
+            // Nếu có môn ngoài chương trình mà sinh viên khóa này đã có điểm (và môn đó không thuộc bất kỳ kỳ nào của khóa),
+            // mới gom vào để xem/sửa điểm. Tránh làm tràn môn của các kỳ khác vào kỳ đang chọn.
             const string query = @"
                 SELECT m.MaMH, m.TenMH, m.SoTinChi,
                        CAST(CASE WHEN c.MaMH IS NULL THEN 1 ELSE 0 END AS BIT) AS NgoaiChuongTrinh
@@ -234,10 +235,11 @@ namespace UDSV.DAL
                 LEFT JOIN ChuongTrinhChiTiet c
                        ON c.MaMH = m.MaMH AND c.MaKhoa = @MaKhoa AND c.HocKy = @HocKy
                 WHERE c.MaMH IS NOT NULL
-                   OR m.MaMH IN (SELECT kq.MaMH
-                                 FROM KetQua kq
-                                 INNER JOIN SinhVien sv ON sv.MaSV = kq.MaSV
-                                 WHERE sv.MaKhoa = @MaKhoa)
+                   OR (m.MaMH IN (SELECT kq.MaMH
+                                  FROM KetQua kq
+                                  INNER JOIN SinhVien sv ON sv.MaSV = kq.MaSV
+                                  WHERE sv.MaKhoa = @MaKhoa)
+                       AND NOT EXISTS (SELECT 1 FROM ChuongTrinhChiTiet ct WHERE ct.MaKhoa = @MaKhoa AND ct.MaMH = m.MaMH))
                 ORDER BY m.MaMH";
 
             SqlParameter[] ps =

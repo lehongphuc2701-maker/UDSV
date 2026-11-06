@@ -264,5 +264,16 @@ namespace UDSV.Tests
             StringAssert.Contains(error, "Trùng lịch giảng dạy");
             StringAssert.Contains(error, "ThS. Đặng Thế Hân");
         }
+
+        [TestMethod]
+        public void LayMonTheoKy_ChiTraVeMonCuaKyDo()
+        {
+            var (bll, _, _) = Tao(coSan: new[] { ("MH01", true, 1), ("MH02", true, 2), ("MH03", true, 1) });
+            System.Data.DataTable dtKy1 = bll.LayMonTheoKy(K24, 1);
+            Assert.AreEqual(2, dtKy1.Rows.Count);
+
+            System.Data.DataTable dtKy2 = bll.LayMonTheoKy(K24, 2);
+            Assert.AreEqual(1, dtKy2.Rows.Count);
+        }
     }
 }

@@ -201,6 +201,7 @@ namespace UDSV
                 cboMonHoc.DisplayMember = ThemCotHienThiMon(dsMon);
                 cboMonHoc.ValueMember = "MaMH";
                 cboMonHoc.SelectedIndexChanged += CboMonHoc_Changed;
+                TaiBangDiem();
             }
             catch (Exception ex) { BaoLoi(ex); }
         }
